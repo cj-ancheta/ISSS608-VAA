@@ -111,13 +111,13 @@ Grammar of Graphics, introduced by Leland Wilkinson (1999), is a general scheme 
 
 ![](https://blog.gramener.com/wp-content/uploads/2018/11/7-layers-of-grammar-of-graphics-to-tell-powerful-data-stories-3.png)
 
--   **`Themes:`** modify all non-data components of a plot, such as main title, sub-title, y-aixs title, or legend background.
--   **`Coordinates:`** define the plane on which data are mapped on the graphic.
--   **`Statistics:`** Statistical transformations that summarise data (e.g. mean, confidence intervals).
--   **`Facets:`** split the data into subsets to create multiple variations of the same graph (paneling, multiple plots).
--   **`Geometries:`** The visual elements used for our data, such as point, bar or line.
--   **`Aesthetics:`** Take attributes of the data and use them to influence visual characteristics, such as position, colors, size, shape, or transparency.
--   **`Data:`** The dataset being plotted.
+-   **`Themes`**: modify all non-data components of a plot, such as main title, sub-title, y-aixs title, or legend background.
+-   **`Coordinates`**: define the plane on which data are mapped on the graphic.
+-   **`Statistics`**: Statistical transformations that summarise data (e.g. mean, confidence intervals).
+-   **`Facets`**: split the data into subsets to create multiple variations of the same graph (paneling, multiple plots).
+-   **`Geometries`**: The visual elements used for our data, such as point, bar or line.
+-   **`Aesthetics`**: Take attributes of the data and use them to influence visual characteristics, such as position, colors, size, shape, or transparency.
+-   **`Data`**: The dataset being plotted.
 
 # 5. Essential element in ggplot2 - Data
 
