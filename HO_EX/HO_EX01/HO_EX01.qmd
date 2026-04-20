@@ -42,7 +42,13 @@ exam_data <- read_csv("data/Exam_data.csv")
 ## Data summary
 
 ::: callout-tip
-The summary shows a year-end examination grades. There are 7 features: - Categorical: ID, CLASS, GENDER, RACE - Continuous: MATH, ENGLISH, SCIENCE
+The summary shows a year-end examination grades.
+
+There are 7 features:
+
+\- Categorical: `ID`, `CLASS`, `GENDER`, `RACE`
+
+\- Continuous: `MATH`, `ENGLISH`, `SCIENCE`
 :::
 
 ```{r}
@@ -105,13 +111,13 @@ Grammar of Graphics, introduced by Leland Wilkinson (1999), is a general scheme 
 
 ![](https://blog.gramener.com/wp-content/uploads/2018/11/7-layers-of-grammar-of-graphics-to-tell-powerful-data-stories-3.png)
 
--   **Themes:** modify all non-data components of a plot, such as main title, sub-title, y-aixs title, or legend background.
--   **Coordinates:** define the plane on which data are mapped on the graphic.
--   **Statistics:** Statistical transformations that summarise data (e.g. mean, confidence intervals).
--   **Facets:** split the data into subsets to create multiple variations of the same graph (paneling, multiple plots).
--   **Geometries:** The visual elements used for our data, such as point, bar or line.
--   **Aesthetics:** Take attributes of the data and use them to influence visual characteristics, such as position, colors, size, shape, or transparency.
--   **Data:** The dataset being plotted.
+-   **`Themes:`** modify all non-data components of a plot, such as main title, sub-title, y-aixs title, or legend background.
+-   **`Coordinates:`** define the plane on which data are mapped on the graphic.
+-   **`Statistics:`** Statistical transformations that summarise data (e.g. mean, confidence intervals).
+-   **`Facets:`** split the data into subsets to create multiple variations of the same graph (paneling, multiple plots).
+-   **`Geometries:`** The visual elements used for our data, such as point, bar or line.
+-   **`Aesthetics:`** Take attributes of the data and use them to influence visual characteristics, such as position, colors, size, shape, or transparency.
+-   **`Data:`** The dataset being plotted.
 
 # 5. Essential element in ggplot2 - Data
 
@@ -148,8 +154,6 @@ ggplot(data=exam_data,
 Geometric objects are the actual marks we put on a plot, in this exercise, I will use:
 
 -   **`geom_bar`**: Creates bar charts to visualize the frequency, count, or proportion of categorical variables.
-
-<!-- -->
 
 -   **`geom_dotplot`**: Represents individual data points as stacked dots to show the exact distribution of small, continuous datasets.
 
@@ -226,7 +230,7 @@ ggplot(data=exam_data,
 
 In the code chunk below, [*geom_histogram()*](https://ggplot2.tidyverse.org/reference/geom_histogram.html) is used to create a simple histogram by using values in *MATHS* field of *exam_data*.
 
-:::::: panel-tabset
+::::: panel-tabset
 ## geom_histogram()
 
 ::: callout-tip
@@ -250,4 +254,4 @@ ggplot(data=exam_data,
        aes(x = MATHS)) +
   geom_histogram(binwidth = 5)       
 ```
-::::::
+:::::
