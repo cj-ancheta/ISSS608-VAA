@@ -233,7 +233,7 @@ In the code chunk below, [*geom_histogram()*](https://ggplot2.tidyverse.org/ref
 ::::: panel-tabset
 ## geom_histogram()
 
-::: callout-tip
+::: callout-warning
 Note that the default bin is **30**.
 :::
 
