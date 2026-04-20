@@ -13,6 +13,7 @@ execute:
 
 # 1. Overview
 
+
 # 2. Getting Started
 
 ::::: panel-tabset
@@ -204,7 +205,7 @@ ggplot(data=exam_data,
   geom_dotplot(dotsize = 0.5)
 ```
 
-## geom_dotplot() - *fixed*
+## geom_dotplot() - *modified*
 
 ::: callout-note
 ## Fix
@@ -243,7 +244,7 @@ ggplot(data=exam_data,
   geom_histogram()       
 ```
 
-## geom_histogram() - *fixed*
+## geom_histogram() - *modified*
 
 ::: callout-tip
 For grades, a *binwidth* of 5 or 10 is the standard "human logic" approach.
@@ -255,3 +256,487 @@ ggplot(data=exam_data,
   geom_histogram(binwidth = 5)       
 ```
 :::::
+
+## 7.4 Modifying a geometric object
+
+::::: panel-tabset
+## *modifying: geom()*
+
+::: callout-tip
+-   bins argument is used to change the number of bins,
+-   fill argument is used to shade the histogram, and
+-   color argument is used to change the outline colour of the bars
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20,            
+                 color="black",      
+                 fill="#FFC107")  
+```
+
+## *modifying: aes()*
+
+::: callout-tip
+-   The code chunk below changes the interior color of the histogram (i.e. fill) by using sub-group of aesthetic().
+
+-   This approach can be used to color or fill the alpha of the geometric.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           fill = GENDER)) +
+  geom_histogram(bins=20, 
+                 color="grey30")
+```
+:::::
+
+## 7.5 Object: geom_density()
+
+[`geom-density()`](https://ggplot2.tidyverse.org/reference/geom_density.html) computes and plots [kernel density estimate](https://en.wikipedia.org/wiki/Kernel_density_estimation), which is a smoothed version of the histogram. It is a useful alternative to the histogram for continuous data that comes from an underlying smooth distribution.
+
+::::: panel-tabset
+## geom_density()
+
+::: callout-note
+The code below plots the distribution of Maths scores in a kernel density estimate plot.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_density()           
+```
+
+## geom_density() - *modified*
+
+::: callout-note
+The code chunk below plots two kernel density lines by using color or fill arguments of aes()
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS, 
+           colour = GENDER, fill = GENDER)) +
+  geom_density(alpha = 0.5)
+```
+:::::
+
+## 7.6 Object: geom_boxplot
+
+[`geom_boxplot()`](https://ggplot2.tidyverse.org/reference/geom_boxplot.html) displays continuous value list. It visualises five summary statistics (the median, two hinges and two whiskers), and all “outlying” points individually.
+
+::: panel-tabset
+## geom_boxplot
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS,       
+           x= GENDER)) +    
+  geom_boxplot()
+```
+
+## boxplot - *with notches*
+
+[Notches](https://sites.google.com/site/davidsstatistics/home/notched-box-plots) are used in box plots to help visually assess whether the medians of distributions differ. If the notches do not overlap, this is evidence that the medians are different.
+
+The code chunk below plots the distribution of Maths scores by gender in notched plot instead of boxplot.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_boxplot(notch=TRUE)
+```
+
+## boxplot - *with facet_wrap*
+
+We can also incorporate facet_wrap() to create boxplots of math scores for each class that is separated by gender.
+
+```{r}
+ggplot(data = exam_data, 
+       aes(y = MATHS, 
+           x = CLASS)) +
+  geom_boxplot() + 
+  facet_wrap(~ GENDER)
+```
+:::
+
+## 7.7 Object: geom_violin
+
+[`geom_violin`](https://ggplot2.tidyverse.org/reference/geom_violin.html) is designed for creating violin plot. Violin plots are a way of comparing multiple data distributions. With ordinary density curves, it is difficult to compare more than just a few distributions because the lines visually interfere with each other. With a violin plot, it’s easier to compare several distributions since they’re placed side by side.
+
+::: callout-note
+The code below plot the distribution of Maths score by gender in violin plot.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_violin()
+```
+
+## 7.8 Object: geom_point
+
+[`geom_point()`](https://ggplot2.tidyverse.org/reference/geom_point.html) is especially useful for creating scatterplot.
+
+:::: panel-tabset
+## geom_point()
+
+::: callout-note
+The code chunk below plots a scatterplot showing the Maths and English grades of pupils by using `geom_point()`, grouped by gender.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= ENGLISH,
+           color = GENDER)) +
+  geom_point()
+```
+
+## geom_point() - *modified*
+
+To add reference lines:
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= ENGLISH, 
+           y = MATHS, 
+           color = GENDER)) +
+  geom_point() +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100)) +
+  geom_vline(aes(xintercept = 50),
+             col = 'grey',
+             linewidth = 0.5,
+             linetype = "dashed") + 
+  geom_hline(aes(yintercept = 50),
+             col = 'grey',
+             linewidth = 0.5,
+             linetype = "dashed") +  
+  labs(x = "English Score",
+       y = "Math Score",
+       title = "Math Score against English Score by Gender")
+
+```
+::::
+
+## 7.9 Combination of objects
+
+The code chunk below plots the data points on the boxplots by using both `geom_boxplot()` and `geom_point()`.
+
+::: callout-important
+Order of geom layer matters! In the code below, boxplot is plotted after/above the scatter and thus covers parts of the scatterplot.
+:::
+
+::: panel-tabset
+## combination
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+
+  geom_point(position = 'jitter',
+             size=0.5) +
+  geom_boxplot()
+```
+
+## combination - *modified*
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_boxplot() +                    
+  geom_point(position="jitter", 
+             size = 0.5)
+```
+:::
+
+# 8. Essential element in ggplot2 - stat
+
+The [Statistics functions](https://ggplot2.tidyverse.org/reference/#stats) statistically transform data, usually as some form of summary. For example:
+
+-   frequency of values of a variable (bar graph)
+
+    -   a mean
+    -   a confidence limit
+
+-   There are two ways to use these functions:
+
+    -   add a `stat_()` function and override the default geom, or
+    -   add a `geom_()` function and override the default stat.
+
+## 8.1 Working with stat()
+
+The boxplots below are incomplete because the positions of the means were not shown.
+
+```{r}
+ggplot(data=exam_data,
+       aes( y= MATHS, x = GENDER)) +
+  geom_boxplot()
+```
+
+## 8.2 Working with stat - the stat_summary() method
+
+The code chunk below **adds mean values** by using [`stat_summary()`](https://ggplot2.tidyverse.org/reference/stat_summary.html) function and overriding the default geom.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot() +
+  stat_summary(geom = 'point',
+               fun='mean',
+               colour = 'red',
+               size=4)
+```
+
+## 8.3 Working with stat - the geom() method
+
+The code chunk below adding mean values by using `geom_()` function and overriding the default stat.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot() +
+  geom_point(stat="summary",        
+             fun="mean",           
+             colour="red",          
+             size=4)          
+```
+
+## 8.4 Adding best fit curve
+
+The scatterplot below shows the relationship of Maths and English grades of pupils. The interpretability of this graph can be improved by adding a best fit curve.
+
+:::::: panel-tabset
+## geom_smooth
+
+::: callout-tip
+In the code chunk below, geom_smooth() is used to plot a best fit curve on the scatterplot.
+
+The default method used is loess.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(size=1)
+```
+
+## loess - override
+
+::: callout-tip
+The default smoothing method can be overridden as shown below.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(size=1, method = lm)
+```
+
+## add-on
+
+::: callout-tip
+To add equation and R\^2 to the plot, we need to download the library ggpmisc.
+:::
+
+```{r}
+pacman::p_load(ggpmisc)
+```
+
+stat_poly_line() is used to add lm line and stat_poly_eq() displays the equation and R-square value.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  stat_poly_line() +
+  stat_poly_eq(use_label(c("eq", "R2"))) +
+  geom_point()
+```
+::::::
+
+# 9. Essential element in ggplot2 - Facets
+
+Facetting generates small multiples (sometimes also called trellis plot), each displaying a different subset of the data. They are an alternative to aesthetics for displaying additional discrete variables. ggplot2 supports two types of factes, namely: [`facet_wrap`](https://ggplot2.tidyverse.org/reference/facet_wrap.html) and [`facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html).
+
+## 9.1 Working with facet_wrap()
+
+[`facet_wrap`](https://ggplot2.tidyverse.org/reference/facet_wrap.html) wraps a 1d sequence of panels into 2d. This is generally a better use of screen space than `facet_grid` because most displays are roughly rectangular.
+
+:::: panel-tabset
+## facet_wrap()
+
+::: callout-note
+The code chunk below plots a trellis plot using `facet-wrap()`.
+:::
+
+```{r}
+ggplot(data=exam_data,
+       aes(x=MATHS)) +
+  geom_histogram(bins=20) +
+  facet_wrap(~CLASS) +
+  labs(y='Number of students', 
+       x='Math scores',
+       title = "Math Scores by Class")
+```
+
+## facet_wrap() - *extras*
+
+Separation by Color, combined by gender (The fill Aesthetic)
+
+```{r}
+ggplot(data = exam_data,        
+       aes(x = MATHS, 
+           fill = GENDER)) +
+  geom_histogram(bins = 20, 
+                 position = "dodge",
+                 color = "black") + 
+  facet_wrap(~ CLASS)
+```
+
+Separation by Gender (facet_grid)
+
+```{r}
+ggplot(data = exam_data,        
+       aes(x = MATHS)) +  
+  geom_histogram(bins = 20, 
+                 color = "black") +    
+  facet_grid(GENDER ~ CLASS)
+```
+::::
+
+## 9.2 facet_grid() function
+
+[`facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html) forms a matrix of panels defined by row and column facetting variables. It is most useful when you have two discrete variables, and all combinations of the variables exist in the data.
+
+::: callout-note
+The code chunk below plots a trellis plot using `facet_grid()`.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20) +
+    facet_grid(~ CLASS)
+```
+
+# 10. Essential element in ggplot2 - Coordinates
+
+The *Coordinates* functions map the position of objects onto the plane of the plot. There are a number of different possible coordinate systems to use, they are:
+
+-   [`coord_cartesian()`](https://ggplot2.tidyverse.org/reference/coord_cartesian.html): the default Cartesian coordinate systems, where you specify x and y values (e.g. allows you to zoom in or out).
+-   [`coord_flip()`](https://ggplot2.tidyverse.org/reference/coord_flip.html): a Cartesian system with the x and y flipped.
+-   [`coord_fixed()`](https://ggplot2.tidyverse.org/reference/coord_fixed.html): a Cartesian system with a “fixed” aspect ratio (e.g. 1.78 for a “widescreen” plot).
+-   [`coord_quickmap()`](https://ggplot2.tidyverse.org/reference/coord_map.html): a coordinate system that approximates a good aspect ratio for maps.
+
+## 10.1 Working with Coordinate
+
+::: panel-tabset
+## Vertical
+
+By the default, the bar chart of ggplot2 is in vertical form.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar()
+```
+
+## Horizontal
+
+The code chunk below flips the horizontal bar chart into vertical bar chart by using coord_flip().
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip()
+```
+:::
+
+## 10.2
+
+::: panel-tabset
+## raw
+
+The scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, size=0.5)
+```
+
+## fixed
+
+The code chunk below fixed both the y-axis and x-axis range from 0-100.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              size=0.5) +  
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+```
+:::
+
+# 11. Working with theme
+
+::: panel-tabset
+## theme_gray()
+
+The code chunk below plot a horizontal bar chart using `theme_gray()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_gray()
+```
+
+## theme_classic()
+
+A horizontal bar chart plotted using `theme_classic()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_classic()
+```
+
+## theme_minimal()
+
+A horizontal bar chart plotted using `theme_minimal()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal()
+```
+:::
+
+# 12. Reference
+
+-   Hadley Wickham (2023) [**ggplot2: Elegant Graphics for Data Analysis**](https://ggplot2-book.org/). Online 3rd edition.
+-   Winston Chang (2013) [**R Graphics Cookbook 2nd edition**](https://r-graphics.org/). Online version.
+-   Healy, Kieran (2019) [**Data Visualization: A practical introduction**](https://socviz.co/). Online version
+-   [Learning ggplot2 on Paper – Components](https://henrywang.nl/learning-ggplot2-on-paper-components/)
+-   [Learning ggplot2 on Paper – Layer](https://henrywang.nl/learning-ggplot2-on-paper-layer/)
+-   [Learning ggplot2 on Paper – Scale](https://henrywang.nl/tag/learning-ggplot2-on-paper/)
