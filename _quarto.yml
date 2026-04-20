@@ -2,25 +2,34 @@ project:
   type: website
 
 website:
-  title: "ISSS608-VAA"
+  title: "Chart Whisperer"
+  
   navbar:
+    pinned: true 
     left:
-    - text: "Hands-on Exercise"
-      menu:
-      - text: "Hands-on Exercise 1"
-        href: "HO_EX/HO_EX01/HO_EX01.html"
+      - icon: rocket-takeoff-fill
+        text: "Adventure"
+        href: "outputs.html"
+      - icon: terminal-fill
+        text: "Powered By"
+        href: "techstack.html"
+        
     right:
-      - href: index.qmd
-        text: Home
-      - about.qmd
-
+      - icon: info-circle-fill
+        href: "about.html"
+        aria-label: "About"
+      - icon: linkedin
+        href: "https://linkedin.com/in/cjancheta" 
+        aria-label: "LinkedIn"
+        
+  page-footer: 
+    right: "Charles Jr Ancheta | Visual Analytics & Applications"
+      
 format:
   html:
-    theme: 
-      light: flatly
-      dark: darkly
-    fontsize: 1.1em
-    toc: true
-
-editor: visual
-
+    theme: cyborg
+    css: styles.css
+    code-overflow: scroll
+    code-line-numbers: true
+    fig-align: center
+    toc: false

@@ -1,10 +1,24 @@
 [
   {
+    "objectID": "techstack.html#infrastructure",
+    "href": "techstack.html#infrastructure",
+    "title": "Chart Whisperer",
+    "section": "Infrastructure",
+    "text": "Infrastructure\n\n\n RStudio IDE\n\n\n Quarto Publishing\n\n\n Tableau Visualization\n\n\n Vercel Live Server\n\n\n Shiny Framework\n\n\n GitHub Repository"
+  },
+  {
+    "objectID": "techstack.html#the-human-logic",
+    "href": "techstack.html#the-human-logic",
+    "title": "Chart Whisperer",
+    "section": "The Human Logic",
+    "text": "The Human Logic\n\n\n Charles Jr Developer\n\n\n Dr. Kam Mentor"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "ISSS608-VAA",
+    "title": "ISSS608 - VAA",
     "section": "",
-    "text": "Welcome to ISSS608 Visual Analytics and Applications homepage. In this website, you will find my coursework prepared for this course."
+    "text": "Welcome to my website.\n\nClick on adventure to get started\n\nExpeditions: contains my hands-on exercises\nLive Sprints: contains my in-class exercises\nDeep Dives: contains my take-home exercises\nMasterpiece: contains my final project"
   },
   {
     "objectID": "about.html",
@@ -12,5 +26,54 @@
     "title": "About",
     "section": "",
     "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "HO_EX/HO_EX01/HO_EX01.html#object-geom_bar",
+    "href": "HO_EX/HO_EX01/HO_EX01.html#object-geom_bar",
+    "title": "Hands-0n Exercise 1:",
+    "section": "7.1 Object: geom_bar",
+    "text": "7.1 Object: geom_bar\n\n\n\n\n\n\nTip\n\n\n\nThe code chunk below plots a bar chart by using geom_bar().\n\n\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar()"
+  },
+  {
+    "objectID": "HO_EX/HO_EX01/HO_EX01.html#object-geom_dotplot",
+    "href": "HO_EX/HO_EX01/HO_EX01.html#object-geom_dotplot",
+    "title": "Hands-0n Exercise 1:",
+    "section": "7.2 Object: geom_dotplot",
+    "text": "7.2 Object: geom_dotplot\n\n\n\n\n\n\nTip\n\n\n\nIn the code chunk below, geom_dotplot() of ggplot2 is used to plot a dot plot.\n\n\n\ngeom_dotplot()geom_dotplot() - fixed\n\n\n\n\n\n\n\n\nCaution\n\n\n\n\nThe y scale is not very useful, in fact it is very misleading.\nBinwidth defaults to 1/30 of the range of the data.\n\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(dotsize = 0.5)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNoteFix\n\n\n\nThe code chunk below performs the following two steps:\n- scale_y_continuous() is used to turn off the y-axis, and\n- binwidth argument is used to change the binwidth to 2.5.\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(binwidth=2.5,         \n               dotsize = 0.5) +      \n  scale_y_continuous(NULL,           \n                     breaks = NULL)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX01/HO_EX01.html#object-geom_histogram",
+    "href": "HO_EX/HO_EX01/HO_EX01.html#object-geom_histogram",
+    "title": "Hands-0n Exercise 1:",
+    "section": "7.3 Object: geom_histogram()",
+    "text": "7.3 Object: geom_histogram()\nIn the code chunk below, geom_histogram() is used to create a simple histogram by using values in MATHS field of exam_data.\n\ngeom_histogram()geom_histogram() - fixed\n\n\n\n\n\n\n\n\nTip\n\n\n\nNote that the default bin is 30.\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_histogram()       \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nFor grades, a binwidth of 5 or 10 is the standard “human logic” approach.\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_histogram(binwidth = 5)"
+  },
+  {
+    "objectID": "outputs.html#expeditions",
+    "href": "outputs.html#expeditions",
+    "title": "Chart Whisperer",
+    "section": "Expeditions",
+    "text": "Expeditions\n\n\n\n1\n\n\n\n\n\n\n\n2\n\n\n\n\n\n\n\n3\n\n\n\n\n\n\n\n4\n\n\n\n\n\n\n\n5\n\n\n\n\n\n\n\n6\n\n\n\n\n\n\n\n7\n\n\n\n\n\n\n\n8\n\n\n\n\n\n\n\n9\n\n\n\n\n\n\n\n10"
+  },
+  {
+    "objectID": "outputs.html#live-sprints",
+    "href": "outputs.html#live-sprints",
+    "title": "Chart Whisperer",
+    "section": "Live Sprints",
+    "text": "Live Sprints\n\n\n\n1\n\n\n\n\n\n\n\n2\n\n\n\n\n\n\n\n3\n\n\n\n\n\n\n\n4\n\n\n\n\n\n\n\n5\n\n\n\n\n\n\n\n6\n\n\n\n\n\n\n\n7\n\n\n\n\n\n\n\n8\n\n\n\n\n\n\n\n9\n\n\n\n\n\n\n\n10"
+  },
+  {
+    "objectID": "outputs.html#deep-dives",
+    "href": "outputs.html#deep-dives",
+    "title": "Chart Whisperer",
+    "section": "Deep Dives",
+    "text": "Deep Dives\n\n\n\n1\n\n\n\n\n\n\n\n2\n\n\n\n\n\n\n\n3\n\n\n\n\n\n\n\n4"
+  },
+  {
+    "objectID": "outputs.html#the-masterpiece",
+    "href": "outputs.html#the-masterpiece",
+    "title": "Chart Whisperer",
+    "section": "The Masterpiece",
+    "text": "The Masterpiece\n\n\n\n1"
   }
 ]

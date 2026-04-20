@@ -1,0 +1,224 @@
+---
+title: ""
+page-layout: custom
+---
+
+## Expeditions
+
+::: scroll-row
+::: gallery-item
+::: huge-number
+1
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=HandsOn+Exercise+1');"}
+<a href="HO_EX/HO_EX01/HO_EX01.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+2
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="HO_EX/HO_EX02/HO_EX02.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+3
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="HO_EX/HO_EX03/HO_EX03.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+4
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="HO_EX/HO_EX04/HO_EX04.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+5
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="HO_EX/HO_EX05/HO_EX05.html" class="stretched-link"></a>
+:::
+:::
+::::: gallery-item
+::: huge-number
+6
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="HO_EX/HO_EX06/HO_EX06.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+7
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="HO_EX/HO_EX07/HO_EX07.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+8
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="HO_EX/HO_EX08/HO_EX08.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+9
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="HO_EX/HO_EX09/HO_EX09.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+10
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="HO_EX/HO_EX10/HO_EX10.html" class="stretched-link"></a>
+:::
+:::
+:::
+
+## Live Sprints
+
+:::scroll-row
+::: gallery-item
+::: huge-number
+1
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="IC_EX/IC_EX01/IC_EX01.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+2
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="IC_EX/IC_EX02/IC_EX02.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+3
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="IC_EX/IC_EX03/IC_EX03.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+4
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="IC_EX/IC_EX04/IC_EX04.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+5
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="IC_EX/IC_EX05/IC_EX05.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+6
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="IC_EX/IC_EX06/IC_EX06.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+7
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="IC_EX/IC_EX07/IC_EX07.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+8
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="IC_EX/IC_EX08/IC_EX08.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+9
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="IC_EX/IC_EX09/IC_EX09.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+10
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="IC_EX/IC_EX10/IC_EX10.html" class="stretched-link"></a>
+:::
+:::
+:::
+
+## Deep Dives
+
+::: center-row
+::: gallery-item
+::: huge-number
+1
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="TH_EX/TH_EX01/TH_EX01.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+2
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="TH_EX/TH_EX02/TH_EX02.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+3
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="TH_EX/TH_EX03/TH_EX03.html" class="stretched-link"></a>
+:::
+:::
+::: gallery-item
+::: huge-number
+4
+:::
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="TH_EX/TH_EX04/TH_EX04.html" class="stretched-link"></a>
+:::
+:::
+:::
+
+## The Masterpiece
+
+::: center-row
+::: gallery-item
+::: huge-number
+1
+:::
+::: {.poster .masterpiece-poster style="background-image: url('https://placehold.co/600x400/2b2b2b/FFC107?text=Coming+soon');"}
+<a href="PROJECT/Project01.html" class="stretched-link"></a>
+:::
+:::
+:::

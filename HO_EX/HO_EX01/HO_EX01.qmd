@@ -1,0 +1,253 @@
+---
+title: "Hands-0n Exercise 1:"
+subtitle:  "A Layered Grammar of Graphics - ggplot2 methods"
+date: "17 Apr 2026"
+date-modified: "last-modified"
+editor: visual
+execute:
+  freeze: auto
+  echo: true
+  eval: true
+  warning: false
+---
+
+# 1. Overview
+
+# 2. Getting Started
+
+::::: panel-tabset
+## Installing and loading libraries
+
+::: callout-tip
+The code chunk below uses `p_load()`, a [pacman](https://rpubs.com/akshaypatankar/594834) package to check if the tidyverse library is installed in the computer.
+:::
+
+```{r}
+pacman::p_load(tidyverse)
+```
+
+## Importing data
+
+::: callout-tip
+-   The code chunk below imports *exam_data.csv* into the R environment by using [*read_csv()*](https://readr.tidyverse.org/reference/read_delim.html) function of [**readr**](https://readr.tidyverse.org/) package.
+-   **readr** is one of the tidyverse package.
+:::
+
+```{r}
+exam_data <- read_csv("data/Exam_data.csv")
+```
+:::::
+
+::::: panel-tabset
+## Data summary
+
+::: callout-tip
+The summary shows a year-end examination grades. There are 7 features: - Categorical: ID, CLASS, GENDER, RACE - Continuous: MATH, ENGLISH, SCIENCE
+:::
+
+```{r}
+summary(exam_data)
+```
+
+## Data preview
+
+::: callout-tip
+These are the top rows of exam_data
+:::
+
+```{r}
+head(exam_data)
+```
+:::::
+
+# 3. R vs ggplot2
+
+Comparison between R graphics and ggplot2
+
+::: panel-tabset
+## R graphics
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+hist(exam_data$MATHS, 
+     ylab='Number of Students', 
+     xlab='Score', 
+     main='Distribution of Maths scores',
+     col='#FFC107')
+```
+
+## ggplot2
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggplot(data=exam_data, aes(x = MATHS)) +
+  geom_histogram(bins=10, 
+                 boundary = 100,
+                 color="black", 
+                 fill="#FFC107") +
+  labs(x = "Score",
+       y = "Number of Students",
+       title = "Distribution of Maths scores")
+```
+:::
+
+### Why is ggplot2 recommended?
+
+> The transferable skills from ggplot2 are not the idiosyncrasies of plotting syntax, but a powerful way of thinking about visualisation, as a way of mapping between variables and the visual properties of geometric objects that you can perceive. \~[Hadley Wickham](http://varianceexplained.org/r/teach_ggplot2_to_beginners/#comment-1745406157)
+
+# 4. Layered Grammar of Graphics
+
+Grammar of Graphics, introduced by Leland Wilkinson (1999), is a general scheme for data visualization which breaks up graphs into semantic components such as scales and layers. It defines the rules of structuring mathematical and aesthetic elements into a meaningful graph.
+
+![](https://blog.gramener.com/wp-content/uploads/2018/11/7-layers-of-grammar-of-graphics-to-tell-powerful-data-stories-3.png)
+
+-   **Themes:** modify all non-data components of a plot, such as main title, sub-title, y-aixs title, or legend background.
+-   **Coordinates:** define the plane on which data are mapped on the graphic.
+-   **Statistics:** Statistical transformations that summarise data (e.g. mean, confidence intervals).
+-   **Facets:** split the data into subsets to create multiple variations of the same graph (paneling, multiple plots).
+-   **Geometries:** The visual elements used for our data, such as point, bar or line.
+-   **Aesthetics:** Take attributes of the data and use them to influence visual characteristics, such as position, colors, size, shape, or transparency.
+-   **Data:** The dataset being plotted.
+
+# 5. Essential element in ggplot2 - Data
+
+Let us call the ggplot() function using the code chunk below.
+
+::: callout-tip
+-   A blank canvas appears.
+-   ggplot() initializes a ggplot object.
+-   The data argument defines the dataset to be used for plotting.
+-   If the dataset is not already a data.frame, it will be converted to one by fortify().
+:::
+
+```{r}
+ggplot(data=exam_data)
+```
+
+# 6. Essential element in ggplot2 - Aesthetics
+
+The aesthetic mappings take attributes of the data and and use them to influence visual characteristics, such as position, color, size, shape, or transparency. Each visual characteristic can thus encode an aspect of the data and be used to convey information.
+
+::: callout-tip
+-   All aesthetics of a plot are specified in the [`aes()`](https://ggplot2.tidyverse.org/reference/aes.html) function call.
+-   Code chunk below adds the aesthetic element into the plot.
+-   ggplot2 includes the x-axis and the axis’s label.
+:::
+
+```{r}
+ggplot(data=exam_data,
+       aes(x=MATHS))
+```
+
+# 7. Essential element in ggplot2 - Geometries
+
+Geometric objects are the actual marks we put on a plot, in this exercise, I will use:
+
+-   **`geom_bar`**: Creates bar charts to visualize the frequency, count, or proportion of categorical variables.
+
+<!-- -->
+
+-   **`geom_dotplot`**: Represents individual data points as stacked dots to show the exact distribution of small, continuous datasets.
+
+-   **`geom_histogram`**: Groups continuous data into connected vertical bins to display its underlying frequency distribution.
+
+-   **`geom_density`**: Creates a smoothed, continuous curve to estimate the probability distribution of a numeric variable.
+
+-   **`geom_boxplot`**: Summarizes the spread of continuous data using its median, quartiles, and potential statistical outliers.
+
+-   **`geom_violin`**: Combines a boxplot and a density plot to reveal the full shape, width, and peaks of a data distribution.
+
+-   **`geom_point`**: Creates scatter plots by plotting individual coordinates to display the relationship between two continuous variables.
+
+::: callout-tip
+-   A plot must have at least one geom; there is no upper limit. You can add a geom to a plot using the + operator.
+-   For complete list, please refer to [here](https://ggplot2.tidyverse.org/reference/#section-layer-geoms).
+:::
+
+## 7.1 Object: *geom_bar*
+
+::: callout-tip
+The code chunk below plots a bar chart by using [`geom_bar()`](https://ggplot2.tidyverse.org/reference/geom_bar.html).
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar()
+```
+
+## 7.2 Object: *geom_dotplot*
+
+::: callout-tip
+In the code chunk below, geom_dotplot() of ggplot2 is used to plot a dot plot.
+:::
+
+::::: panel-tabset
+## geom_dotplot()
+
+::: callout-caution
+-   The ***y*** scale is not very useful, in fact it is very misleading.
+-   *Binwidth* defaults to 1/30 of the range of the data.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot(dotsize = 0.5)
+```
+
+## geom_dotplot() - *fixed*
+
+::: callout-note
+## Fix
+
+The code chunk below performs the following two steps:
+
+\- `scale_y_continuous()` is used to turn off the y-axis, and
+
+\- *binwidth* argument is used to change the binwidth to 2.5.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot(binwidth=2.5,         
+               dotsize = 0.5) +      
+  scale_y_continuous(NULL,           
+                     breaks = NULL)  
+```
+:::::
+
+## 7.3 Object: geom_histogram()
+
+In the code chunk below, [*geom_histogram()*](https://ggplot2.tidyverse.org/reference/geom_histogram.html) is used to create a simple histogram by using values in *MATHS* field of *exam_data*.
+
+:::::: panel-tabset
+## geom_histogram()
+
+::: callout-tip
+Note that the default bin is **30**.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_histogram()       
+```
+
+## geom_histogram() - *fixed*
+
+::: callout-tip
+For grades, a *binwidth* of 5 or 10 is the standard "human logic" approach.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_histogram(binwidth = 5)       
+```
+::::::

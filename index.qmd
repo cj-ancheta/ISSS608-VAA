@@ -1,5 +1,15 @@
 ---
-title: "ISSS608-VAA"
+title: "ISSS608 - VAA"
 ---
 
-Welcome to I**SSS608 Visual Analytics and Applications** homepage. In this website, you will find my coursework prepared for this course.
+Welcome to my website.\
+\
+Click on adventure to get started\
+\
+**Expeditions:** contains my hands-on exercises
+
+**Live Sprints:** contains my in-class exercises
+
+**Deep Dives:** contains my take-home exercises
+
+**Masterpiece:** contains my final project
