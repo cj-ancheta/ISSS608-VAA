@@ -26,7 +26,7 @@ h2 {
 }
 
 /* ==========================================================================
-   2. DYNAMIC GRID ARCHITECTURE
+   2. DYNAMIC GRID & FLEX CONTAINERS
    ========================================================================== */
 .center-row {
   display: grid;
@@ -50,7 +50,7 @@ h2 {
 }
 
 /* ==========================================================================
-   3. GALLERY & CARD COMPONENTS
+   3. EXERCISE GALLERY (HORIZONTAL PREVIEWS)
    ========================================================================== */
 .gallery-item {
   position: relative;
@@ -83,14 +83,15 @@ h2 {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   overflow: hidden;
+  transform: translateZ(0);
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   box-shadow: 0 10px 30px rgba(0,0,0,0.8);
   width: 100%;
 }
 
 .poster {
-  width: 100%;
-  height: 120px;
+  width: auto;
+  height: 120px; 
   background-color: #1a1a1a;
   background-size: cover; 
   background-repeat: no-repeat;
@@ -124,7 +125,6 @@ h2 {
 
 .poster-card:hover .poster-label { color: #FFC107; }
 
-/* MASTERPIECE OVERRIDES */
 .masterpiece-card {
   max-width: 400px !important;
   grid-column: span 2; 
@@ -142,7 +142,103 @@ h2 {
 }
 
 /* ==========================================================================
-   4. TYPOGRAPHY & HEADER HIERARCHY
+   4. VERTICAL TECH & HUMAN CARDS
+   ========================================================================== */
+.vertical-tech-card {
+  width: 220px; 
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.card-header {
+  height: 160px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #151515;
+  padding: 15px;
+}
+
+.card-footer {
+  padding: 15px 10px;
+  background: #111111;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vertical-tech-card .tech-icon {
+  width: 90px;         
+  height: 90px;        
+  object-fit: contain;
+  filter: grayscale(100%) opacity(0.6); 
+  transition: all 0.4s ease;
+  margin: 0 auto;      
+  display: block;
+}
+
+.vertical-tech-card .profile-photo {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #222;
+  filter: grayscale(30%) contrast(1.1);
+  transition: all 0.4s ease;
+  margin: 0 auto;
+}
+
+.tech-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  display: block;
+}
+
+.tech-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: #A68B44;
+  text-transform: uppercase;
+  display: block;
+}
+
+.vertical-tech-card:hover {
+  transform: translateY(-10px);
+  border-color: #FFC107;
+  box-shadow: 0 15px 40px rgba(255, 193, 7, 0.2);
+}
+
+.vertical-tech-card:hover .tech-icon {
+  filter: grayscale(0%) opacity(1);
+  transform: scale(1.1);
+}
+
+.vertical-tech-card:hover .profile-photo {
+  filter: grayscale(0%);
+  border-color: #FFC107;
+  transform: scale(1.05);
+}
+
+.icon-white {
+  filter: brightness(0) invert(1) opacity(0.6) !important;
+}
+
+.vertical-tech-card:hover .icon-white {
+  filter: brightness(0) invert(1) opacity(1) !important;
+  transform: scale(1.1);
+}
+
+
+/* ==========================================================================
+   5. TYPOGRAPHY & INTERFACE
    ========================================================================== */
 .title {
   color: #FFC107 !important;
@@ -169,72 +265,6 @@ h2 {
   display: block;
 }
 
-/* ==========================================================================
-   5. SPECIALIZED COMPONENT CARDS
-   ========================================================================== */
-.mini-tech-card {
-  width: 240px;
-  background-color: #121212;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 25px 15px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  transition: all 0.4s ease;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-}
-
-.mini-tech-card:hover {
-  transform: translateY(-8px);
-  border-color: #FFC107;
-  box-shadow: 0 15px 30px rgba(255, 193, 7, 0.1);
-}
-
-.tech-icon {
-  width: 100%;
-  height: 60px;      
-  object-fit: contain; 
-  filter: grayscale(100%) brightness(0.8);
-  transition: all 0.4s ease;
-}
-
-.mini-tech-card:hover .tech-icon {
-  filter: grayscale(0%) brightness(1);
-  transform: scale(1.05);
-}
-
-.profile-photo { 
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  object-fit: cover; 
-  border: 2px solid #222; 
-  transition: all 0.4s ease;
-}
-
-.mini-tech-card:hover .profile-photo { border-color: #FFC107; }
-
-.tech-title {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  color: #FFFFFF;
-}
-
-.tech-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  color: #A68B44;
-  text-transform: uppercase;
-}
-
-/* ==========================================================================
-   6. INTERFACE & NAVIGATION
-   ========================================================================== */
 .nav-tabs {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 30px;
@@ -261,7 +291,7 @@ h2 {
 }
 
 /* ==========================================================================
-   7. R OUTPUT STYLING
+   6. R OUTPUT & SCROLLBARS
    ========================================================================== */
 .cell-output-display {
   display: flex;
@@ -276,17 +306,28 @@ h2 {
   border-radius: 4px;
 }
 
+::-webkit-scrollbar { display: none; }
+html, body { scrollbar-width: none; }
+body { -ms-overflow-style: none; }
+
 /* ==========================================================================
-   8. GLOBAL SCROLLBAR HIDE
+   7. TABSET CLEANUP (REMOVE OUTER BORDERS)
    ========================================================================== */
-::-webkit-scrollbar {
-  display: none;
+
+.tab-content, 
+.tab-pane {
+  border: none !important;
+  border-width: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
-html, body {
-  scrollbar-width: none; 
+.nav-tabs .nav-link:focus, 
+.nav-tabs .nav-link:active {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-body {
-  -ms-overflow-style: none;
+.panel-tabset {
+  border: none !important;
 }
