@@ -1,7 +1,8 @@
 /* ==========================================================================
-   1. JETBRAINS MONO SETUP
+   1. BASE STYLES & RESET
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+
 body {
   font-family: 'JetBrains Mono', monospace;
   background-color: #000000;
@@ -18,117 +19,120 @@ h2 {
   letter-spacing: 2px;
   font-size: 1.2rem;
   padding-left: 20px;
-  margin-top: 20px; 
-  margin-bottom: 10px; 
+  margin-top: 20px;
+  margin-bottom: 10px;
   color: #FFFFFF;
   border-left: 4px solid #FFC107;
 }
 
-.center-row {
-  display: flex;
-  flex-wrap: wrap; 
-  justify-content: center; 
-  padding: 10px 20px; 
-  gap: 20px 10px;   
-}
-
-.mini-tech-card {
-  width: 220px;
-  background-color: #121212;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 20px 15px; /* REDUCED from 30px */
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-}
-
-.navbar-nav {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.9rem;
-}
-
 /* ==========================================================================
-   2. ROW LAYOUTS
+   2. DYNAMIC GRID ARCHITECTURE
    ========================================================================== */
-.row-wrapper { padding: 0 20px; }
-
-.scroll-row {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding: 15px 0 45px 10px; 
-  gap: 5px;
-  -webkit-overflow-scrolling: touch;
-}
-
-.scroll-row::-webkit-scrollbar { height: 6px; }
-.scroll-row::-webkit-scrollbar-track { background: transparent; }
-.scroll-row::-webkit-scrollbar-thumb {
-  background-color: #FFC107; 
-  border-radius: 20px;
-}
-
 .center-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  justify-items: center;
+  align-items: start;
+  gap: 60px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.tech-stack-row {
   display: flex;
-  flex-wrap: wrap; 
-  justify-content: center; 
-  padding: 20px 20px 60px 20px;
-  gap: 45px 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
 /* ==========================================================================
-   3. GALLERY ITEMS
+   3. GALLERY & CARD COMPONENTS
    ========================================================================== */
 .gallery-item {
-  display: flex;
-  align-items: center;
   position: relative;
-  flex: 0 0 auto;
+  width: 100%;
+  max-width: 180px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ==========================================================================
-   4. NUMBERS & POSTERS
-   ========================================================================== */
 .huge-number {
+  position: absolute;
+  top: -35px;
+  left: -20px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 220px;
-  font-weight: 900;
+  font-size: 8rem;
+  font-weight: 800;
+  color: #FFC107;
+  z-index: 0;
   line-height: 1;
-  color: #FFC107; 
-  opacity: 1; 
-  -webkit-text-stroke: 0px; 
-  margin-right: -40px; 
-  z-index: 1;
-  letter-spacing: -10px;
-  text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.5); 
+  pointer-events: none;
+  opacity: 0.9;
+  letter-spacing: -5px;
+  text-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+}
+
+.poster-card {
+  position: relative;
+  z-index: 2;
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  width: 100%;
 }
 
 .poster {
-  width: 155px;
-  height: 230px;
+  width: 100%;
+  height: 120px;
   background-color: #1a1a1a;
-  background-size: cover;
+  background-size: cover; 
+  background-repeat: no-repeat;
   background-position: center;
-  border-radius: 4px;
-  z-index: 2; 
-  position: relative;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.masterpiece-poster { width: 310px; }
+.poster-info {
+  padding: 12px 10px;
+  background: #111111;
+  text-align: center;
+}
 
-.poster:hover {
-  transform: translateY(-12px) scale(1.04); 
-  z-index: 10;
-  border-color: #FFC107; 
-  box-shadow: 0 15px 35px rgba(255, 193, 7, 0.3); 
+.poster-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #A68B44;
+  display: block;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.poster-card:hover {
+  transform: translateY(-10px);
+  border-color: #FFC107;
+  box-shadow: 0 15px 40px rgba(255, 193, 7, 0.2);
+}
+
+.poster-card:hover .poster-label { color: #FFC107; }
+
+/* MASTERPIECE OVERRIDES */
+.masterpiece-card {
+  max-width: 400px !important;
+  grid-column: span 2; 
+}
+
+.masterpiece-poster {
+  height: 250px !important;
+  background-size: cover; 
 }
 
 .stretched-link {
@@ -138,130 +142,126 @@ h2 {
 }
 
 /* ==========================================================================
-   5. POWERED BY PAGE
-   ========================================================================== */
-.mini-tech-card {
-  width: 240px; 
-  background-color: #121212;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 30px 15px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px; 
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-}
-
-.mini-tech-card:hover {
-  transform: translateY(-10px);
-  border-color: #FFC107;
-  box-shadow: 0 15px 35px rgba(255, 193, 7, 0.15);
-}
-
-.tech-icon {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-  margin-bottom: 5px;
-  border-radius: 50%; 
-  transition: all 0.4s ease;
-}
-
-.tech-title {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: #FFFFFF;
-  display: block; 
-}
-
-.tech-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  color: #A68B44; 
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  display: block;
-}
-
-.mini-tech-card:hover .tech-icon {
-  filter: drop-shadow(0 0 10px rgba(255, 193, 7, 0.4));
-  transform: scale(1.1);
-}
-
-/* ==========================================================================
-   6. PAGE FOOTER STYLING
-   ========================================================================== */
-.nav-footer {
-  background-color: #000;
-  border-top: 1px solid #1a1a1a;
-  padding: 25px 0;
-  font-family: 'JetBrains Mono', monospace;
-  letter-spacing: 0.5px;
-}
-
-.nav-footer-left, 
-.nav-footer-center, 
-.nav-footer-right {
-  color: #A68B44 !important; 
-}
-
-.nav-footer a {
-  color: #A68B44; 
-  text-decoration: none;
-  border-bottom: 1px solid rgba(166, 139, 68, 0.3)
-  transition: all 0.3s ease;
-}
-
-.nav-footer a:hover {
-  color: #FFC107;
-}
-
-/* ==========================================================================
-   7. PAGE TYPOGRAPHY HIERARCHY (Title > Subtitle > H1)
+   4. TYPOGRAPHY & HEADER HIERARCHY
    ========================================================================== */
 .title {
   color: #FFC107 !important;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 800;
-  font-size: 2.8rem; 
+  font-size: 2.8rem;
   text-transform: uppercase;
   letter-spacing: 4px;
   margin-top: 50px;
-  margin-bottom: 5px; 
-  padding-bottom: 0;
+  margin-bottom: 5px;
 }
 
 .subtitle {
   color: #FFC107;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 400;
-  font-size: 1.4rem;    
-  letter-spacing: 0.5px; 
-  line-height: 1.4; 
+  font-size: 1.4rem;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
   text-transform: uppercase;
-  opacity: 0.85; 
-  margin-top: 5px;  
+  opacity: 0.85;
+  margin-top: 5px;
   margin-bottom: 35px;
   display: block;
 }
 
-h1.title, h1 {
-  color: #FFFFFF;
+/* ==========================================================================
+   5. SPECIALIZED COMPONENT CARDS
+   ========================================================================== */
+.mini-tech-card {
+  width: 240px;
+  background-color: #121212;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 25px 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.4s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.mini-tech-card:hover {
+  transform: translateY(-8px);
+  border-color: #FFC107;
+  box-shadow: 0 15px 30px rgba(255, 193, 7, 0.1);
+}
+
+.tech-icon {
+  width: 100%;
+  height: 60px;      
+  object-fit: contain; 
+  filter: grayscale(100%) brightness(0.8);
+  transition: all 0.4s ease;
+}
+
+.mini-tech-card:hover .tech-icon {
+  filter: grayscale(0%) brightness(1);
+  transform: scale(1.05);
+}
+
+.profile-photo { 
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover; 
+  border: 2px solid #222; 
+  transition: all 0.4s ease;
+}
+
+.mini-tech-card:hover .profile-photo { border-color: #FFC107; }
+
+.tech-title {
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  font-size: 1.6rem;
-  letter-spacing: 1px;
-  margin-top: 40px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: #FFFFFF;
+}
+
+.tech-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: #A68B44;
+  text-transform: uppercase;
 }
 
 /* ==========================================================================
-   8. GLOBAL PLOT CENTERING
+   6. INTERFACE & NAVIGATION
+   ========================================================================== */
+.nav-tabs {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 30px;
+  justify-content: center;
+}
+
+.nav-tabs .nav-link {
+  color: #A68B44;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link.active {
+  color: #FFC107 !important;
+  border-bottom: 2px solid #FFC107 !important;
+}
+
+/* ==========================================================================
+   7. R OUTPUT STYLING
    ========================================================================== */
 .cell-output-display {
   display: flex;
@@ -274,4 +274,19 @@ h1.title, h1 {
   max-width: 100%;
   height: auto;
   border-radius: 4px;
+}
+
+/* ==========================================================================
+   8. GLOBAL SCROLLBAR HIDE
+   ========================================================================== */
+::-webkit-scrollbar {
+  display: none;
+}
+
+html, body {
+  scrollbar-width: none; 
+}
+
+body {
+  -ms-overflow-style: none;
 }

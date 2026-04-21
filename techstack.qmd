@@ -3,62 +3,62 @@ title: ""
 page-layout: custom
 ---
 
+::: panel-tabset
+
 ## Infrastructure
 
-::: {.center-row}
-
-::: {.mini-tech-card}
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rstudio/rstudio-original.svg" class="tech-icon">
-[RStudio]{.tech-title}
+::: tech-stack-row
+::: mini-tech-card
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rstudio/rstudio-original.svg" class="tech-icon"/> 
+[RStudio]{.tech-title} 
 [IDE]{.tech-label}
 :::
 
-::: {.mini-tech-card}
-<img src="https://raw.githubusercontent.com/quarto-dev/quarto-web/main/favicon.png" class="tech-icon">
-[Quarto]{.tech-title}
+::: mini-tech-card
+<img src="https://raw.githubusercontent.com/quarto-dev/quarto-web/main/favicon.png" class="tech-icon"/> 
+[Quarto]{.tech-title} 
 [Publishing]{.tech-label}
 :::
 
-::: {.mini-tech-card}
-<img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Tableau_Logo.png" class="tech-icon">
-[Tableau]{.tech-title}
+::: mini-tech-card
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Tableau_Logo.png" class="tech-icon"/> 
+[Tableau]{.tech-title} 
 [Visualization]{.tech-label}
 :::
 
-::: {.mini-tech-card}
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original-wordmark.svg" class="tech-icon" style="filter: invert(1);">
-[Vercel]{.tech-title}
+::: mini-tech-card
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original-wordmark.svg" class="tech-icon" style="filter: invert(1);"/> 
+[Vercel]{.tech-title} 
 [Live Server]{.tech-label}
 :::
 
-::: {.mini-tech-card}
-<img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/SVG/shiny.svg" class="tech-icon">
-[Shiny]{.tech-title}
+::: mini-tech-card
+<img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/SVG/shiny.svg" class="tech-icon"/> 
+[Shiny]{.tech-title} 
 [Framework]{.tech-label}
 :::
 
-::: {.mini-tech-card}
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" class="tech-icon" style="filter: invert(1);">
-[GitHub]{.tech-title}
+::: mini-tech-card
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" class="tech-icon" style="filter: invert(1);"/> 
+[GitHub]{.tech-title} 
 [Repository]{.tech-label}
 :::
-
 :::
 
 ## The Human Logic
 
-::: {.center-row}
-
-::: {.mini-tech-card}
-<img src="https://cdn-icons-png.flaticon.com/512/6009/6009034.png" class="tech-icon" style="filter: invert(0.8);">
-[Charles Jr]{.tech-title}
+::: tech-stack-row
+::: mini-tech-card
+<img src="https://media.licdn.com/dms/image/v2/D5603AQGRYVWP73RxdQ/profile-displayphoto-crop_800_800/B56ZrbOZKSIcAI-/0/1764614575949?e=1778112000&amp;v=beta&amp;t=qU0-vahdz93o-p7x5nzJg3QIa57jNmVX4R0SKh98uLk" class="profile-photo"/> 
+[Charles Jr]{.tech-title} 
 [Developer]{.tech-label}
 :::
 
-::: {.mini-tech-card}
-<img src="https://cdn-icons-png.flaticon.com/512/194/194931.png" class="tech-icon" style="filter: invert(0.8);">
-[Dr. Kam]{.tech-title}
+::: mini-tech-card
+<img src="https://staffphoto.smu.edu.sg/s/tskam/600x400" class="profile-photo"/> 
+[Dr. Kam]{.tech-title} 
 [Mentor]{.tech-label}
+:::
 :::
 
 :::

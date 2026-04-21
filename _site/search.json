@@ -1,19 +1,5 @@
 [
   {
-    "objectID": "techstack.html#infrastructure",
-    "href": "techstack.html#infrastructure",
-    "title": "Chart Whisperer",
-    "section": "Infrastructure",
-    "text": "Infrastructure\n\n\n RStudio IDE\n\n\n Quarto Publishing\n\n\n Tableau Visualization\n\n\n Vercel Live Server\n\n\n Shiny Framework\n\n\n GitHub Repository"
-  },
-  {
-    "objectID": "techstack.html#the-human-logic",
-    "href": "techstack.html#the-human-logic",
-    "title": "Chart Whisperer",
-    "section": "The Human Logic",
-    "text": "The Human Logic\n\n\n Charles Jr Developer\n\n\n Dr. Kam Mentor"
-  },
-  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "ISSS608 - VAA",
@@ -21,11 +7,11 @@
     "text": "Welcome to my website.\n\nClick on adventure to get started\n\nExpeditions: contains my hands-on exercises\nLive Sprints: contains my in-class exercises\nDeep Dives: contains my take-home exercises\nMasterpiece: contains my final project"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "HO_EX/HO_EX01/HO_EX01.html",
+    "href": "HO_EX/HO_EX01/HO_EX01.html",
+    "title": "Hands-0n Exercise 1:",
     "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "text": "In data analytics, the gap between raw information and actionable business strategy is bridged by visual architecture. I dedicated twenty hours to this deep-dive into the Layered Grammar of Graphics not simply to learn a coding package (ggplot2), but to engineer a robust approach to data storytelling.\nComing from a background in Quality Assurance and enterprise operations, I approach data visualization the same way I approach software: with a strict focus on integrity, structure, and user experience.\nThis exercise was an investment in my analytical infrastructure. It solidified my ability to translate data into a structure that drives clarity."
   },
   {
     "objectID": "HO_EX/HO_EX01/HO_EX01.html#object-geom_bar",
@@ -67,7 +53,7 @@
     "href": "HO_EX/HO_EX01/HO_EX01.html#object-geom_boxplot",
     "title": "Hands-0n Exercise 1:",
     "section": "7.6 Object: geom_boxplot",
-    "text": "7.6 Object: geom_boxplot\ngeom_boxplot() displays continuous value list. It visualises five summary statistics (the median, two hinges and two whiskers), and all “outlying” points individually.\n\ngeom_boxplotboxplot - with notchesboxplot - with facet_wrap\n\n\n\nggplot(data=exam_data, \n       aes(y = MATHS,       \n           x= GENDER)) +    \n  geom_boxplot()\n\n\n\n\n\n\n\n\n\n\nNotches are used in box plots to help visually assess whether the medians of distributions differ. If the notches do not overlap, this is evidence that the medians are different.\nThe code chunk below plots the distribution of Maths scores by gender in notched plot instead of boxplot.\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot(notch=TRUE)\n\n\n\n\n\n\n\n\n\n\nWe can also incorporate facet_wrap() to create boxplots of math scores for each class that is separated by gender.\n\nggplot(data = exam_data, \n       aes(y = MATHS, \n           x = CLASS)) +\n  geom_boxplot() + \n  facet_wrap(~ GENDER)"
+    "text": "7.6 Object: geom_boxplot\ngeom_boxplot() displays continuous value list. It visualises five summary statistics (the median, two hinges and two whiskers), and all “outlying” points individually.\n\ngeom_boxplotboxplot - notchesboxplot - facet_wrap\n\n\n\nggplot(data=exam_data, \n       aes(y = MATHS,       \n           x= GENDER)) +    \n  geom_boxplot()\n\n\n\n\n\n\n\n\n\n\nNotches are used in box plots to help visually assess whether the medians of distributions differ. If the notches do not overlap, this is evidence that the medians are different.\nThe code chunk below plots the distribution of Maths scores by gender in notched plot instead of boxplot.\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot(notch=TRUE)\n\n\n\n\n\n\n\n\n\n\nWe can also incorporate facet_wrap() to create boxplots of math scores for each class that is separated by gender.\n\nggplot(data = exam_data, \n       aes(y = MATHS, \n           x = CLASS)) +\n  geom_boxplot() + \n  facet_wrap(~ GENDER)"
   },
   {
     "objectID": "HO_EX/HO_EX01/HO_EX01.html#object-geom_violin",
@@ -116,7 +102,7 @@
     "href": "HO_EX/HO_EX01/HO_EX01.html#adding-best-fit-curve",
     "title": "Hands-0n Exercise 1:",
     "section": "8.4 Adding best fit curve",
-    "text": "8.4 Adding best fit curve\nThe scatterplot below shows the relationship of Maths and English grades of pupils. The interpretability of this graph can be improved by adding a best fit curve.\n\ngeom_smoothloess - overrideadd-on\n\n\n\n\n\n\n\n\nTip\n\n\n\nIn the code chunk below, geom_smooth() is used to plot a best fit curve on the scatterplot.\nThe default method used is loess.\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(size=1)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nThe default smoothing method can be overridden as shown below.\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(size=1, method = lm)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTo add equation and R^2 to the plot, we need to download the library ggpmisc.\n\n\n\npacman::p_load(ggpmisc)\n\nstat_poly_line() is used to add lm line and stat_poly_eq() displays the equation and R-square value.\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  stat_poly_line() +\n  stat_poly_eq(use_label(c(\"eq\", \"R2\"))) +\n  geom_point()"
+    "text": "8.4 Adding best fit curve\nThe scatterplot below shows the relationship of Maths and English grades of pupils. The interpretability of this graph can be improved by adding a best fit curve.\n\ngeom_smoothloess - overrideadd-on\n\n\n\n\n\n\n\n\nTip\n\n\n\nIn the code chunk below, geom_smooth() is used to plot a best fit curve on the scatterplot.\nThe default method used is loess.\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(linewidth=1)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nThe default smoothing method can be overridden as shown below.\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(size=1, method = lm)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTo add equation and R^2 to the plot, we need to download the library ggpmisc.\n\n\n\npacman::p_load(ggpmisc)\n\nstat_poly_line() is used to add lm line and stat_poly_eq() displays the equation and R-square value.\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  stat_poly_line() +\n  stat_poly_eq(use_label(c(\"eq\", \"R2\"))) +\n  geom_point()"
   },
   {
     "objectID": "HO_EX/HO_EX01/HO_EX01.html#working-with-facet_wrap",
@@ -147,31 +133,10 @@
     "text": "10.2\n\nrawfixed\n\n\nThe scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, size=0.5)\n\n\n\n\n\n\n\n\n\n\nThe code chunk below fixed both the y-axis and x-axis range from 0-100.\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))"
   },
   {
-    "objectID": "outputs.html#expeditions",
-    "href": "outputs.html#expeditions",
-    "title": "Chart Whisperer",
-    "section": "Expeditions",
-    "text": "Expeditions\n\n\n\n1\n\n\n\n\n\n\n\n2\n\n\n\n\n\n\n\n3\n\n\n\n\n\n\n\n4\n\n\n\n\n\n\n\n5\n\n\n\n\n\n\n\n6\n\n\n\n\n\n\n\n7\n\n\n\n\n\n\n\n8\n\n\n\n\n\n\n\n9\n\n\n\n\n\n\n\n10"
-  },
-  {
-    "objectID": "outputs.html#live-sprints",
-    "href": "outputs.html#live-sprints",
-    "title": "Chart Whisperer",
-    "section": "Live Sprints",
-    "text": "Live Sprints\n\n\n\n1\n\n\n\n\n\n\n\n2\n\n\n\n\n\n\n\n3\n\n\n\n\n\n\n\n4\n\n\n\n\n\n\n\n5\n\n\n\n\n\n\n\n6\n\n\n\n\n\n\n\n7\n\n\n\n\n\n\n\n8\n\n\n\n\n\n\n\n9\n\n\n\n\n\n\n\n10"
-  },
-  {
-    "objectID": "outputs.html#deep-dives",
-    "href": "outputs.html#deep-dives",
-    "title": "Chart Whisperer",
-    "section": "Deep Dives",
-    "text": "Deep Dives\n\n\n\n1\n\n\n\n\n\n\n\n2\n\n\n\n\n\n\n\n3\n\n\n\n\n\n\n\n4"
-  },
-  {
-    "objectID": "outputs.html#the-masterpiece",
-    "href": "outputs.html#the-masterpiece",
-    "title": "Chart Whisperer",
-    "section": "The Masterpiece",
-    "text": "The Masterpiece\n\n\n\n1"
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
   }
 ]

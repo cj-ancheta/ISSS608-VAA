@@ -13,6 +13,13 @@ execute:
 
 # 1. Overview
 
+![](images/ho_ex01_poster.png)
+
+In data analytics, the gap between raw information and actionable business strategy is bridged by visual architecture. I dedicated twenty hours to this deep-dive into the *Layered Grammar of Graphics* not simply to learn a coding package (`ggplot2`), but to engineer a robust approach to data storytelling.
+
+Coming from a background in Quality Assurance and enterprise operations, I approach data visualization the same way I approach software: with a strict focus on integrity, structure, and user experience.
+
+This exercise was an investment in my analytical infrastructure. It solidified my ability to translate data into a structure that drives clarity.
 
 # 2. Getting Started
 
@@ -338,7 +345,7 @@ ggplot(data=exam_data,
   geom_boxplot()
 ```
 
-## boxplot - *with notches*
+## boxplot - *notches*
 
 [Notches](https://sites.google.com/site/davidsstatistics/home/notched-box-plots) are used in box plots to help visually assess whether the medians of distributions differ. If the notches do not overlap, this is evidence that the medians are different.
 
@@ -351,7 +358,7 @@ ggplot(data=exam_data,
   geom_boxplot(notch=TRUE)
 ```
 
-## boxplot - *with facet_wrap*
+## boxplot - *facet_wrap*
 
 We can also incorporate facet_wrap() to create boxplots of math scores for each class that is separated by gender.
 
@@ -527,7 +534,7 @@ The default method used is loess.
 ggplot(data=exam_data, 
        aes(x= MATHS, y=ENGLISH)) +
   geom_point() +
-  geom_smooth(size=1)
+  geom_smooth(linewidth=1)
 ```
 
 ## loess - override
