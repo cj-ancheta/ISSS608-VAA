@@ -159,7 +159,7 @@ ggplot(data=exam_data,
 
 # 7. Essential element in ggplot2 - Geometries
 
-Geometric objects are the actual marks we put on a plot, in this exercise, I will use:
+Geometric objects are the actual marks we put on a plot, in this exercise, I will showcase:
 
 -   **`geom_bar`**: Creates bar charts to visualize the frequency, count, or proportion of categorical variables.
 
@@ -547,7 +547,7 @@ The default smoothing method can be overridden as shown below.
 ggplot(data=exam_data, 
        aes(x= MATHS, y=ENGLISH)) +
   geom_point() +
-  geom_smooth(size=1, method = lm)
+  geom_smooth(linewidth=1, method = lm)
 ```
 
 ## add-on

@@ -24,7 +24,7 @@ page-layout: custom
 :::
 ::: card-footer
 [Quarto]{.tech-title}
-[Publishing]{.tech-label}
+[Tech Pub]{.tech-label}
 :::
 :::
 
@@ -65,6 +65,26 @@ page-layout: custom
 ::: card-footer
 [GitHub]{.tech-title}
 [Repository]{.tech-label}
+:::
+:::
+
+::: vertical-tech-card
+::: card-header
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/r/r-original.svg" class="tech-icon"/>
+:::
+::: card-footer
+[R]{.tech-title}
+[Language]{.tech-label}
+:::
+:::
+
+::: vertical-tech-card
+::: card-header
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" class="tech-icon"/>
+:::
+::: card-footer
+[CSS3]{.tech-title}
+[Styling]{.tech-label}
 :::
 :::
 :::
