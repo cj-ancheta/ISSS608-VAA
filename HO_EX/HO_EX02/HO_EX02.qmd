@@ -11,3 +11,84 @@ execute:
   warning: false
 ---
 
+# 1. Overview
+
+# 2. Getting Started
+
+::: panel-tabset
+## Installing and loading libraries
+
+## Importing data
+:::
+
+::: panel-tabset
+## Data summary
+
+## Data preview
+:::
+
+# 3. Beyond ggplot2: ggrepel
+
+## 3.1 Working with ggrepel
+
+# 4. Beyond ggplot2: Themes
+
+::: panel-tabset
+## ggthemes
+
+## hrbthemes
+:::
+
+# 5. Beyond Single Graph
+
+::: panel-tabset
+## Math Scores
+
+## English Scores
+
+## Math vs English
+:::
+
+## 5.1 Creating Composite Graphics: pathwork methods
+
+## 5.2 Combining two ggplot2 graphs
+
+::: panel-tabset
+## Horizontal
+
+## Vertical
+
+## Relative area
+:::
+
+## 5.3 Combining three ggplot2 graphs
+
+::: panel-tabset
+## / and \| operators
+
+## - operator (subtrack placement)
+
+## Nested layouts
+
+## With non-ggplot content
+:::
+
+## 5.4 Creating a composite figure with tag
+
+::: panel-tabset
+## Enumeration
+
+## With tagging
+:::
+
+## 5.5 Creating figure with inset
+
+## 5.6 Composite figure: Patchwork + ggtheme
+
+::: panel-tabset
+## theme_economist()
+
+## theme_solarized
+:::
+
+# 6. References

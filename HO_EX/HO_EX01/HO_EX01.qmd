@@ -15,11 +15,11 @@ execute:
 
 ![](images/ho_ex01_poster.png)
 
-In data analytics, the gap between raw information and actionable business strategy is bridged by visual architecture. I dedicated twenty hours to this deep-dive into the *Layered Grammar of Graphics* not simply to learn a coding package (`ggplot2`), but to engineer a robust approach to data storytelling.
+In data analytics, the gap between raw information and actionable business strategy is connected by visual architecture. I dedicated twenty hours to this deep-dive into the *Layered Grammar of Graphics* not simply to learn a package (`ggplot2`), but to create a better approach to data storytelling.
 
-Coming from a background in Quality Assurance and enterprise operations, I approach data visualization the same way I approach software: with a strict focus on integrity, structure, and user experience.
+Coming from a background in Quality Assurance, I approach data visualization the same way I approach software: with a strict focus on integrity, structure, and user experience.
 
-This exercise was an investment in my analytical infrastructure. It solidified my ability to translate data into a structure that drives clarity.
+This exercise was an investment for my analytics infrastructure. It solidified my ability to translate data into a structure that prioritizes clarity.
 
 # 2. Getting Started
 
