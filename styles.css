@@ -1,5 +1,5 @@
 /* ==========================================================================
-   1. BASE STYLES & RESET
+   1. BASE STYLES & TYPOGRAPHY
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,400&display=swap');
 
@@ -25,8 +25,46 @@ h2 {
   border-left: 4px solid #FFC107;
 }
 
+.title {
+  color: #FFC107 !important;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 2.2rem; 
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-top: 30px;
+  margin-bottom: 5px;
+  text-align: center;
+  width: 100%;
+}
+
+.title::after {
+  content: "_";
+  animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.subtitle {
+  color: #FFC107;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 400;
+  font-size: 1.2rem; 
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-top: 5px;
+  margin-bottom: 35px;
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
 /* ==========================================================================
-   2. DYNAMIC GRID & FLEX CONTAINERS
+   2. DYNAMIC GRID CONTAINERS
    ========================================================================== */
 .center-row {
   display: grid;
@@ -50,7 +88,7 @@ h2 {
 }
 
 /* ==========================================================================
-   3. EXERCISE GALLERY (HORIZONTAL PREVIEWS)
+   3. HORIZONTAL EXERCISE POSTERS
    ========================================================================== */
 .gallery-item {
   position: relative;
@@ -81,7 +119,7 @@ h2 {
   z-index: 2;
   background-color: #1a1a1a;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
+  border-radius: 0 !important;
   overflow: hidden;
   transform: translateZ(0);
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -90,7 +128,7 @@ h2 {
 }
 
 .poster {
-  width: auto;
+  width: 100%;
   height: 120px; 
   background-color: #1a1a1a;
   background-size: cover; 
@@ -148,7 +186,7 @@ h2 {
   width: 220px; 
   background-color: #1a1a1a;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
+  border-radius: 0 !important; 
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -185,8 +223,8 @@ h2 {
 .vertical-tech-card .profile-photo {
   width: 110px;
   height: 110px;
-  border-radius: 50%;
   object-fit: cover;
+  border-radius: 50%;
   border: 2px solid #222;
   filter: grayscale(30%) contrast(1.1);
   transition: all 0.4s ease;
@@ -236,35 +274,9 @@ h2 {
   transform: scale(1.1);
 }
 
-
 /* ==========================================================================
-   5. TYPOGRAPHY & INTERFACE
+   5. NAVIGATION TABS (PANEL TABSET)
    ========================================================================== */
-.title {
-  color: #FFC107 !important;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 800;
-  font-size: 2.8rem;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  margin-top: 50px;
-  margin-bottom: 5px;
-}
-
-.subtitle {
-  color: #FFC107;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 400;
-  font-size: 1.4rem;
-  letter-spacing: 0.5px;
-  line-height: 1.4;
-  text-transform: uppercase;
-  opacity: 0.85;
-  margin-top: 5px;
-  margin-bottom: 35px;
-  display: block;
-}
-
 .nav-tabs {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 30px;
@@ -290,6 +302,21 @@ h2 {
   border-bottom: 2px solid #FFC107 !important;
 }
 
+.tab-content, 
+.tab-pane,
+.panel-tabset {
+  border: none !important;
+  border-width: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.nav-tabs .nav-link:focus, 
+.nav-tabs .nav-link:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 /* ==========================================================================
    6. R OUTPUT & SCROLLBARS
    ========================================================================== */
@@ -303,7 +330,7 @@ h2 {
 .cell-output-display img {
   max-width: 100%;
   height: auto;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar { display: none; }
@@ -311,23 +338,61 @@ html, body { scrollbar-width: none; }
 body { -ms-overflow-style: none; }
 
 /* ==========================================================================
-   7. TABSET CLEANUP (REMOVE OUTER BORDERS)
+   7. CATEGORY GRID
    ========================================================================== */
-
-.tab-content, 
-.tab-pane {
-  border: none !important;
-  border-width: 0 !important;
-  box-shadow: none !important;
-  outline: none !important;
+.hero-statement {
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #E5E5E5;
 }
 
-.nav-tabs .nav-link:focus, 
-.nav-tabs .nav-link:active {
-  outline: none !important;
-  box-shadow: none !important;
+.hero-statement strong {
+  color: #FFC107;
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 5px;
 }
 
-.panel-tabset {
-  border: none !important;
+.category-grid {
+  max-width: 950px; 
+  margin: 2rem auto 1rem auto;
+  text-align: center;
+}
+
+.category-card {
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0 !important;
+  padding: 1.2rem 1rem;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.category-card h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem; 
+  margin-bottom: 8px;
+  color: #FFFFFF;
+  border-left: none; 
+  padding-left: 0;
+}
+
+.category-card a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #A68B44; 
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.category-card:hover {
+  border-color: #FFC107;
+  box-shadow: 0 10px 30px rgba(255, 193, 7, 0.2);
+  transform: translateY(-5px);
+}
+
+.category-card:hover h3, .category-card:hover a {
+  color: #FFC107;
 }

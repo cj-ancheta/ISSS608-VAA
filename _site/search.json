@@ -1,17 +1,10 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "ISSS608 - VAA",
-    "section": "",
-    "text": "Welcome to my website.\n\nClick on adventure to get started\n\nExpeditions: contains my hands-on exercises\nLive Sprints: contains my in-class exercises\nDeep Dives: contains my take-home exercises\nMasterpiece: contains my final project"
-  },
-  {
     "objectID": "HO_EX/HO_EX01/HO_EX01.html",
     "href": "HO_EX/HO_EX01/HO_EX01.html",
     "title": "Hands-0n Exercise 1:",
     "section": "",
-    "text": "In data analytics, the gap between raw information and actionable business strategy is bridged by visual architecture. I dedicated twenty hours to this deep-dive into the Layered Grammar of Graphics not simply to learn a coding package (ggplot2), but to engineer a robust approach to data storytelling.\nComing from a background in Quality Assurance and enterprise operations, I approach data visualization the same way I approach software: with a strict focus on integrity, structure, and user experience.\nThis exercise was an investment in my analytical infrastructure. It solidified my ability to translate data into a structure that drives clarity."
+    "text": "In data analytics, the gap between raw information and actionable business strategy is connected by visual architecture. I dedicated twenty hours to this deep-dive into the Layered Grammar of Graphics not simply to learn a package (ggplot2), but to create a better approach to data storytelling.\nComing from a background in Quality Assurance, I approach data visualization the same way I approach software: with a strict focus on integrity, structure, and user experience.\nThis exercise was an investment for my analytics infrastructure. It solidified my ability to translate data into a structure that prioritizes clarity."
   },
   {
     "objectID": "HO_EX/HO_EX01/HO_EX01.html#object-geom_bar",
@@ -102,7 +95,7 @@
     "href": "HO_EX/HO_EX01/HO_EX01.html#adding-best-fit-curve",
     "title": "Hands-0n Exercise 1:",
     "section": "8.4 Adding best fit curve",
-    "text": "8.4 Adding best fit curve\nThe scatterplot below shows the relationship of Maths and English grades of pupils. The interpretability of this graph can be improved by adding a best fit curve.\n\ngeom_smoothloess - overrideadd-on\n\n\n\n\n\n\n\n\nTip\n\n\n\nIn the code chunk below, geom_smooth() is used to plot a best fit curve on the scatterplot.\nThe default method used is loess.\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(linewidth=1)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nThe default smoothing method can be overridden as shown below.\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(size=1, method = lm)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTo add equation and R^2 to the plot, we need to download the library ggpmisc.\n\n\n\npacman::p_load(ggpmisc)\n\nstat_poly_line() is used to add lm line and stat_poly_eq() displays the equation and R-square value.\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  stat_poly_line() +\n  stat_poly_eq(use_label(c(\"eq\", \"R2\"))) +\n  geom_point()"
+    "text": "8.4 Adding best fit curve\nThe scatterplot below shows the relationship of Maths and English grades of pupils. The interpretability of this graph can be improved by adding a best fit curve.\n\ngeom_smoothloess - overrideadd-on\n\n\n\n\n\n\n\n\nTip\n\n\n\nIn the code chunk below, geom_smooth() is used to plot a best fit curve on the scatterplot.\nThe default method used is loess.\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(linewidth=1)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nThe default smoothing method can be overridden as shown below.\n\n\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(linewidth=1, method = lm)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTo add equation and R^2 to the plot, we need to download the library ggpmisc.\n\n\n\npacman::p_load(ggpmisc)\n\nstat_poly_line() is used to add lm line and stat_poly_eq() displays the equation and R-square value.\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  stat_poly_line() +\n  stat_poly_eq(use_label(c(\"eq\", \"R2\"))) +\n  geom_point()"
   },
   {
     "objectID": "HO_EX/HO_EX01/HO_EX01.html#working-with-facet_wrap",
@@ -138,5 +131,54 @@
     "title": "About",
     "section": "",
     "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "HO_EX/HO_EX02/HO_EX02.html#working-with-ggrepel",
+    "href": "HO_EX/HO_EX02/HO_EX02.html#working-with-ggrepel",
+    "title": "Hands-0n Exercise 2:",
+    "section": "3.1 Working with ggrepel",
+    "text": "3.1 Working with ggrepel"
+  },
+  {
+    "objectID": "HO_EX/HO_EX02/HO_EX02.html#creating-composite-graphics-pathwork-methods",
+    "href": "HO_EX/HO_EX02/HO_EX02.html#creating-composite-graphics-pathwork-methods",
+    "title": "Hands-0n Exercise 2:",
+    "section": "5.1 Creating Composite Graphics: pathwork methods",
+    "text": "5.1 Creating Composite Graphics: pathwork methods"
+  },
+  {
+    "objectID": "HO_EX/HO_EX02/HO_EX02.html#combining-two-ggplot2-graphs",
+    "href": "HO_EX/HO_EX02/HO_EX02.html#combining-two-ggplot2-graphs",
+    "title": "Hands-0n Exercise 2:",
+    "section": "5.2 Combining two ggplot2 graphs",
+    "text": "5.2 Combining two ggplot2 graphs\n\nHorizontalVerticalRelative area"
+  },
+  {
+    "objectID": "HO_EX/HO_EX02/HO_EX02.html#combining-three-ggplot2-graphs",
+    "href": "HO_EX/HO_EX02/HO_EX02.html#combining-three-ggplot2-graphs",
+    "title": "Hands-0n Exercise 2:",
+    "section": "5.3 Combining three ggplot2 graphs",
+    "text": "5.3 Combining three ggplot2 graphs\n\n/ and | operators- operator (subtrack placement)Nested layoutsWith non-ggplot content"
+  },
+  {
+    "objectID": "HO_EX/HO_EX02/HO_EX02.html#creating-a-composite-figure-with-tag",
+    "href": "HO_EX/HO_EX02/HO_EX02.html#creating-a-composite-figure-with-tag",
+    "title": "Hands-0n Exercise 2:",
+    "section": "5.4 Creating a composite figure with tag",
+    "text": "5.4 Creating a composite figure with tag\n\nEnumerationWith tagging"
+  },
+  {
+    "objectID": "HO_EX/HO_EX02/HO_EX02.html#creating-figure-with-inset",
+    "href": "HO_EX/HO_EX02/HO_EX02.html#creating-figure-with-inset",
+    "title": "Hands-0n Exercise 2:",
+    "section": "5.5 Creating figure with inset",
+    "text": "5.5 Creating figure with inset"
+  },
+  {
+    "objectID": "HO_EX/HO_EX02/HO_EX02.html#composite-figure-patchwork-ggtheme",
+    "href": "HO_EX/HO_EX02/HO_EX02.html#composite-figure-patchwork-ggtheme",
+    "title": "Hands-0n Exercise 2:",
+    "section": "5.6 Composite figure: Patchwork + ggtheme",
+    "text": "5.6 Composite figure: Patchwork + ggtheme\n\ntheme_economist()theme_solarized"
   }
 ]
