@@ -1,5 +1,5 @@
 /* ==========================================================================
-   1. BASE STYLES & TYPOGRAPHY
+   1. BASE STYLES, TYPOGRAPHY & TACTILE GRAIN
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,400&display=swap');
 
@@ -10,6 +10,16 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.04; 
+  z-index: -1;
+  pointer-events: none;
 }
 
 h2 {
@@ -64,7 +74,7 @@ h2 {
 }
 
 /* ==========================================================================
-   2. DYNAMIC GRID CONTAINERS
+   2. DYNAMIC GRID CONTAINERS & FOCUS DIMMING (GLOBAL)
    ========================================================================== */
 .center-row {
   display: grid;
@@ -87,6 +97,24 @@ h2 {
   padding: 40px 20px;
 }
 
+.center-row:hover .gallery-item,
+.tech-stack-row:hover .vertical-tech-card,
+.category-grid:hover .category-card,
+#latest-posts:hover .card {
+  opacity: 0.4;
+  filter: grayscale(80%);
+  transition: all 0.4s ease;
+}
+
+.center-row .gallery-item:hover,
+.tech-stack-row .vertical-tech-card:hover,
+.category-grid .category-card:hover,
+#latest-posts .card:hover {
+  opacity: 1;
+  filter: grayscale(0%);
+  z-index: 10;
+}
+
 /* ==========================================================================
    3. HORIZONTAL EXERCISE POSTERS
    ========================================================================== */
@@ -96,6 +124,7 @@ h2 {
   max-width: 180px;
   display: flex;
   flex-direction: column;
+  transition: all 0.4s ease; 
 }
 
 .huge-number {
@@ -122,8 +151,7 @@ h2 {
   border-radius: 0 !important;
   overflow: hidden;
   transform: translateZ(0);
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); /* Premium easing */
   width: 100%;
 }
 
@@ -146,22 +174,27 @@ h2 {
 .poster-label {
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.5px; 
   color: #A68B44;
   display: block;
   white-space: normal;
   line-height: 1.2;
+  opacity: 0.7; 
+  transition: opacity 0.3s ease;
 }
 
 .poster-card:hover {
-  transform: translateY(-10px);
-  border-color: #FFC107;
-  box-shadow: 0 15px 40px rgba(255, 193, 7, 0.2);
+  transform: translateY(-4px);
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.05), 0 0 40px rgba(255, 193, 7, 0.1) !important;
 }
 
-.poster-card:hover .poster-label { color: #FFC107; }
+.poster-card:hover .poster-label { 
+  color: #FFC107; 
+  opacity: 1; 
+}
 
 .masterpiece-card {
   max-width: 400px !important;
@@ -190,8 +223,7 @@ h2 {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .card-header {
@@ -242,16 +274,19 @@ h2 {
 
 .tech-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
   color: #A68B44;
   text-transform: uppercase;
   display: block;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
 }
 
 .vertical-tech-card:hover {
-  transform: translateY(-10px);
-  border-color: #FFC107;
-  box-shadow: 0 15px 40px rgba(255, 193, 7, 0.2);
+  transform: translateY(-4px);
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.05), 0 0 40px rgba(255, 193, 7, 0.1) !important;
 }
 
 .vertical-tech-card:hover .tech-icon {
@@ -263,6 +298,11 @@ h2 {
   filter: grayscale(0%);
   border-color: #FFC107;
   transform: scale(1.05);
+}
+
+.vertical-tech-card:hover .tech-label {
+  opacity: 1;
+  color: #FFC107;
 }
 
 .icon-white {
@@ -294,7 +334,12 @@ h2 {
   border: none !important;
   border-bottom: 2px solid transparent !important;
   padding: 10px 20px;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+}
+
+.nav-tabs .nav-link:hover {
+  transform: translateY(-2px);
+  color: #FFFFFF !important;
 }
 
 .nav-tabs .nav-link.active {
@@ -365,7 +410,7 @@ body { -ms-overflow-style: none; }
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0 !important;
   padding: 1.2rem 1rem;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); 
 }
 
 .category-card h3 {
@@ -388,9 +433,9 @@ body { -ms-overflow-style: none; }
 }
 
 .category-card:hover {
-  border-color: #FFC107;
-  box-shadow: 0 10px 30px rgba(255, 193, 7, 0.2);
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.05), 0 0 40px rgba(255, 193, 7, 0.1) !important;
 }
 
 .category-card:hover h3, .category-card:hover a {
@@ -398,7 +443,71 @@ body { -ms-overflow-style: none; }
 }
 
 /* ==========================================================================
-   11. CINEMATIC TAB TRANSITIONS (SHADER.SE STYLE)
+   8. SIMPLE FULL-BLEED IMAGES (LATEST POSTS)
+   ========================================================================== */
+#latest-posts {
+  max-width: 950px; 
+  margin: 0 auto;
+}
+
+.quarto-listing-grid .card {
+  background-color: #1a1a1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0 !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  overflow: hidden;
+}
+
+.quarto-listing-grid .card img,
+.quarto-listing-grid .thumbnail-image {
+  width: 100% !important;        
+  height: auto !important;       
+  aspect-ratio: 6 / 4 !important;
+  object-fit: cover !important;  
+  object-position: top !important; 
+  border-radius: 0 !important;   
+  margin: 0 !important;
+}
+
+.quarto-listing-grid .card-img-top {
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.quarto-listing-grid .card-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.quarto-listing-grid .card-title {
+  color: #FFFFFF !important;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem !important; 
+}
+
+.quarto-listing-grid .card-text,
+.quarto-listing-grid .listing-reading-time,
+.quarto-listing-grid .listing-date {
+  color: #A68B44 !important;
+  font-size: 0.8rem !important; 
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.quarto-listing-grid .card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.05), 0 0 40px rgba(255, 193, 7, 0.1) !important;
+}
+
+/* ==========================================================================
+   9. CINEMATIC TAB TRANSITIONS (SHADER.SE STYLE)
    ========================================================================== */
 .tab-content > .tab-pane {
   display: none !important;
@@ -420,13 +529,4 @@ body { -ms-overflow-style: none; }
     transform: translateY(0);   
     filter: blur(0);       
   }
-}
-
-.nav-tabs .nav-link {
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
-}
-
-.nav-tabs .nav-link:hover {
-  transform: translateY(-2px);
-  color: #FFFFFF !important;
 }
