@@ -162,17 +162,11 @@ ggplot(data=exam_data,
 Geometric objects are the actual marks we put on a plot, in this exercise, I will showcase:
 
 -   **`geom_bar`**: Creates bar charts to visualize the frequency, count, or proportion of categorical variables.
-
 -   **`geom_dotplot`**: Represents individual data points as stacked dots to show the exact distribution of small, continuous datasets.
-
 -   **`geom_histogram`**: Groups continuous data into connected vertical bins to display its underlying frequency distribution.
-
 -   **`geom_density`**: Creates a smoothed, continuous curve to estimate the probability distribution of a numeric variable.
-
 -   **`geom_boxplot`**: Summarizes the spread of continuous data using its median, quartiles, and potential statistical outliers.
-
 -   **`geom_violin`**: Combines a boxplot and a density plot to reveal the full shape, width, and peaks of a data distribution.
-
 -   **`geom_point`**: Creates scatter plots by plotting individual coordinates to display the relationship between two continuous variables.
 
 ::: callout-tip
@@ -219,9 +213,7 @@ ggplot(data=exam_data,
 
 The code chunk below performs the following two steps:
 
-\- `scale_y_continuous()` is used to turn off the y-axis, and
-
-\- *binwidth* argument is used to change the binwidth to 2.5.
+\- `scale_y_continuous()` is used to turn off the y-axis, and - *binwidth* argument is used to change the binwidth to 2.5.
 :::
 
 ```{r}
@@ -287,7 +279,6 @@ ggplot(data=exam_data,
 
 ::: callout-tip
 -   The code chunk below changes the interior color of the histogram (i.e. fill) by using sub-group of aesthetic().
-
 -   This approach can be used to color or fill the alpha of the geometric.
 :::
 
@@ -675,7 +666,7 @@ ggplot(data=exam_data,
 ::: panel-tabset
 ## raw
 
-The scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.
+The scatterplot on the right is slightly misleading because the y-axis and x-axis range are not equal.
 
 ```{r}
 ggplot(data=exam_data, 
