@@ -185,7 +185,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">April 22, 2026</p>
+      <p class="date-modified">April 23, 2026</p>
     </div>
   </div>
     
@@ -459,13 +459,13 @@ Tip
 <h1>7. Essential element in ggplot2 - Geometries</h1>
 <p>Geometric objects are the actual marks we put on a plot, in this exercise, I will showcase:</p>
 <ul>
-<li><p><strong><code>geom_bar</code></strong>: Creates bar charts to visualize the frequency, count, or proportion of categorical variables.</p></li>
-<li><p><strong><code>geom_dotplot</code></strong>: Represents individual data points as stacked dots to show the exact distribution of small, continuous datasets.</p></li>
-<li><p><strong><code>geom_histogram</code></strong>: Groups continuous data into connected vertical bins to display its underlying frequency distribution.</p></li>
-<li><p><strong><code>geom_density</code></strong>: Creates a smoothed, continuous curve to estimate the probability distribution of a numeric variable.</p></li>
-<li><p><strong><code>geom_boxplot</code></strong>: Summarizes the spread of continuous data using its median, quartiles, and potential statistical outliers.</p></li>
-<li><p><strong><code>geom_violin</code></strong>: Combines a boxplot and a density plot to reveal the full shape, width, and peaks of a data distribution.</p></li>
-<li><p><strong><code>geom_point</code></strong>: Creates scatter plots by plotting individual coordinates to display the relationship between two continuous variables.</p></li>
+<li><strong><code>geom_bar</code></strong>: Creates bar charts to visualize the frequency, count, or proportion of categorical variables.</li>
+<li><strong><code>geom_dotplot</code></strong>: Represents individual data points as stacked dots to show the exact distribution of small, continuous datasets.</li>
+<li><strong><code>geom_histogram</code></strong>: Groups continuous data into connected vertical bins to display its underlying frequency distribution.</li>
+<li><strong><code>geom_density</code></strong>: Creates a smoothed, continuous curve to estimate the probability distribution of a numeric variable.</li>
+<li><strong><code>geom_boxplot</code></strong>: Summarizes the spread of continuous data using its median, quartiles, and potential statistical outliers.</li>
+<li><strong><code>geom_violin</code></strong>: Combines a boxplot and a density plot to reveal the full shape, width, and peaks of a data distribution.</li>
+<li><strong><code>geom_point</code></strong>: Creates scatter plots by plotting individual coordinates to display the relationship between two continuous variables.</li>
 </ul>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -571,8 +571,7 @@ Caution
 </div>
 <div class="callout-body-container callout-body">
 <p>The code chunk below performs the following two steps:</p>
-<p>- <code>scale_y_continuous()</code> is used to turn off the y-axis, and</p>
-<p>- <em>binwidth</em> argument is used to change the binwidth to 2.5.</p>
+<p>- <code>scale_y_continuous()</code> is used to turn off the y-axis, and - <em>binwidth</em> argument is used to change the binwidth to 2.5.</p>
 </div>
 </div>
 <div class="cell">
@@ -707,8 +706,8 @@ Tip
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li><p>The code chunk below changes the interior color of the histogram (i.e.&nbsp;fill) by using sub-group of aesthetic().</p></li>
-<li><p>This approach can be used to color or fill the alpha of the geometric.</p></li>
+<li>The code chunk below changes the interior color of the histogram (i.e.&nbsp;fill) by using sub-group of aesthetic().</li>
+<li>This approach can be used to color or fill the alpha of the geometric.</li>
 </ul>
 </div>
 </div>
@@ -1341,7 +1340,7 @@ Note
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-14-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-1" role="tab" aria-controls="tabset-14-1" aria-selected="true" href="">raw</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-2" role="tab" aria-controls="tabset-14-2" aria-selected="false" href="">fixed</a></li></ul>
 <div class="tab-content">
 <div id="tabset-14-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-14-1-tab">
-<p>The scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.</p>
+<p>The scatterplot on the right is slightly misleading because the y-axis and x-axis range are not equal.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
 <span id="cb41-2"><a href="#cb41-2"></a>       <span class="fu">aes</span>(<span class="at">x=</span> MATHS, <span class="at">y=</span>ENGLISH)) <span class="sc">+</span></span>

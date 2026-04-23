@@ -18,7 +18,7 @@
     "href": "HO_EX/HO_EX01/HO_EX01.html#object-geom_dotplot",
     "title": "Hands-0n Exercise 1:",
     "section": "7.2 Object: geom_dotplot",
-    "text": "7.2 Object: geom_dotplot\n\n\n\n\n\n\nTip\n\n\n\nIn the code chunk below, geom_dotplot() of ggplot2 is used to plot a dot plot.\n\n\n\ngeom_dotplot()geom_dotplot() - modified\n\n\n\n\n\n\n\n\nCaution\n\n\n\n\nThe y scale is not very useful, in fact it is very misleading.\nBinwidth defaults to 1/30 of the range of the data.\n\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(dotsize = 0.5)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNoteFix\n\n\n\nThe code chunk below performs the following two steps:\n- scale_y_continuous() is used to turn off the y-axis, and\n- binwidth argument is used to change the binwidth to 2.5.\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(binwidth=2.5,         \n               dotsize = 0.5) +      \n  scale_y_continuous(NULL,           \n                     breaks = NULL)"
+    "text": "7.2 Object: geom_dotplot\n\n\n\n\n\n\nTip\n\n\n\nIn the code chunk below, geom_dotplot() of ggplot2 is used to plot a dot plot.\n\n\n\ngeom_dotplot()geom_dotplot() - modified\n\n\n\n\n\n\n\n\nCaution\n\n\n\n\nThe y scale is not very useful, in fact it is very misleading.\nBinwidth defaults to 1/30 of the range of the data.\n\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(dotsize = 0.5)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNoteFix\n\n\n\nThe code chunk below performs the following two steps:\n- scale_y_continuous() is used to turn off the y-axis, and - binwidth argument is used to change the binwidth to 2.5.\n\n\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(binwidth=2.5,         \n               dotsize = 0.5) +      \n  scale_y_continuous(NULL,           \n                     breaks = NULL)"
   },
   {
     "objectID": "HO_EX/HO_EX01/HO_EX01.html#object-geom_histogram",
@@ -123,7 +123,7 @@
     "href": "HO_EX/HO_EX01/HO_EX01.html#section",
     "title": "Hands-0n Exercise 1:",
     "section": "10.2",
-    "text": "10.2\n\nrawfixed\n\n\nThe scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, size=0.5)\n\n\n\n\n\n\n\n\n\n\nThe code chunk below fixed both the y-axis and x-axis range from 0-100.\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))"
+    "text": "10.2\n\nrawfixed\n\n\nThe scatterplot on the right is slightly misleading because the y-axis and x-axis range are not equal.\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, size=0.5)\n\n\n\n\n\n\n\n\n\n\nThe code chunk below fixed both the y-axis and x-axis range from 0-100.\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))"
   },
   {
     "objectID": "about.html",

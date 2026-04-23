@@ -396,3 +396,37 @@ body { -ms-overflow-style: none; }
 .category-card:hover h3, .category-card:hover a {
   color: #FFC107;
 }
+
+/* ==========================================================================
+   11. CINEMATIC TAB TRANSITIONS (SHADER.SE STYLE)
+   ========================================================================== */
+.tab-content > .tab-pane {
+  display: none !important;
+}
+
+.tab-content > .tab-pane.active {
+  display: block !important;
+  animation: shaderReveal 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+@keyframes shaderReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(30px); 
+    filter: blur(8px);           
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);   
+    filter: blur(0);       
+  }
+}
+
+.nav-tabs .nav-link {
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+}
+
+.nav-tabs .nav-link:hover {
+  transform: translateY(-2px);
+  color: #FFFFFF !important;
+}
