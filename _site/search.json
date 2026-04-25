@@ -133,52 +133,59 @@
     "text": "About this site\n\n1 + 1\n\n[1] 2"
   },
   {
+    "objectID": "HO_EX/HO_EX02/HO_EX02.html",
+    "href": "HO_EX/HO_EX02/HO_EX02.html",
+    "title": "Hands-0n Exercise 2:",
+    "section": "",
+    "text": "In this chapter, I learned about ggplot2 extensions for creating more effective statistical graphics.\nThe goals of this exercise was to:\n\ncontrol the placement of annotation on a graph by using functions provided in ggrepel package,\ncreate professional publication quality figure by using functions provided in ggthemes and hrbrthemes packages, and\nplot composite figure by combining ggplot2 graphs by using patchwork package."
+  },
+  {
     "objectID": "HO_EX/HO_EX02/HO_EX02.html#working-with-ggrepel",
     "href": "HO_EX/HO_EX02/HO_EX02.html#working-with-ggrepel",
     "title": "Hands-0n Exercise 2:",
     "section": "3.1 Working with ggrepel",
-    "text": "3.1 Working with ggrepel\n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  geom_label_repel(aes(label = ID), \n                   fontface = \"bold\") +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"English scores versus Math scores for Primary 3\")"
+    "text": "3.1 Working with ggrepel\n\n\nShow the code\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  geom_label_repel(aes(label = ID), \n                   fontface = \"bold\") +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"English scores versus Math scores for Primary 3\")"
   },
   {
     "objectID": "HO_EX/HO_EX02/HO_EX02.html#creating-composite-graphics-pathwork-methods",
     "href": "HO_EX/HO_EX02/HO_EX02.html#creating-composite-graphics-pathwork-methods",
     "title": "Hands-0n Exercise 2:",
     "section": "5.1 Creating Composite Graphics: pathwork methods",
-    "text": "5.1 Creating Composite Graphics: pathwork methods"
+    "text": "5.1 Creating Composite Graphics: pathwork methods\nThere are several ggplot2 extension’s functions support the needs to prepare composite figure by combining several graphs such as grid.arrange() of gridExtra package and plot_grid() of cowplot package. In this section, we use ggplot2 extension called patchwork which is specially designed for combining separate ggplot2 graphs into a single figure.\nPatchwork package has a very simple syntax, such as:\n\nTwo-Column Layout using the Plus Sign +.\nParenthesis () to create a subplot group.\nTwo-Row Layout using the Division Sign /"
   },
   {
     "objectID": "HO_EX/HO_EX02/HO_EX02.html#combining-two-ggplot2-graphs",
     "href": "HO_EX/HO_EX02/HO_EX02.html#combining-two-ggplot2-graphs",
     "title": "Hands-0n Exercise 2:",
     "section": "5.2 Combining two ggplot2 graphs",
-    "text": "5.2 Combining two ggplot2 graphs\n\nHorizontalVerticalRelative area\n\n\n\np1 + p2\n\n\n\n\n\n\n\n\n\n\n\np1 / p2\n\n\n\n\n\n\n\n\n\n\n\np1 + p2 + plot_layout(ncol=2,widths=c(2,1))"
+    "text": "5.2 Combining two ggplot2 graphs\nFigure below shows a composite of two histograms created using patchwork.\n\nHorizontalVerticalRelative area\n\n\n\n\nShow the code\np1 + p2\n\n\n\n\n\n\n\n\n\n\n\n\n\nShow the code\np1 / p2\n\n\n\n\n\n\n\n\n\n\n\n\n\nShow the code\np1 + p2 + plot_layout(ncol=2,widths=c(2,1))"
   },
   {
     "objectID": "HO_EX/HO_EX02/HO_EX02.html#combining-three-ggplot2-graphs",
     "href": "HO_EX/HO_EX02/HO_EX02.html#combining-three-ggplot2-graphs",
     "title": "Hands-0n Exercise 2:",
     "section": "5.3 Combining three ggplot2 graphs",
-    "text": "5.3 Combining three ggplot2 graphs\n\n/ and | operators- operator (subtraction)Nested layoutsWith non-ggplot content\n\n\n\n(p1 / p2) | p3\n\n\n\n\n\n\n\n\n\n\n\np1 + p2 - p3 + plot_layout(ncol=1)\n\n\n\n\n\n\n\n\n\n\n\np3 + {\n  p1 + p2 + plot_layout(ncol=1)\n}\n\n\n\n\n\n\n\n\n\n\n\n((p1 / p2) | p3) + grid:: textGrob('(Can add content here.)', hjust=0, x=-0, gp=grid::gpar(font=3, fontsize = 12))"
+    "text": "5.3 Combining three ggplot2 graphs\nWe can plot more complex composite by using appropriate operators. For example, the composite figure below is plotted by using:\n\n“|” operator to stack two ggplot2 graphs,\n“/” operator to place the plots beside each other,\n“()” operator the define the sequence of the plotting.\n\n\n/ and | operators- operator (subtraction)Nested layoutsWith non-ggplot content\n\n\n\n\nShow the code\n(p1 / p2) | p3\n\n\n\n\n\n\n\n\n\n\n\n\n\nShow the code\np1 + p2 - p3 + plot_layout(ncol=1)\n\n\n\n\n\n\n\n\n\n\n\n\n\nShow the code\np3 + {\n  p1 + p2 + plot_layout(ncol=1)\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\nShow the code\n((p1 / p2) | p3) + grid:: textGrob('(Can add content here.)', hjust=0, x=-0, gp=grid::gpar(font=3, fontsize = 12))\n\n\n\n\n\n\n\n\n\n\n\n\nTo learn more, refer to Plot Assembly."
   },
   {
     "objectID": "HO_EX/HO_EX02/HO_EX02.html#creating-a-composite-figure-with-tag",
     "href": "HO_EX/HO_EX02/HO_EX02.html#creating-a-composite-figure-with-tag",
     "title": "Hands-0n Exercise 2:",
     "section": "5.4 Creating a composite figure with tag",
-    "text": "5.4 Creating a composite figure with tag\n\nEnumerationWith tagging\n\n\n\n((p1 / p2) | p3) +\n  plot_annotation(tag_levels = 'I')\n\n\n\n\n\n\n\n\n\n\n\n((p1 / p2) | p3)  + \n  plot_layout(tag_level = 'new') +\n  plot_annotation(tag_levels = c('A', '1'), tag_prefix = 'Fig. ', tag_sep = '.', \n                  tag_suffix = ':')"
+    "text": "5.4 Creating a composite figure with tag\nIn order to identify subplots in text, patchwork also provides auto-tagging capabilities as shown in the figure below.\n\nEnumerationWith tagging\n\n\n\n\nShow the code\n((p1 / p2) | p3) +\n  plot_annotation(tag_levels = 'I')\n\n\n\n\n\n\n\n\n\n\n\n\n\nShow the code\n((p1 / p2) | p3)  + \n  plot_layout(tag_level = 'new') +\n  plot_annotation(tag_levels = c('A', '1'), tag_prefix = 'Fig. ', tag_sep = '.', \n                  tag_suffix = ':')"
   },
   {
     "objectID": "HO_EX/HO_EX02/HO_EX02.html#creating-figure-with-inset",
     "href": "HO_EX/HO_EX02/HO_EX02.html#creating-figure-with-inset",
     "title": "Hands-0n Exercise 2:",
     "section": "5.5 Creating figure with inset",
-    "text": "5.5 Creating figure with inset\n\np4 &lt;- ggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") + \n  coord_cartesian(xlim=c(0,100)) +\n  ggtitle(\"Distribution of Math scores\")\n\np5 &lt;- ggplot(data=exam_data, \n             aes(x = ENGLISH)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") +\n  coord_cartesian(xlim=c(0,100)) +\n  ggtitle(\"Distribution of English scores\")\n\np6 &lt;- ggplot(data=exam_data, \n             aes(x= MATHS, \n                 y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"Correlation between English & Math scores\")\n\np6 +  inset_element(p5,\n                    left = 0.02,\n                    bottom=0.7,\n                    right= 0.5,\n                    top=1)"
+    "text": "5.5 Creating figure with inset\nBeside providing functions to place plots next to each other based on the provided layout. With inset_element() of patchwork, we can place one or several plots or graphic elements freely on top or below another plot.\n\n\nShow the code\np4 &lt;- ggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") + \n  coord_cartesian(xlim=c(0,100)) +\n  ggtitle(\"Distribution of Math scores\")\n\np5 &lt;- ggplot(data=exam_data, \n             aes(x = ENGLISH)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") +\n  coord_cartesian(xlim=c(0,100)) +\n  ggtitle(\"Distribution of English scores\")\n\np6 &lt;- ggplot(data=exam_data, \n             aes(x= MATHS, \n                 y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"Correlation between English & Math scores\")\n\np6 +  inset_element(p5,\n                    left = 0.02,\n                    bottom=0.7,\n                    right= 0.5,\n                    top=1)"
   },
   {
     "objectID": "HO_EX/HO_EX02/HO_EX02.html#composite-figure-patchwork-ggtheme",
     "href": "HO_EX/HO_EX02/HO_EX02.html#composite-figure-patchwork-ggtheme",
     "title": "Hands-0n Exercise 2:",
     "section": "5.6 Composite figure: Patchwork + ggtheme",
-    "text": "5.6 Composite figure: Patchwork + ggtheme\n\ntheme_economist()theme_solarized\n\n\n\npatchwork &lt;- ((p4/p5) | p6)\n\npatchwork & theme_economist() +\n  theme(plot.title=element_text(size =10),\n                                        axis.title.y=element_text(size = 9,\n                                                                  angle = 0,\n                                                                  vjust=0.9),\n                                         axis.title.x=element_text(size = 9))\n\n\n\n\n\n\n\n\n\n\n\npatchwork & theme_solarized() +\n  theme(plot.title=element_text(size =10),\n                                        axis.title.y=element_text(size = 9,\n                                                                  angle = 0,\n                                                                  vjust=0.9),\n                                         axis.title.x=element_text(size = 9))"
+    "text": "5.6 Composite figure: Patchwork + ggtheme\nFigure below is created by combining patchwork and theme_economist() of ggthemes package discussed earlier.\n\ntheme_economist()theme_solarized\n\n\n\n\nShow the code\npatchwork &lt;- ((p4/p5) | p6)\n\npatchwork & theme_economist() +\n  theme(plot.title=element_text(size =10),\n                                        axis.title.y=element_text(size = 9,\n                                                                  angle = 0,\n                                                                  vjust=0.9),\n                                         axis.title.x=element_text(size = 9))\n\n\n\n\n\n\n\n\n\n\n\n\n\nShow the code\npatchwork & theme_solarized() +\n  theme(plot.title=element_text(size =10),\n                                        axis.title.y=element_text(size = 9,\n                                                                  angle = 0,\n                                                                  vjust=0.9),\n                                         axis.title.x=element_text(size = 9))"
   }
 ]

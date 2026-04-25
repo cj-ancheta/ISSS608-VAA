@@ -13,7 +13,7 @@ page-layout: custom
 1
 :::
 ::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ggplot2+Methods');"}
+::: {.poster style="background-image: url('HO_EX/HO_EX01/images/ho_ex01_poster.png');"}
 :::
 ::: poster-info
 [Hands-on Exercise 1]{.poster-label}
@@ -27,7 +27,7 @@ page-layout: custom
 2
 :::
 ::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ggplot2+Fundamentals');"}
+::: {.poster style="background-image: url('HO_EX/HO_EX02/images/ho_ex02_poster.png');"}
 :::
 ::: poster-info
 [Hands-on Exercise 2]{.poster-label}

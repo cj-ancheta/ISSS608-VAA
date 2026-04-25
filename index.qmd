@@ -45,7 +45,7 @@ listing:
 
 ::: {style="max-width: 950px; margin: 0 auto;"}
 
-### Current Deployments:
+### Latest Deployments:
 
 ::: {#latest-posts}
 :::

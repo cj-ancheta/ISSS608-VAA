@@ -13,6 +13,17 @@ execute:
 
 # 1. Overview
 
+![](images/ho_ex02_poster.png) 
+
+
+In this chapter, I learned about ggplot2 extensions for creating more effective statistical graphics.
+
+The goals of this exercise was to:
+
+-   control the placement of annotation on a graph by using functions provided in ggrepel package,
+-   create professional publication quality figure by using functions provided in ggthemes and hrbrthemes packages, and
+-   plot composite figure by combining ggplot2 graphs by using patchwork package.
+
 # 2. Getting Started
 
 ::: panel-tabset
@@ -21,8 +32,6 @@ execute:
 In this exercise, beside tidyverse, four R packages will be used. They are: - **`ggrepel`**: an R package provides geoms for ggplot2 to repel overlapping text labels. - **`ggthemes`**: an R package provides some extra themes, geoms, and scales for ‘ggplot2’. - **`hrbrthemes`**: an R package provides typography-centric themes and theme components for ggplot2. - **`patchwork`**: an R package for preparing composite figure created using ggplot2.
 
 ```{r}
-# | fig_width: 12
-# | fig_height: 8
 pacman::p_load(ggrepel, patchwork, 
                ggthemes, hrbrthemes,
                tidyverse) 
