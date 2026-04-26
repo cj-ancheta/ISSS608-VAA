@@ -1,0 +1,40 @@
+---
+title: "Hands-0n Exercise 3-A:"
+subtitle:  "Programming Interactive Data Visualisation with R"
+date: "26 Apr 2026"
+date-modified: "last-modified"
+editor: visual
+execute:
+  freeze: auto
+  echo: true
+  eval: true
+  warning: false
+---
+
+
+1 Overview
+
+2 Getting Started
+
+> Installing and loading libraries
+> Importing data
+
+3 Data
+
+> summary
+> preview
+
+4 Interactive Data Visualization: ggiraph
+
+>tooltip
+>onclick
+>data_id
+
+> Tooltip aesthetic
+
+5 Interactivity
+
+Hovering mechanism
+
+> Displaying multiple information on tooltip
+

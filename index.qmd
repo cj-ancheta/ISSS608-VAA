@@ -10,7 +10,7 @@ listing:
       - "FIN_PROJ/**/*.qmd"
     sort: "date desc"
     type: grid
-    grid-columns: 3        
+    grid-columns: 3       
     max-items: 3
     image-height: "200px" 
     fields: [image, title, subtitle, date]

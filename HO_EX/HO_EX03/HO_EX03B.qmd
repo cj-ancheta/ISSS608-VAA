@@ -1,0 +1,13 @@
+---
+title: "Hands-0n Exercise 3-B:"
+subtitle:  "A Layered Grammar of Graphics - ggplot2 methods"
+date: "26 Apr 2026"
+date-modified: "last-modified"
+editor: visual
+execute:
+  freeze: auto
+  echo: true
+  eval: true
+  warning: false
+---
+

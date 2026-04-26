@@ -13,8 +13,7 @@ execute:
 
 # 1. Overview
 
-![](images/ho_ex02_poster.png) 
-
+![](images/ho_ex02_poster.png)
 
 In this chapter, I learned about ggplot2 extensions for creating more effective statistical graphics.
 
@@ -57,7 +56,6 @@ The summary shows a year-end examination grades.
 There are 7 features:
 
 \- Categorical: `ID`, `CLASS`, `GENDER`, `RACE`
-
 \- Continuous: `MATH`, `ENGLISH`, `SCIENCE`
 :::
 

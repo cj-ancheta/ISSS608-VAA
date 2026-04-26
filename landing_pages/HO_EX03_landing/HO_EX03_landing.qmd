@@ -1,0 +1,42 @@
+---
+title: "Hands-on Exercise 3"
+page-layout: custom
+---
+
+--------------------------------------------------------------------------------
+
+::::::::::::: tech-stack-row
+::::::: gallery-item
+::: huge-number
+1
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX03/images/ho_ex03a_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 3-A]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX03/HO_EX03A.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+2
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX03/images/ho_ex03b_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 3-B]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX03/HO_EX03B.html" class="stretched-link"></a>
+:::::
+:::::::
+:::::::::::::
