@@ -3,372 +3,445 @@ title: ""
 page-layout: custom
 ---
 
-::: panel-tabset
-
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: panel-tabset
 ## Expeditions
 
-::: center-row
-::: gallery-item
+::::::::::::::::::::::::::::::::::::::::::::::::::::: center-row
+::::::: gallery-item
 ::: huge-number
 1
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('HO_EX/HO_EX01/images/ho_ex01_poster.png');"}
 :::
+
 ::: poster-info
 [Hands-on Exercise 1]{.poster-label}
 :::
-<a href="HO_EX/HO_EX01/HO_EX01.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="HO_EX/HO_EX01/HO_EX01.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 2
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('HO_EX/HO_EX02/images/ho_ex02_poster.png');"}
 :::
+
 ::: poster-info
 [Hands-on Exercise 2]{.poster-label}
 :::
-<a href="HO_EX/HO_EX02/HO_EX02.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="HO_EX/HO_EX02/HO_EX02.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 3
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=CLICK+HERE');"}
 :::
+
 ::: poster-info
 [Hands-on Exercise 3]{.poster-label}
 :::
-<a href="landing_pages/HO_EX03_landing/HO_EX03_landing.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="landing_pages/HO_EX03_landing/HO_EX03_landing.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 4
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Hands-on Exercise 4]{.poster-label}
 :::
-<a href="HO_EX/HO_EX04/HO_EX04.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="HO_EX/HO_EX04/HO_EX04.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 5
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Hands-on Exercise 5]{.poster-label}
 :::
-<a href="HO_EX/HO_EX05/HO_EX05.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="HO_EX/HO_EX05/HO_EX05.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 6
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Hands-on Exercise 6]{.poster-label}
 :::
-<a href="HO_EX/HO_EX06/HO_EX06.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="HO_EX/HO_EX06/HO_EX06.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 7
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Hands-on Exercise 7]{.poster-label}
 :::
-<a href="HO_EX/HO_EX07/HO_EX07.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="HO_EX/HO_EX07/HO_EX07.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 8
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Hands-on Exercise 8]{.poster-label}
 :::
-<a href="HO_EX/HO_EX08/HO_EX08.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="HO_EX/HO_EX08/HO_EX08.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 9
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Hands-on Exercise 9]{.poster-label}
 :::
-<a href="HO_EX/HO_EX09/HO_EX09.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="HO_EX/HO_EX09/HO_EX09.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 10
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Hands-on Exercise 10]{.poster-label}
 :::
+
 <a href="HO_EX/HO_EX10/HO_EX10.html" class="stretched-link"></a>
-:::
-:::
-:::
+:::::
+:::::::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Live Sprints
 
-::: center-row
-::: gallery-item
+::::::::::::::::::::::::::::::::::::::::::::::::::::: center-row
+::::::: gallery-item
 ::: huge-number
 1
 :::
-::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+
+::::: poster-card
+::: {.poster style="background-image: url('IC_EX/IC_EX01.png');"}
 :::
+
 ::: poster-info
 [In-class Exercise 1]{.poster-label}
 :::
-<a href="IC_EX/IC_EX01/IC_EX01.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="https://public.tableau.com/app/profile/charles.ancheta6872/viz/In-classExercise1_17771005719550/Dashboard" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 2
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [In-class Exercise 2]{.poster-label}
 :::
-<a href="IC_EX/IC_EX02/IC_EX02.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="IC_EX/IC_EX02/IC_EX02.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 3
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [In-class Exercise 3]{.poster-label}
 :::
-<a href="IC_EX/IC_EX03/IC_EX03.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="IC_EX/IC_EX03/IC_EX03.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 4
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [In-class Exercise 4]{.poster-label}
 :::
-<a href="IC_EX/IC_EX04/IC_EX04.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="IC_EX/IC_EX04/IC_EX04.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 5
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [In-class Exercise 5]{.poster-label}
 :::
-<a href="IC_EX/IC_EX05/IC_EX05.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="IC_EX/IC_EX05/IC_EX05.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 6
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [In-class Exercise 6]{.poster-label}
 :::
-<a href="IC_EX/IC_EX06/IC_EX06.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="IC_EX/IC_EX06/IC_EX06.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 7
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [In-class Exercise 7]{.poster-label}
 :::
-<a href="IC_EX/IC_EX07/IC_EX07.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="IC_EX/IC_EX07/IC_EX07.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 8
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [In-class Exercise 8]{.poster-label}
 :::
-<a href="IC_EX/IC_EX08/IC_EX08.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="IC_EX/IC_EX08/IC_EX08.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 9
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [In-class Exercise 9]{.poster-label}
 :::
-<a href="IC_EX/IC_EX09/IC_EX09.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="IC_EX/IC_EX09/IC_EX09.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 10
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [In-class Exercise 10]{.poster-label}
 :::
+
 <a href="IC_EX/IC_EX10/IC_EX10.html" class="stretched-link"></a>
-:::
-:::
-:::
+:::::
+:::::::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Deep Dives
 
-::: center-row
-::: gallery-item
+::::::::::::::::::::::: center-row
+::::::: gallery-item
 ::: huge-number
 1
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Take-home Exercise 1]{.poster-label}
 :::
-<a href="TH_EX/TH_EX01/TH_EX01.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="TH_EX/TH_EX01/TH_EX01.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 2
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Take-home Exercise 2]{.poster-label}
 :::
-<a href="TH_EX/TH_EX02/TH_EX02.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="TH_EX/TH_EX02/TH_EX02.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 3
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Take-home Exercise 3]{.poster-label}
 :::
-<a href="TH_EX/TH_EX03/TH_EX03.html" class="stretched-link"></a>
-:::
-:::
 
-::: gallery-item
+<a href="TH_EX/TH_EX03/TH_EX03.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
 ::: huge-number
 4
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Take-home Exercise 4]{.poster-label}
 :::
+
 <a href="TH_EX/TH_EX04/TH_EX04.html" class="stretched-link"></a>
-:::
-:::
-:::
+:::::
+:::::::
+:::::::::::::::::::::::
 
 ## The Masterpiece
 
-::: center-row
-::: {.gallery-item .masterpiece-card}
+:::::::: center-row
+::::::: {.gallery-item .masterpiece-card}
 ::: huge-number
 1
 :::
-::: poster-card
+
+::::: poster-card
 ::: {.poster .masterpiece-poster style="background-image: url('https://placehold.co/600x400/2b2b2b/FFC107?text=Coming+soon');"}
 :::
+
 ::: poster-info
 [Final Project]{.poster-label}
 :::
-<a href="PROJECT/Project01.html" class="stretched-link"></a>
-:::
-:::
-:::
 
-:::
+<a href="PROJECT/Project01.html" class="stretched-link"></a>
+:::::
+:::::::
+::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
