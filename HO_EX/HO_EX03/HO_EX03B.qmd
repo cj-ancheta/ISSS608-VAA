@@ -11,3 +11,535 @@ execute:
   warning: false
 ---
 
+# 1 Overview
+
+When telling a visually-driven data story, animated graphics tend to attract the interest of the audience and make deeper impression than static graphics. In this hands-on exercise, we will learn how to create animated data visualisation by using **gganimate** and **plotly r** packages. At the same time, we will also learn how to:
+
+\(i\) reshape data by using **tidyr** package, and
+
+\(ii\) process, wrangle and transform data by using **dplyr** package.
+
+## 1.1 Basic concepts of animation
+
+When creating animations, the plot does not actually move. Instead, many individual plots are built and then stitched together as movie frames, just like an old-school flip book or cartoon. Each frame is a different plot when conveying motion, which is built using some relevant subset of the aggregate data. The subset drives the flow of the animation when stitched back together.
+
+## 1.2 Terminology
+
+Before we dive into the steps for creating an animated statistical graph, it's important to understand some of the key concepts and terminology related to this type of visualization.
+
+1.  **Frame**: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data.
+
+2.  **Animation Attributes**: The animation attributes are the settings that control how the animation behaves. For example, you can specify the duration of each frame, the easing function used to transition between frames, and whether to start the animation from the current frame or from the beginning.
+
+# 2 Getting Started
+
+::: panel-tabset
+## Installing and loading libraries
+
+We will use p_load from pacman package to check, install and load the following R packages:
+
+| **Package**                                                         | **Description**                                                                                                                                                                                      |
+|--------------------|----------------------------------------------------|
+| [**plotly**](https://plotly.com/r/)                                 | R library for plotting interactive statistical graphs.                                                                                                                                               |
+| [**gganimate**](https://gganimate.com/)                             | An ggplot extension for creating animated statistical graphs                                                                                                                                         |
+| [**gifski**](https://cran.r-project.org/web/packages/gifski/)       | Converts video frames to GIF animations using pngquant's fancy features for efficient cross-frame palettes and temporal dithering. It produces animated GIFs that use thousands of colors per frame. |
+| [**gapminder**](https://cran.r-project.org/web/packages/gapminder/) | An excerpt of the data available at Gapminder.org. We just want to use its *country_colors* scheme.                                                                                                  |
+| [**tidyverse**](https://www.tidyverse.org/)                         | A family of modern R packages specially designed to support data science, analysis and communication task including creating static statistical graphs.                                              |
+| [**ggpp**](https://docs.r4photobiology.info/ggpp/)                  | Supports data labels and annotations for ggplot2.                                                                                                                                                    |
+
+: {tbl-colwidths="\[20,80\]"}
+
+```{r}
+pacman::p_load(readxl, gifski, gapminder, 
+               plotly, gganimate, tidyverse,
+               ggrepel, ggpp)
+```
+
+## Importing Data
+
+In this hands-on exercise, the *Data* worksheet from *GlobalPopulation* Excel workbook will be used.
+
+Write a code chunk to import Data worksheet from GlobalPopulation Excel workbook by using appropriate R package from tidyverse family.
+
+::: panel-tabset
+## mutate_at()
+
+```{r}
+col <- c("Country", "Continent")
+
+globalPop <- read_xls("data/GlobalPopulation.xls",
+                      sheet="Data") %>%
+  mutate_at(col, as.factor) %>%
+  mutate(Year = as.integer(Year))
+```
+
+## across()
+
+```{r}
+#| warning: false
+
+col <- c("Country", "Continent")
+
+globalPop_2 <- read_xls("data/GlobalPopulation.xls",
+                      sheet="Data") %>%
+  mutate(across(col, as.factor)) %>%
+  mutate(Year = as.integer(Year))
+```
+:::
+
+-   [`read_xls()`](https://readxl.tidyverse.org/reference/read_excel.html) of **readxl** package is used to import the Excel worksheet.
+
+-   `mutate_at()` / `across` of dplyr package is used to convert all character data type into factor [for/across multiple columns]{.underline}.
+
+    -   This line applies the **`factor()`** function to each column specified in the **`col`** argument. Character to factor. It takes column indices or column names in strings format as inputs, and returns a data frame with new columns for each column in the input data frame, where each new column is the result of applying the specified function to the corresponding column in the input data frame.
+
+    -   The **`fun`** argument specifies the function to apply to each column, and **`factor(.)`** is a way to specify the **`factor`** works as an argument.
+
+-   `mutate` of dplyr package is used to convert data values of *Year* field into integer.
+
+    -   as.character(x), as.integer(x), as.numeric(x), as.factor(x) (for categorical data)
+
+## Understanding the Data
+
+```{r}
+glimpse(globalPop)
+```
+
+There are 222 unique countries, spanning 6 continents in the dataset.
+
+```{r}
+n_distinct(globalPop$Country)
+```
+
+```{r}
+n_distinct(globalPop$Continent)
+```
+:::
+
+# 3 Animated Data Visualisation: gganimate methods
+
+[**gganimate**](https://gganimate.com/) extends the grammar of graphics as implemented by ggplot2 to include the description of animation. It does this by providing a range of new grammar classes that can be added to the plot object in order to customise how it should change with time.
+
+| Arguments            | Description                                                                                                                           |
+|-----------------|-------------------------------------------------------|
+| `transition_*()`     | Defines how the data should be spread out and how it relates to itself across time, i.e. you want your data to change.                |
+| `view_*()`           | Defines how the positional scales should change along the animation, i.e. you want your viewpoint to change                           |
+| `shadow_*()`         | Defines how data from other points in time should be presented in the given point in time, i.e. you want the animation to have memory |
+| `enter_*()/exit_*()` | Defines how new data should appear and how old data should disappear during the course of the animation.                              |
+| `ease_aes()`         | Defines how different aesthetics should be eased during transitions.                                                                  |
+
+: {tbl-colwidths="\[20,80\]"}
+
+## 3.1 Static population bubble plot
+
+In the code chunk below, the basic ggplot2 functions are used to create a static [bubble plot](https://r-graph-gallery.com/bubble-chart.html). A bubble plot is created when a third numeric variable is assigned to `size =` argument inside a ggplot with geom_point.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+
+p <- ggplot(data= globalPop,
+       aes(x= Old,
+           y=Young,
+           size= Population,
+           color=Country)) +
+  geom_point(alpha = 0.7,
+             show.legend = FALSE) +
+  scale_color_manual(values=country_colors) +  #<<< 'country_colors' from Gapminder lib
+  scale_size(range= c(2,12)) +
+  labs(title = "Age Distribution Across Time",
+      subtitle ='Year: {frame_time}',
+       x = '% Aged',
+       y= '% Young')
+
+p
+```
+
+-   The **`scale_size(range= c(2,12))`** sets the range of point sizes to be used in the plot to between 2 and 12.
+
+-   `Population` is mapped to `size` aes in `ggplot`, thus this range parameter controls the min and max size of the points.
+
+**Using `scale_color_viridis_d()`** :
+
+The code below uses `scale_color_viridis_d()` discrete colour scale instead, and does not require Gapminder package to be loaded.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+
+p2 <- ggplot(data= globalPop,
+       aes(x= Old,
+           y=Young,
+           size= Population,
+           color=Country)) +
+  geom_point(alpha = 0.7,
+             show.legend = FALSE) +
+  scale_color_viridis_d(option="plasma")+    #<<<
+  scale_size(range= c(2,12)) +
+  labs(title = "Age Distribution Across Time",
+      subtitle ='Year: {frame_time}',
+       x = '% Aged',
+       y= '% Young')
+
+p2
+```
+
+## 3.2 Animated bubble plot
+
+Now you can incorporate the animation into a basic ggplot graph. Take note that when you run this code, the visual takes some time to render. This is because RStudio is creating a gif representation of your animated chart.
+
+::: panel-tabset:
+## Basic
+
+In the code chunk below,
+
+-   [`transition_time()`](https://gganimate.com/reference/transition_time.html) of **gganimate** is used to create transition through a **continuous variable**, where there are distinct states in time (i.e. *Year*).
+
+-   [`ease_aes()`](https://gganimate.com/reference/ease_aes.html) is used to control easing of aesthetics. The default is `linear`. Other methods are: quadratic, cubic, quartic, quintic, sine, circular, exponential, elastic, back, and bounce.
+
+**Transition through distinct countries in time**
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+p +
+  transition_time(Year) +
+  ease_aes("linear")
+```
+
+**Using `scale_color_viridis_d()`** :
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+p2 +
+  transition_time(Year) +
+  ease_aes("linear")
+```
+
+## Labelling with `geom_text`
+
+Text geoms are useful for labeling plots. They can be used by themselves as scatterplots or in combination with other geoms, for example, labeling points or for annotating the height of bars. [`geom_text()`](https://ggplot2.tidyverse.org/reference/geom_text.html) adds only text to the plot. [`geom_label()`](https://ggplot2.tidyverse.org/reference/geom_text.html) draws a rectangle behind the text, making it easier to read.
+
+I thought it would be clearer for the `geom_point` and `geom_text` to be placed side-by-side so I won't have to refer to a legend, but the trade-off is a messier overlapped plot.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+pt <- ggplot(data= globalPop,
+       aes(x= Old,
+           y=Young,
+           size= Population,
+           color=Country)) +
+  geom_point(alpha = 0.7,
+             show.legend = FALSE) +
+    scale_color_manual(values=country_colors) + 
+    scale_size(range= c(2,12)) +
+  labs(title = "Age Distribution Across Time",
+      subtitle ='Year: {frame_time}',
+         x = '% Aged',
+         y= '% Young')+
+    geom_text(data=globalPop,        
+            aes(x=Old + 1.2,           
+                y=Young + 1.2,           
+                label=Country,
+                color = "Black",           
+                hjust=0,
+                vjust= 1.2),
+                size=2.5,
+                show.legend = FALSE)
+
+pt
+```
+
+Replacing `geom_text()` with `geom_text_repel()` from our last chapter gives us the following results.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+pr <- ggplot(data= globalPop,
+       aes(x= Old,
+           y=Young,
+           size= Population,
+           color=Country)) +
+  geom_point(alpha = 0.7,
+             show.legend = FALSE) +
+    scale_color_manual(values=country_colors) +  
+    scale_size(range= c(2,12)) +
+  labs(title = "Age Distribution Across Time",
+      subtitle ='Year: {frame_time}',
+         x = '% Aged',
+         y= '% Young')+
+  geom_text_repel(data=globalPop,        
+            aes(x=Old + 1.2,               
+                y=Young + 1.2,        
+                label=Country,
+                color = "Black",        
+                hjust=0,
+                vjust= 1.2),
+            size=2.5,
+            show.legend = FALSE,        
+            max.overlaps=)
+
+pr
+```
+
+`geom_point` with borders no fill with `geom_text_repel` from **ggrepel**
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggplot(data= globalPop,
+       aes(x= Old,
+           y=Young,
+           size= Population,
+           color=Country,
+           label=Country)) +                
+  geom_point(alpha = 0.85,
+             shape=21,
+             stroke =2,
+             show.legend = FALSE) +
+  scale_color_manual(values=country_colors) +
+  scale_size(range= c(2,12)) +
+  labs(title = "Age Distribution Across Time",
+      subtitle ='Year: {frame_time}',
+       x = '% Aged',
+       y= '% Young')+
+  geom_text_repel(data=globalPop,          
+            aes(x=Old + 1.2,              
+                y=Young + 1.2,          
+                label=Country,
+                color = "Black",            
+                hjust=0,
+                vjust= 1.2),
+            size=2.5,
+            show.legend = FALSE,             
+            max.overlaps=)
+```
+
+
+Using`geom_text_s()` from **ggpp**.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggplot(data= globalPop,
+       aes(x= Old,
+           y=Young,
+           size= Population,
+           color=Country,
+           label=Country)) +              
+  geom_point(alpha = 0.7,
+             show.legend = FALSE) +
+  scale_color_manual(values=country_colors) + 
+  scale_size(range= c(2,12)) +
+  labs(title = "Age Distribution Across Time",
+      subtitle ='Year: {frame_time}',
+       x = '% Aged',
+       y= '% Young')+
+  geom_text_s(nudge_x=2, show.legend = FALSE)+
+  expand_limits(x=10)
+```
+
+You can use `anim_save("file_location", plot)` function to export animated chart in GIF format.
+
+```{r}
+#| eval: false 
+
+anim_save(filename="images/animation.gif", pr)
+```
+
+## Making Year more visible **\~WIP**
+
+With the animation, it's more engaging to see how demography has changed over time in different countries. The date is included in the title, but it is omitted from the graph, which prevents the title from being used for other purposes.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggplot(data= globalPop,
+       aes(x= Old,
+           y=Young,
+           size= Population,
+           color=Country)) +
+  geom_point(alpha = 0.7,
+             show.legend = FALSE) +
+  geom_text(aes(x=min(Old),
+                y=min(Young),
+                label=as.factor(Year)),
+            hjust= -1.9,
+            vjust = -7.2,
+            alpha = 0.2,
+            col = "gray",
+            size= 20) +
+  scale_color_manual(values=country_colors) +  
+  scale_size(range= c(2,12)) +
+  labs(title = "Age Distribution Across Time",
+       x = '% Aged',
+       y= '% Young')+
+  geom_text(data=globalPop,               
+            aes(x=Old + 1.2,                
+                y=Young + 1.2,             
+                label=Country,
+                color = "Black",        
+                hjust=0,
+                vjust= 1.2),
+                size=2.5,
+                show.legend = FALSE)
+```
+
+
+## Create facets by continent
+
+Combining with `facet_wrap()` allows us to arrange the plots in a more space efficient manner when we have a single variable with many levels, such as the 6 unique *Continents*.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+p + 
+  facet_wrap(~Continent) +
+  transition_time(Year)
+```
+
+## Let the view follow the data in each frame
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+p + transition_time(Year) +
+  view_follow(fixed_y = TRUE)
+```
+
+## Display preceding frames with a gradual decrease in size
+
+By displaying the most recent frames up to the current, this shadow is intended to create a small wake after data. You can choose to gradually reduce the shadow's size and/or opacity. The duration of the wake is not specified in absolute frames, as this would subject the animation to framerate changes. Rather than that, it is expressed as a percentage of the total duration of the animation.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+p + transition_time(Year) +
+  shadow_wake(wake_length = 0.1, alpha = FALSE)
+```
+
+## Show the original data as background marks
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+p + transition_time(Year) +
+  shadow_mark(alpha = 0.3, size = 0.5)
+```
+:::
+
+## 3.3 Animated Line Graph
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+l <- ggplot(
+  globalPop,
+  aes(Year, Old, group = Continent, color = Continent),
+  ) +
+  geom_line(show.legend = FALSE) +
+  scale_color_viridis_d() +
+  labs(x = "Year", y = "% Aged", title="% Aged Across Years")+
+  geom_text(data=globalPop,              #<<<
+            aes(x=Year,
+                y=Old,
+                label=Continent,
+                color=Continent,
+                hjust=0,
+                size=10),
+                show.legend = FALSE)
+```
+
+### 3.3.1 Reveal data along a given dimension
+
+Reveal by day (x-axis):
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+l + 
+  geom_point() +
+  transition_reveal(Year)
+```
+
+Animation looks jumpy because there are a lot of countries for each continent for every year.
+
+# 4 Animated Data Visualisation: plotly
+
+In **Plotly R** package, both [ggplotly()](https://plotly.com/ggplot2/animations/) and `plot_ly()` support key frame animations through the `frame` argument/aesthetic. They also support an `ids` argument/aesthetic to ensure smooth transitions between objects with the same id (which helps facilitate object constancy).
+
+## 4.1 Building an animated bubble plot: ggplotly() method
+
+The animated bubble plot below includes a play/pause button and a slider component for controlling the animation.
+
+**Note:** - Appropriate ggplot2 functions are used to create a static bubble plot. The output is then saved as an R object called *gg*.
+
+-   `ggplotly()` is then used to convert the R graphic object into an animated svg object.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+
+gg <- ggplot(globalPop, 
+       aes(x = Old, 
+           y = Young, 
+           size = Population, 
+           colour = Country)) +
+  geom_point(aes(size = Population,
+                 frame = Year),
+             alpha = 0.7, 
+             show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  labs(x = '% Aged', 
+       y = '% Young')+
+  theme(legend.position='none')
+
+ggplotly(gg)
+```
+
+Notice that although `show.legend = FALSE` argument was used, the legend still appears on the plot. To overcome this problem, `theme(legend.position='none')` should be used as shown in the plot and code chunk below.
+
+## 4.2 Building an animated bubble plot: plot_ly() method
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+bp <- globalPop %>% 
+  plot_ly( x = ~Old,
+           y= ~Young,
+           color = ~Continent,#<< 6 unique
+           frame= ~Year,
+           text= ~Country,
+           hoverinfo='text',
+           type = 'scatter',
+           mode= 'markers')
+
+
+bp
+```
+
+# 5 References
+
+-   [Getting Started](https://gganimate.com/articles/gganimate.html)
+-   [Building an animation step-by-step with gganimate](https://www.alexcookson.com/post/2020-10-18-building-an-animation-step-by-step-with-gganimate/).
+-   [Creating a composite gif with multiple gganimate panels](https://solarchemist.se/2021/08/02/composite-gif-gganimate/)
