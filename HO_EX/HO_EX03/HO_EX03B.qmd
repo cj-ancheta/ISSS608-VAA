@@ -1,6 +1,6 @@
 ---
 title: "Hands-0n Exercise 3-B:"
-subtitle:  "A Layered Grammar of Graphics - ggplot2 methods"
+subtitle:  "Programming Animated Statistical Graphics with R"
 date: "26 Apr 2026"
 date-modified: "last-modified"
 editor: visual
@@ -456,7 +456,7 @@ l <- ggplot(
   geom_line(show.legend = FALSE) +
   scale_color_viridis_d() +
   labs(x = "Year", y = "% Aged", title="% Aged Across Years")+
-  geom_text(data=globalPop,              #<<<
+  geom_text(data=globalPop,          
             aes(x=Year,
                 y=Old,
                 label=Continent,
@@ -527,7 +527,7 @@ Notice that although `show.legend = FALSE` argument was used, the legend still a
 bp <- globalPop %>% 
   plot_ly( x = ~Old,
            y= ~Young,
-           color = ~Continent,#<< 6 unique
+           color = ~Continent,
            frame= ~Year,
            text= ~Country,
            hoverinfo='text',
