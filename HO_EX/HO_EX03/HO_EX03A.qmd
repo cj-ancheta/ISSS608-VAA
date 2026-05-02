@@ -11,7 +11,6 @@ execute:
   warning: false
 ---
 
-
 # 1 Learning Outcome
 
 In this hands-on exercise, we will learn how to create interactive data visualisation by using functions provided by **ggiraph** and **plotlyr** packages.
@@ -50,11 +49,10 @@ We will also use `datatable()` function of the **DT** package to print the data.
 
 ```{r}
 #| echo: false
-datatable(exam_data, class = 'cell-border stripe', options = list(pageLength = 5))
+datatable(exam_data, options = list(pageLength = 5))
 ```
 
 ```{r}
-glimpse(exam_data)
 summary(exam_data)
 
 ```
@@ -693,7 +691,6 @@ library(gapminder)
 
 p <- ggplot(gapminder, aes(x = gdpPercap, y = lifeExp, color = continent, size = pop)) +
   geom_point(alpha = 0.1) +
-  geom_point(aes(frame = year, ids = country)) +
   scale_x_continuous(trans = "log10")  
 
 ggplotly(p) %>% 
@@ -754,8 +751,6 @@ So, `highlight(ggplotly(p), "plotly_selected")` is taking the ggplotly(p) object
 `crosstalk::bscols()`: particularly useful when working with interactive data visualizations, as it allows for easy linking of different components of the dashboard, such as brushing and highlighting on the plot and filtering on the data table.
 
 # 6 Reference
-
--   Kam, T.S. (2023). [Programming Interactive Data Visualisation with R](https://r4va.netlify.app/chap03).
 
 ## 6.1 ggiraph
 

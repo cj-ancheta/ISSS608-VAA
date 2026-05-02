@@ -1,0 +1,13 @@
+---
+title: "Hands-0n Exercise 4-A:"
+subtitle:  "ggplot2 methods"
+date: "17 Apr 2026"
+date-modified: "last-modified"
+editor: visual
+execute:
+  freeze: auto
+  echo: true
+  eval: true
+  warning: false
+---
+
