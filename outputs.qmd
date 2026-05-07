@@ -47,7 +47,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=CLICK+HERE');"}
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');"}
 :::
 
 ::: poster-info
@@ -64,14 +64,14 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');"}
 :::
 
 ::: poster-info
 [Hands-on Exercise 4]{.poster-label}
 :::
 
-<a href="HO_EX/HO_EX04/HO_EX04.html" class="stretched-link"></a>
+<a href="landing_pages/HO_EX04_landing/HO_EX04_landing.html" class="stretched-link"></a>
 :::::
 :::::::
 

@@ -1,13 +1,76 @@
 ---
-title: "Hands-0n Exercise 4-A:"
-subtitle:  "ggplot2 methods"
-date: "17 Apr 2026"
-date-modified: "last-modified"
-editor: visual
-execute:
-  freeze: auto
-  echo: true
-  eval: true
-  warning: false
+title: "Hands-on Exercise 4"
+page-layout: custom
 ---
 
+--------------------------------------------------------------------------------
+
+::::::::::::: tech-stack-row
+::::::: gallery-item
+::: huge-number
+1
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX04/images/ho_ex04a_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 4-A]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX04/HO_EX04A.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+2
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX04/images/ho_ex04b_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 4-B]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX04/HO_EX04B.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+3
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX04/images/ho_ex04c_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 4-C]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX04/HO_EX04C.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+4
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX04/images/ho_ex04d_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 4-D]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX04/HO_EX04D.html" class="stretched-link"></a>
+:::::
+:::::::
+:::::::::::::

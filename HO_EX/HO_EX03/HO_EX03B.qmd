@@ -33,19 +33,19 @@ Before we dive into the steps for creating an animated statistical graph, it's i
 
 # 2 Getting Started
 
-::: panel-tabset
+:::: panel-tabset
 ## Installing and loading libraries
 
 We will use p_load from pacman package to check, install and load the following R packages:
 
-| **Package**                                                         | **Description**                                                                                                                                                                                      |
-|--------------------|----------------------------------------------------|
-| [**plotly**](https://plotly.com/r/)                                 | R library for plotting interactive statistical graphs.                                                                                                                                               |
-| [**gganimate**](https://gganimate.com/)                             | An ggplot extension for creating animated statistical graphs                                                                                                                                         |
-| [**gifski**](https://cran.r-project.org/web/packages/gifski/)       | Converts video frames to GIF animations using pngquant's fancy features for efficient cross-frame palettes and temporal dithering. It produces animated GIFs that use thousands of colors per frame. |
-| [**gapminder**](https://cran.r-project.org/web/packages/gapminder/) | An excerpt of the data available at Gapminder.org. We just want to use its *country_colors* scheme.                                                                                                  |
-| [**tidyverse**](https://www.tidyverse.org/)                         | A family of modern R packages specially designed to support data science, analysis and communication task including creating static statistical graphs.                                              |
-| [**ggpp**](https://docs.r4photobiology.info/ggpp/)                  | Supports data labels and annotations for ggplot2.                                                                                                                                                    |
+| **Package** | **Description** |
+|----|----|
+| [**plotly**](https://plotly.com/r/) | R library for plotting interactive statistical graphs. |
+| [**gganimate**](https://gganimate.com/) | An ggplot extension for creating animated statistical graphs |
+| [**gifski**](https://cran.r-project.org/web/packages/gifski/) | Converts video frames to GIF animations using pngquant's fancy features for efficient cross-frame palettes and temporal dithering. It produces animated GIFs that use thousands of colors per frame. |
+| [**gapminder**](https://cran.r-project.org/web/packages/gapminder/) | An excerpt of the data available at Gapminder.org. We just want to use its *country_colors* scheme. |
+| [**tidyverse**](https://www.tidyverse.org/) | A family of modern R packages specially designed to support data science, analysis and communication task including creating static statistical graphs. |
+| [**ggpp**](https://docs.r4photobiology.info/ggpp/) | Supports data labels and annotations for ggplot2. |
 
 : {tbl-colwidths="\[20,80\]"}
 
@@ -114,19 +114,19 @@ n_distinct(globalPop$Country)
 ```{r}
 n_distinct(globalPop$Continent)
 ```
-:::
+::::
 
 # 3 Animated Data Visualisation: gganimate methods
 
 [**gganimate**](https://gganimate.com/) extends the grammar of graphics as implemented by ggplot2 to include the description of animation. It does this by providing a range of new grammar classes that can be added to the plot object in order to customise how it should change with time.
 
-| Arguments            | Description                                                                                                                           |
-|-----------------|-------------------------------------------------------|
-| `transition_*()`     | Defines how the data should be spread out and how it relates to itself across time, i.e. you want your data to change.                |
-| `view_*()`           | Defines how the positional scales should change along the animation, i.e. you want your viewpoint to change                           |
-| `shadow_*()`         | Defines how data from other points in time should be presented in the given point in time, i.e. you want the animation to have memory |
-| `enter_*()/exit_*()` | Defines how new data should appear and how old data should disappear during the course of the animation.                              |
-| `ease_aes()`         | Defines how different aesthetics should be eased during transitions.                                                                  |
+| Arguments | Description |
+|----|----|
+| `transition_*()` | Defines how the data should be spread out and how it relates to itself across time, i.e. you want your data to change. |
+| `view_*()` | Defines how the positional scales should change along the animation, i.e. you want your viewpoint to change |
+| `shadow_*()` | Defines how data from other points in time should be presented in the given point in time, i.e. you want the animation to have memory |
+| `enter_*()/exit_*()` | Defines how new data should appear and how old data should disappear during the course of the animation. |
+| `ease_aes()` | Defines how different aesthetics should be eased during transitions. |
 
 : {tbl-colwidths="\[20,80\]"}
 
@@ -324,7 +324,6 @@ ggplot(data= globalPop,
             max.overlaps=)
 ```
 
-
 Using`geom_text_s()` from **ggpp**.
 
 ```{r}
@@ -395,7 +394,6 @@ ggplot(data= globalPop,
                 size=2.5,
                 show.legend = FALSE)
 ```
-
 
 ## Create facets by continent
 
