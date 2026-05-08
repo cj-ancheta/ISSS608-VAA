@@ -129,7 +129,7 @@ Sometimes we would like to have the area under a ridgeline not filled with a sin
 ggplot(exam, 
        aes(x = ENGLISH, 
            y = CLASS,
-           fill = stat(x))) +
+           fill = after_stat(x))) +
   geom_density_ridges_gradient(
     scale = 3,
     rel_min_height = 0.01) +
