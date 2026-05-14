@@ -88,7 +88,7 @@ page-layout: custom
 [Hands-on Exercise 5]{.poster-label}
 :::
 
-<a href="HO_EX/HO_EX05/HO_EX05.html" class="stretched-link"></a>
+<a href="landing_pages/HO_EX05_landing/HO_EX05_landing.html" class="stretched-link"></a>
 :::::
 :::::::
 

@@ -1,0 +1,93 @@
+---
+title: "Hands-on Exercise 5"
+page-layout: custom
+---
+
+--------------------------------------------------------------------------------
+
+::::::::::::: tech-stack-row
+::::::: gallery-item
+::: huge-number
+1
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX05/images/ho_ex05a_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 5-A]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX05HO_EX05A.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+2
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX05/images/ho_ex05b_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 5-B]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX05/HO_EX05B.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+3
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX05/images/ho_ex05c_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 5-C]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX05/HO_EX05C.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+4
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX05/images/ho_ex05d_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 5-D]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX05/HO_EX05D.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+5
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX05/images/ho_ex05e_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 5-E]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX05/HO_EX05E.html" class="stretched-link"></a>
+:::::
+:::::::
+:::::::::::::

@@ -1,0 +1,1562 @@
+---
+title: "Hands_on_Ex05"
+date: "14 May 2026"
+date-modified: "last-modified"
+format: html
+execute:
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+---
+
+### 5A: Building Ternary Plot with R
+
+```{r}
+pacman::p_load(plotly, ggtern, tidyverse)
+```
+
+```{r}
+#Reading the data into R environment
+pop_data <- read_csv("data/respopagsex2000to2018_tidy.csv") 
+```
+
+```{r}
+#Deriving the young, economy active and old measures
+agpop_mutated <- pop_data %>%
+  mutate(`Year` = as.character(Year))%>%
+  spread(AG, Population) %>%
+  mutate(YOUNG = rowSums(.[4:8]))%>%
+  mutate(ACTIVE = rowSums(.[9:16]))  %>%
+  mutate(OLD = rowSums(.[17:21])) %>%
+  mutate(TOTAL = rowSums(.[22:24])) %>%
+  filter(Year == 2018)%>%
+  filter(TOTAL > 0)
+```
+
+```{r}
+#Building the static ternary plot
+ggtern(data=agpop_mutated,aes(x=YOUNG,y=ACTIVE, z=OLD)) +
+  geom_point()
+```
+
+```{r}
+#Building the static ternary plot
+ggtern(data=agpop_mutated, aes(x=YOUNG,y=ACTIVE, z=OLD)) +
+  geom_point() +
+  labs(title="Population structure, 2015") +
+  theme_rgbw()
+```
+
+```{r}
+# reusable function for creating annotation object
+label <- function(txt) {
+  list(
+    text = txt, 
+    x = 0.1, y = 1,
+    ax = 0, ay = 0,
+    xref = "paper", yref = "paper", 
+    align = "center",
+    font = list(family = "serif", size = 15, color = "white"),
+    bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
+  )
+}
+
+# reusable function for axis formatting
+axis <- function(txt) {
+  list(
+    title = txt, tickformat = ".0%", tickfont = list(size = 10)
+  )
+}
+
+ternaryAxes <- list(
+  aaxis = axis("Young"), 
+  baxis = axis("Active"), 
+  caxis = axis("Old")
+)
+
+# Initiating a plotly visualization 
+plot_ly(
+  agpop_mutated, 
+  a = ~YOUNG, 
+  b = ~ACTIVE, 
+  c = ~OLD, 
+  color = I("black"), 
+  type = "scatterternary"
+) %>%
+  layout(
+    annotations = label("Ternary Markers"), 
+    ternary = ternaryAxes
+  )
+```
+
+### 5B: Visual Correlation Analysis
+
+```{r}
+wine <- read_csv("data/wine_quality.csv")
+```
+
+```{r}
+pacman::p_load(corrplot, ggstatsplot, tidyverse)
+```
+
+```{r}
+pairs(wine[,1:11])
+```
+
+```{r}
+pairs(wine[,2:12])
+```
+
+```{r}
+pairs(wine[,2:12], upper.panel = NULL)
+```
+
+```{r}
+pairs(wine[,2:12], lower.panel = NULL)
+```
+
+```{r}
+panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...) {
+usr <- par("usr")
+on.exit(par(usr))
+par(usr = c(0, 1, 0, 1))
+r <- abs(cor(x, y, use="complete.obs"))
+txt <- format(c(r, 0.123456789), digits=digits)[1]
+txt <- paste(prefix, txt, sep="")
+if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+text(0.5, 0.5, txt, cex = cex.cor * (1 + r) / 2)
+}
+
+pairs(wine[,2:12], 
+      upper.panel = panel.cor)
+```
+
+```{r}
+ggstatsplot::ggcorrmat(
+  data = wine, 
+  cor.vars = 1:11,
+  ggcorrplot.args = list(outline.color = "black", 
+                         hc.order = TRUE,
+                         tl.cex = 10),
+  title    = "Correlogram for wine dataset",
+  subtitle = "Four pairs are no significant at p < 0.05"
+)
+```
+
+```{r}
+ggplot.component = list(
+    theme(text=element_text(size=5),
+      axis.text.x = element_text(size = 8),
+      axis.text.y = element_text(size = 8)))
+```
+
+```{r}
+grouped_ggcorrmat(
+  data = wine,
+  cor.vars = 1:11,
+  grouping.var = type,
+  type = "robust",
+  p.adjust.method = "holm",
+  plotgrid.args = list(ncol = 2),
+  ggcorrplot.args = list(outline.color = "black", 
+                         hc.order = TRUE,
+                         tl.cex = 10),
+  annotation.args = list(
+    tag_levels = "a",
+    title = "Correlogram for wine dataset",
+    subtitle = "The measures are: alcohol, sulphates, fixed acidity, citric acid, chlorides, residual sugar, density, free sulfur dioxide and volatile acidity",
+    caption = "Dataset: UCI Machine Learning Repository"
+  )
+)
+```
+
+```{r}
+wine.cor <- cor(wine[, 1:11])
+corrplot(wine.cor)
+```
+
+```{r}
+library(corrplot)
+corrplot(wine.cor, 
+         method = "ellipse") 
+```
+
+```{r}
+corrplot(wine.cor, 
+         method = "ellipse", 
+         type="lower",
+         diag = FALSE,
+         tl.col = "black")
+```
+
+```{r}
+corrplot.mixed(wine.cor, 
+               lower = "ellipse", 
+               upper = "number",
+               tl.pos = "lt",
+               diag = "l",
+               tl.col = "black")
+```
+
+```{r}
+wine.sig = cor.mtest(wine.cor, conf.level= .95)
+```
+
+```{r}
+corrplot(wine.cor,
+         method = "number",
+         type = "lower",
+         diag = FALSE,
+         tl.col = "black",
+         tl.srt = 45,
+         p.mat = wine.sig$p,
+         sig.level = .05)
+```
+
+```{r}
+corrplot.mixed(wine.cor, 
+               lower = "ellipse", 
+               upper = "number",
+               tl.pos = "lt",
+               diag = "l",
+               order="AOE",
+               tl.col = "black")
+```
+
+```{r}
+corrplot(wine.cor, 
+         method = "ellipse", 
+         tl.pos = "lt",
+         tl.col = "black",
+         order="hclust",
+         hclust.method = "ward.D",
+         addrect = 3)
+```
+
+### 5C: Visual Multivariate Analysis with Heatmap
+
+Heatmaps visualise data through variations in colouring. When applied to a tabular format, heatmaps are useful for cross-examining multivariate data, through placing variables in the columns and observation (or records) in rows and colouring the cells within the table. Heatmaps are good for showing variance across multiple variables, revealing any patterns, displaying whether any variables are similar to each other, and for detecting if any correlations exist in-between them.
+
+In this hands-on exercise, we will gain hands-on experience on using R to plot static and interactive heatmap for visualising and analysing multivariate data.
+
+# 2 Getting Starting
+
+::: panel-tabset
+## Installing & Launching R Packages
+
+```{r}
+pacman::p_load(seriation, dendextend, heatmaply, 
+               tidyverse, ggridges, ggtext,
+               patchwork)
+```
+
+## Importing Data
+
+In this hands-on exercise, the data of [World Happiness 2018 report](https://worldhappiness.report/ed/2018/) will be used. The original data set is in Microsoft Excel format. It has been extracted and saved in csv file called **WHData-2018.csv**.
+
+```{r}
+wh <- read_csv("data/WHData-2018.csv")
+```
+
+The output is a tibble data frame called **wh**, with 156 observations (rows) across 12 variables (columns).
+
+```{r}
+glimpse(wh)
+```
+
+```{r}
+n_distinct(wh$Country)
+```
+
+Ultimately, we want a heatmap where the different countires are shown along one axis, the explanatory variables on another aixs, and the shading/intensity of the cells should reflect the magnitude of values.
+
+## Understanding the Variables
+
+### Target Variable
+
+```{r}
+# Calculate Median and Mean values for plotting normal curve
+med_hs <- median(wh$`Happiness score`)
+mean_hs <- mean(wh$`Happiness score`)
+std_hs <- sd(wh$`Happiness score`)
+
+ggplot(
+    wh, 
+    aes(x = `Happiness score`)
+  ) +
+  
+  # Density plot of target variable
+  geom_density(
+    color = "#d18a7d",
+    fill = "#d18a7d",
+    
+  # Adjust bandwidth to reduce smoothness of density plot to reveal variations
+    adjust = .2,
+    alpha = .6
+  ) +
+  
+  # Plot normal curve
+  stat_function(
+    fun = dnorm,
+    args = list(mean = mean_hs,
+                sd = std_hs),
+    col = "#65666a",
+    size = .6
+  ) +
+  
+  # Adding mean line with annotation
+  geom_vline(aes(xintercept = mean_hs, 
+                     ),
+                 color = "#dc7068",
+                 linetype = "dotted",
+                 linewidth = .8,
+                 hjust = 0.6,
+                 size = 3) +
+    annotate(
+      "text", 
+      x = mean_hs-0.3, 
+      y = 0.45,
+      label = paste("Mean: ", round(mean_hs, 2)),
+      color = "#dc7068",
+      size = 3.5
+    ) +
+  
+  # Adding median line with annotation
+  geom_vline(aes(xintercept = med_hs, 
+                     ),
+                 color = "steelblue",
+                 linetype = "dotted",
+                 linewidth = .8,
+                 hjust = 0.6,
+                 size = 3) +  
+
+    annotate(
+      "text", 
+      x = med_hs+0.4, 
+      y = 0.45,
+      label = paste("Median: ", round(med_hs, 2)),
+      color = "steelblue",
+      size = 3.5
+    ) +  
+        
+  # Adding titles, subtitles, and axes labels
+  labs(
+    title = "Uneven Distribution of Happiness Scores",
+    subtitle = "Median and Mean happiness indicators are similar, with various humps noted",
+    x = "Happiness Score"
+  ) +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+```
+
+### Dependent Variables
+
+**Categorical**
+
+```{r}
+ggplot(data = wh, 
+       aes(x = fct_rev(fct_infreq(Region)))) +
+    geom_bar()+
+    ylim(0, 45) + 
+    geom_text(stat="count", 
+      aes(label=paste0(after_stat(count), ", ", 
+      round(after_stat(count)/sum(after_stat(count))*100, 1), "%")),
+      vjust= 0.5,
+      hjust = -0.2,
+      size= 3.5) +
+    labs(x = "Region",
+         y = "No. of Countries",
+         title = "Number of Countries by Region")
+  coord_flip()
+```
+
+**Numerical**
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# Whisker-high
+
+p_wh <- 
+  ggplot(
+    wh, 
+    aes(x = `Whisker-high`)
+  ) +
+  
+  # Density plot of target variable
+  geom_density(
+    color = "#EABEC3",
+    fill = "#EABEC3",
+    
+  # Adjust bandwidth to reduce smoothness of density plot to reveal variations
+    adjust = .2,
+    alpha = .6
+  ) +
+        
+  # Adding titles, subtitles, and axes labels
+  labs(
+    x = "Whisker-High"
+  ) +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_text(face="bold")
+  )
+
+p_wl <- 
+  ggplot(
+    wh, 
+    aes(x = `Whisker-low`)
+  ) +
+  
+  # Density plot of target variable
+  geom_density(
+    color = "#EABEC3",
+    fill = "#EABEC3",
+    
+  # Adjust bandwidth to reduce smoothness of density plot to reveal variations
+    adjust = .2,
+    alpha = .6
+  ) +
+        
+  # Adding titles, subtitles, and axes labels
+  labs(
+    x = "Whisker-Low"
+  ) +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_text(face="bold")
+  )
+
+p_dys <- 
+  ggplot(
+    wh, 
+    aes(x = Dystopia)
+  ) +
+  
+  # Density plot of target variable
+  geom_density(
+    color = "#EABEC3",
+    fill = "#EABEC3",
+    
+  # Adjust bandwidth to reduce smoothness of density plot to reveal variations
+    adjust = .2,
+    alpha = .6
+  ) +
+        
+  # Adding titles, subtitles, and axes labels
+  labs(
+    x = "Dystopia"
+  ) +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_text(face="bold")
+  )
+
+p_gdppc <- 
+  ggplot(
+    wh, 
+    aes(x = `GDP per capita`)
+  ) +
+  
+  # Density plot of target variable
+  geom_density(
+    color = "#EABEC3",
+    fill = "#EABEC3",
+    
+  # Adjust bandwidth to reduce smoothness of density plot to reveal variations
+    adjust = .2,
+    alpha = .6
+  ) +
+        
+  # Adding titles, subtitles, and axes labels
+  labs(
+    x = "GDP Per Capita"
+  ) +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_text(face="bold")
+  )
+
+
+p_social <- 
+  ggplot(
+    wh, 
+    aes(x = `Social support`)
+  ) +
+  
+  # Density plot of target variable
+  geom_density(
+    color = "#EABEC3",
+    fill = "#EABEC3",
+    
+  # Adjust bandwidth to reduce smoothness of density plot to reveal variations
+    adjust = .2,
+    alpha = .6
+  ) +
+        
+  # Adding titles, subtitles, and axes labels
+  labs(
+    x = "Social support"
+  ) +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_text(face="bold")
+  )
+
+p_lifeexp <- 
+  ggplot(
+    wh, 
+    aes(x = `Healthy life expectancy`)
+  ) +
+  
+  # Density plot of target variable
+  geom_density(
+    color = "#EABEC3",
+    fill = "#EABEC3",
+    
+  # Adjust bandwidth to reduce smoothness of density plot to reveal variations
+    adjust = .2,
+    alpha = .6
+  ) +
+        
+  # Adding titles, subtitles, and axes labels
+  labs(
+    x = "Healthy Life Expectancy"
+  ) +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_text(face="bold")
+  )
+
+p_freedom <- 
+  ggplot(
+    wh, 
+    aes(x = `Freedom to make life choices`)
+  ) +
+  
+  # Density plot of target variable
+  geom_density(
+    color = "#EABEC3",
+    fill = "#EABEC3",
+    
+  # Adjust bandwidth to reduce smoothness of density plot to reveal variations
+    adjust = .2,
+    alpha = .6
+  ) +
+        
+  # Adding titles, subtitles, and axes labels
+  labs(
+    x = "Freedom to Make Life Choices"
+  ) +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_text(face="bold")
+  )
+
+
+p_generosity <- 
+  ggplot(
+    wh, 
+    aes(x = Generosity)
+  ) +
+  
+  # Density plot of target variable
+  geom_density(
+    color = "#EABEC3",
+    fill = "#EABEC3",
+    
+  # Adjust bandwidth to reduce smoothness of density plot to reveal variations
+    adjust = .2,
+    alpha = .6
+  ) +
+        
+  # Adding titles, subtitles, and axes labels
+  labs(
+    x = "Generosity"
+  ) +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_text(face="bold")
+  )
+
+
+p_corruption <- 
+  ggplot(
+    wh, 
+    aes(x = `Perceptions of corruption`)
+  ) +
+  
+  # Density plot of target variable
+  geom_density(
+    color = "#EABEC3",
+    fill = "#EABEC3",
+    
+  # Adjust bandwidth to reduce smoothness of density plot to reveal variations
+    adjust = .2,
+    alpha = .6
+  ) +
+        
+  # Adding titles, subtitles, and axes labels
+  labs(
+    x = "Perceptions of Corruption"
+  ) +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.x = element_text(face="bold")
+  )
+
+wrap_plots(p_wh, p_wl, p_dys, p_gdppc, p_social, p_lifeexp, p_freedom, p_generosity, p_corruption) +
+  plot_annotation(title="Uneven Distribution across explanatory variables")
+  
+```
+
+## Data Preparation
+
+### Step 1: Changing Row Names
+
+Next, we need to change the rows by country name instead of row number by using the code chunk below.
+
+```{r}
+row.names(wh) <- wh$Country
+```
+
+### Step 2: Transforming the data frame into a matrix
+
+The data was loaded into a data frame, but it has to be a data matrix to make your heatmap.
+
+The code chunk below will be used to transform **wh** data frame into a data matrix.
+
+```{r}
+wh1 <- dplyr::select(wh, c(3, 7:12))
+wh_matrix <- data.matrix(wh) #Transforms categorial variable into numerical representations.
+```
+:::
+
+# 3 Static Heatmap
+
+There are many R packages and functions can be used to drawing static heatmaps, they are:
+
+-   [heatmap()](https://www.rdocumentation.org/packages/stats/versions/3.6.0/topics/heatmap) of R stats package for simple heatmaps.
+-   [heatmap.2()](https://www.rdocumentation.org/packages/gplots/versions/3.0.1.1/topics/heatmap.2) of **gplots** R package for enhanced heatmaps.
+-   [pheatmap()](https://www.rdocumentation.org/packages/pheatmap/versions/1.0.12/topics/pheatmap) of [**pheatmap**](https://www.rdocumentation.org/packages/pheatmap/versions/1.0.12) R package. **pheatmap** package also known as Pretty Heatmap. The package provides functions to draws pretty heatmaps and provides more control to change the appearance of heatmaps.
+-   [**ComplexHeatmap**](https://bioconductor.org/packages/release/bioc/html/ComplexHeatmap.html) package of **R/Bioconductor** package. The package draws, annotates and arranges complex heatmaps (very useful for genomic data analysis). Full reference guide of the package is available [here](https://jokergoo.github.io/ComplexHeatmap-reference/book/).
+-   [**superheat**](https://cran.r-project.org/web/packages/superheat/) package: A Graphical Tool for Exploring Complex Datasets Using Heatmaps. A system for generating extendable and customizable heatmaps for exploring complex datasets, including big data and data with multiple data types. The full reference guide of the package is available [here](https://rlbarter.github.io/superheat/).
+
+## 3.1 heatmap() of R Stats
+
+::: panel-tabset
+## Basic Heatmap
+
+```{r}
+par(bg = "#f5f5f5")
+
+wh_heatmap <- heatmap(wh_matrix,
+                      Rowv=NA, Colv=NA)
+```
+
+**Notes from Code Chunk**
+
+By default, `heatmap()` plots a cluster heatmap. The arguments `Rowv=NA` and `Colv=NA` are used to switch off the option of plotting the row and column dendrograms.
+
+## Cluster Heatmap
+
+```{r}
+par(bg = "#f5f5f5")
+
+wh_heatmap <- heatmap(wh_matrix)
+```
+
+**Notes from Code Chunk** - The order of both rows and columns is different compare to the native **wh_matrix**. This is because heatmap do a reordering using clusterisation: it calculates the distance between each pair of rows and columns and try to order them by similarity. Moreover, the corresponding dendrogram are provided beside the heatmap.
+
+**Insights** - This heatmap is hard to interpret since we are unable to see colours between the opposing ends of the range of the values. - Happiness Score variable have relatively higher values, which makes that the other variables with small values all look the same. Thus, we need to normalize this matrix to "scale" our data. It can be applied to rows or to columns.
+
+## Normalised Heatmap
+
+```{r}
+par(bg = "#f5f5f5")
+
+wh_heatmap <- heatmap(wh_matrix,
+                      scale="column",
+                      cexRow = 0.6, 
+                      cexCol = 0.8,
+                      margins = c(10, 4))
+```
+
+**Notes from Code Chunk**
+
+-   Notice that the values are scaled now.
+-   `Margins` argument is used to ensure that the entire x-axis labels are displayed completely
+-   `cexRow` and `cexCol` arguments are used to define the font size used for y-axis and x-axis labels respectively.
+
+:::
+
+# 4 Interactive Heatmap
+
+[**heatmaply**](http://talgalili.github.io/heatmaply/) is an R package for building interactive cluster heatmap that can be shared online as a stand-alone HTML file. It is designed and maintained by Tal Galili.
+
+## 4.1 Working with **heatmaply**
+
+```{r}
+head(mtcars,5)
+```
+
+```{r}
+heatmaply(mtcars)
+```
+
+The code chunk below shows the basic syntax needed to create an interactive heatmap by using **heatmaply** package.
+
+```{r}
+heatmaply(wh_matrix[, -c(1, 2, 4, 5)], #<<< Removes Country, Region, Whisker-High/Low
+          fontsize_col = 7,
+          fontsize_row = 4,
+          margins = c(60,130,10,10))  
+```
+
+Note that:
+
+-   Different from *heatmap()*, for *heatmaply()* the default horizontal dendrogram is placed on the left hand side of the heatmap.
+-   The text label of each raw, on the other hand, is placed on the right hand side of the heat map.
+-   When the x-axis marker labels are too long, they will be rotated by 135 degree from the north.
+
+## 4.2 Data transformation
+
+When analysing multivariate data set, it is very common that the variables in the data sets includes values that reflect different types of measurement. In general, these variables' values have their own range. In order to ensure that all the variables have comparable values, data transformation are commonly used before clustering.
+
+Three main data transformation methods are supported by *heatmaply()*, namely:
+
+-   **scale,**
+-   **normalise and**
+-   **percentilise.**
+
+### 4.2.1 Scaling method
+
+When all variables are came from or assumed to come from some **normal distribution**, then scaling (i.e.: subtract the mean and divide by the standard deviation) would bring them all close to the standard normal distribution.
+
+-   In such a case, each value would reflect the ***distance from the mean in units*** of standard deviation.
+-   The *scale* argument in *heatmaply()* supports column and row scaling.
+
+The code chunk below is used to scale variable values column-wise.
+
+```{r}
+heatmaply(wh_matrix[, -c(1, 2, 4, 5)],
+          fontsize_col = 7,
+          fontsize_row = 4,          
+          scale = "column")
+```
+
+### 4.2.2 Normalising method
+
+When variables in the data comes from possibly different (and non-normal) distributions, the normalize function can be used to bring data to the 0 to 1 scale by subtracting the minimum and dividing by the maximum of all observations.
+
+-   This preserves the shape of each variable's distribution while making them easily comparable on the same "scale".
+
+Different from Scaling, the normalise method is performed on the input data set i.e. *wh_matrix* as shown in the code chunk below.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          fontsize_col = 7,
+          fontsize_row = 4)
+```
+
+### 4.2.3 Percentising method
+
+-   This is similar to ranking the variables, but instead of keeping the rank values, divide them by the maximal rank.
+-   This is done by using the ecdf of the variables on their own values, bringing each value to its empirical percentile.
+-   The benefit of the `percentize` function is that each value has a relatively clear interpretation, it is the percent of observations that got that value or below it.
+
+Similar to Normalize method, the Percentize method is also performed on the input data set i.e.*wh_matrix* as shown in the code chunk below.
+
+```{r}
+heatmaply(percentize(wh_matrix[, -c(1, 2, 4, 5)]),
+          fontsize_col = 7,
+          fontsize_row = 4)
+```
+
+## 4.3 Clustering algorithm
+
+**heatmaply** supports a variety of hierarchical clustering algorithm. The main arguments provided are:
+
+-   *distfun*: function used to compute the distance (dissimilarity) between both rows and columns. Defaults to dist. The options "pearson", "spearman" and "kendall" can be used to use correlation-based clustering, which uses as.dist(1 - cor(t(x))) as the distance metric (using the specified correlation method).
+-   *hclustfun*: function used to compute the hierarchical clustering when *Rowv* or *Colv* are not dendrograms. Defaults to *hclust*.
+-   *dist_method* default is NULL, which results in "euclidean" to be used. It can accept alternative character strings indicating the method to be passed to distfun. By default *distfun* is "dist"" hence this can be one of "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski".
+-   *hclust_method* default is NULL, which results in "complete" method to be used. It can accept alternative character strings indicating the method to be passed to *hclustfun*. By default hclustfun is hclust hence this can be one of "ward.D", "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) or "centroid" (= UPGMC).
+
+In general, a clustering model can be calibrated either manually or statistically.
+
+### 4.3.1 Manual approach
+
+In the code chunk below, the heatmap is plotted by using hierachical clustering algorithm with "Euclidean distance" and "ward.D" method.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          dist_method = "euclidean",
+          hclust_method = "ward.D",
+          fontsize_col = 7,
+          fontsize_row = 4)
+```
+
+### 4.3.2 Statistical approach
+
+In order to determine the best clustering method and number of cluster the *dend_expend()* and *find_k()* functions of **dendextend** package will be used.
+
+**Step 1: Determine Clustering Method** First, the *dend_expend()* will be used to determine the recommended clustering method to be used.
+
+```{r}
+wh_d <- dist(normalize(wh_matrix[, -c(1, 2, 4, 5)]), method = "euclidean")  #<< finding distance matrix 
+
+dend_expend(wh_d)[[3]]
+```
+
+The output table shows that "average" method should be used because it gave the **highest optimum value**.
+
+**Step 2: Determine Optimal \# of Clusters** Next, *find_k()* is used to determine the optimal number of cluster.
+
+```{r}
+wh_clust <- hclust(wh_d, method = "average")
+num_k <- find_k(wh_clust)
+plot(num_k)
+```
+
+Figure above shows that **k=3** would be optimal.
+
+With reference to the statistical analysis results, we can prepare the code chunk as shown below.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          dist_method = "euclidean",
+          hclust_method = "average",
+          k_row = 3,
+          fontsize_col = 7,
+          fontsize_row = 4
+          )
+```
+
+## 4.4 Seriation
+
+In heatmap, every cell gets a colour, the higher the number the brighter the colour. Unfortunately, this is often a fairly unrewarding exercise, yielding graphics that look like plaid or tartan fabric. Part of the problem is that the rows and columns of a dataset often have no natural ordering, such as time, and are instead shown in alphabetical order, or else the dataset is sorted by one of the rows or columns, rather than in an order which makes patterns pop out visually.
+
+The default options is `OLO` (Optimal leaf ordering) which optimizes the above criterion (in O(n\^4)). Another option is `GW` (Gruvaeus and Wainer) which aims for the same goal but uses a potentially faster heuristic. The option `mean` gives the output we would get by default from heatmap functions in other packages such as **gplots::heatmap.2**. The option `none` gives us the dendrograms without any rotation that is based on the data matrix.
+
+A less technical write-up on agglomerative clustering/seriation found [here](https://nicolas.kruchten.com/content/2018/02/seriation/).
+
+::: panel-tabset
+## OLO
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          seriate = "OLO",
+          fontsize_col = 7,
+          fontsize_row = 4)
+```
+
+## Default
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          seriate = "GW",
+          fontsize_col = 7,
+          fontsize_row = 4)
+```
+
+## Mean
+
+The option "mean" gives the output we would get by default from heatmap functions in other packages such as gplots::heatmap.2.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          seriate = "mean",
+          fontsize_col = 7,
+          fontsize_row = 4
+          )
+```
+
+## None
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          seriate = "none",
+          fontsize_col = 7,
+          fontsize_row = 4
+          )
+```
+:::
+
+This serves as a compelling example of why it is essential to consider the capabilities and limitations of the human visual system when creating data visualizations. Simply converting numbers into graphics isn't sufficient. Both the shuffled and organized heatmaps depicted the same data, but it's crucial to organize the visual elements in a way that allows the human eye to perceive patterns effectively. Heatmaps, in particular, demonstrate that we can discern patterns more easily when they are presented in a spatially continuous manner. Our ability to interpret data is significantly influenced by the arrangement and proximity of the information displayed.
+
+## 4.5 Working with colour palettes
+
+The default colour palette uses by **heatmaply** is *viridis*. heatmaply users, however, can use other colour palettes in order to improve the aestheticness and visual friendliness of the heatmap.
+
+In the code chunk below, the Blues colour palette of rColorBrewer is used.
+
+```{r}
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          dist_method = "euclidean",
+          hclust_method = "average",
+          k_row = 3, 
+          seriate = "OLO",
+          colors = Blues,
+          fontsize_col = 7,
+          fontsize_row = 4
+          )
+```
+
+## 4.6 Aesthetic Changes
+
+Beside providing a wide collection of arguments for meeting the statistical analysis needs, *heatmaply* also provides many plotting features to ensure cartographic quality heatmap can be produced.
+
+In the code chunk below the following arguments are used:
+
+-   *k_row* is used to produce 5 groups.
+-   *margins* is used to change the top margin to 60 and row margin to 200.
+-   *fontsize_row* and *fontsize_col* are used to change the font size for row and column labels to 4.
+-   *main* is used to write the main title of the plot.
+-   *xlab* and *ylab* are used to write the x-axis and y-axis labels respectively.
+
+**Explanation of [margin]{.underline} parameter:** numeric vector of length 4 (default is c(50,50,NA,0)) containing the margins (see layout) for column, row and main title names, respectively. The top margin is NA by default. If main=="" then the top margin will be set to 0, otherwise it will get 30. For a multiline title a larger default for the 3rd element should be set. The right margin is NA by default, meaning it will be zero if row_dend_left is FALSE, or 100 if row_dend_left is TRUE.
+
+```{r}
+#| fig-width: 12
+heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
+          Colv=NA,
+          seriate = "none",
+          colors = Blues,
+          k_row = 5,
+          margins = c(NA,200,60,NA),
+          fontsize_row = 4,
+          fontsize_col = 5,
+          main="World Happiness Score and Variables by Country, 2018 \nDataTransformation using Normalise Method",
+          xlab = "World Happiness Indicators",
+          ylab = "World Countries"
+          )
+```
+
+### 5D: Visual multivariate Analysis with Parallel Coordinates Plot
+
+# 1 Overview
+
+Parallel coordinates plot is a data visualisation specially designed for visualising and analysing multivariate, numerical data. It is ideal for comparing multiple quantitative variables together and seeing the relationships between them. Its strength is that the variables can even be completely different: different ranges and even different units.
+
+# 2 Getting Starting
+
+::: panel-tabset
+## Installing & Launching R Packages
+
+For this exercise, the **GGally**, **parcoords**, **parallelPlot** and **tidyverse** packages will be used.
+
+```{r}
+pacman::p_load(GGally, parallelPlot, tidyverse)
+```
+
+## Importing Data
+
+In this hands-on exercise, the data of [World Happiness 2018 report](https://worldhappiness.report/ed/2018/) will be used. The original data set is in Microsoft Excel format. It has been extracted and saved in csv file called **WHData-2018.csv**.
+
+```{r}
+wh <- read_csv("data/WHData-2018.csv")
+```
+
+The output is a tibble data frame called **wh**, with 156 observations (rows) across 12 variables (columns).
+
+```{r}
+glimpse(wh)
+```
+
+```{r}
+n_distinct(wh$Country)
+```
+:::
+
+# 2 Static Parallel Coordinates Plot
+
+The code chunk below plots a basic parallel coordinate plot.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12)) +
+  labs(title = "Basic Parallel Plot")+
+    theme(
+      plot.title = element_text(hjust=0, family = "Bold"),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(hjust=1, angle=0))  +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+`showPoints = TRUE`and `alphaLines = 0.3` are added to show individual observations and reduce opacity of the lines to reduce visual clutter.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12),
+           showPoints = TRUE,
+           alphaLines = 0.3) +
+  labs(title = "Basic Parallel Plot with Points")+
+    theme(
+      plot.title = element_text(hjust=0, family = "Bold"),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(hjust=1, angle=0))  +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+`groupColumn = "Region"` groups and colours the observations by their Region.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12),
+           groupColumn = "Region") +
+  labs(title = "Basic Parallel Plot, grouped by Region")+
+    theme(
+      plot.title = element_text(hjust=0, family = "Bold"),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(hjust=1, angle=0),
+      legend.text = element_text(size=6),
+      legend.key.width = unit(0.1, "cm"),
+      legend.key.size = unit(0.1, "cm"),
+      legend.position = "bottom") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+The highlighting effect is performed manually by assigning a highlight colour via `scale_color_manual()` to the group of interest, while muting the colours of the other groups in the backdrop.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12),
+           groupColumn = "Region") +
+  labs(title = "Basic Parallel Plot, highlighting a group")+
+    theme(
+      plot.title = element_text(hjust=0, family = "Bold"),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(hjust=1, angle=0),
+      legend.text = element_text(size=6),
+      legend.key.width = unit(0.1, "cm"),
+      legend.key.size = unit(0.1, "cm"),
+      legend.position = "bottom") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) 
+  
+```
+
+## 2.1 Parallel Coordinates with Boxplot
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12), 
+           groupColumn = 2,
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Parallel Coordinates Plot of World Happines Variables") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+::: {.brainbox .brain data-latex="brain"}
+**Things to learn from the code chunk above.**
+
+-   `groupColumn` argument is used to group the observations (i.e. parallel lines) by using a single variable (i.e. Region) and colour the parallel coordinates lines by region name.
+-   `scale` argument is used to scale the variables in the parallel coordinate plot by using `uniminmax` method. The method univariately scale each variable so the minimum of the variable is zero and the maximum is one.
+
+-   `alphaLines` argument is used to reduce the intensity of the line colour to 0.2. The permissible value range is between 0 to 1.
+
+-   `boxplot` argument is used to turn on the boxplot by using logical `TRUE`. The default is `FALSE`.
+
+-   `title` argument is used to provide the parallel coordinates plot a title.
+:::
+
+## 2.2 Parallel coordinates with facet
+
+Since `ggparcoord()` is developed by extending **ggplot2** package, we can combination use some of the ggplot2 function when plotting a parallel coordinates plot.
+
+In the code chunk below, `facet_wrap()` of **ggplot2** is used to plot 10 small multiple parallel coordinates plots. Each plot represent one geographical region such as East Asia.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12), 
+           groupColumn = 2,
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Multiple Parallel Coordinates Plots of World Happines Variables by Region") +
+  facet_wrap(~ Region, labeller = labeller(group = label_wrap_gen(width = 25))) +
+    theme(
+      plot.title = element_text(hjust=0, family = "Bold"),
+      axis.title.x = element_blank(),
+      axis.text.x = element_text(angle=30, hjust=1, size= 6),
+      axis.title.y = element_blank(),
+      strip.text = element_text(size = 8),
+      legend.text = element_text(size=6),
+      legend.key.width = unit(0.1, "cm"),
+      legend.key.size = unit(0.1, "cm"),
+      legend.position = "bottom") 
+```
+
+# 3 Interactive Parallel Coordinates Plot: parallelPlot methods
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+wh <- wh %>%
+  select("Happiness score", c(7:12))
+
+parallelPlot(wh,
+             width = 320,
+             height = 250,
+             rotateTitle = TRUE)
+```
+
+**Interactivity:**
+
+-   Click on a variable of interest, for example Happiness score, the monotonous blue colour (default) will change a blues with different intensity colour scheme will be used.
+
+-   Hover over observation of interest to highlight its trajectory across variables.
+
+## 3.1 Parallel coordinates plot with histogram
+
+In the code chunk below, `histoVisibility` argument is used to plot histogram along the axis of each variables.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+histoVisibility <- rep(TRUE, ncol(wh))
+parallelPlot(wh,
+             rotateTitle = TRUE,
+             histoVisibility = histoVisibility)
+```
+
+
+### 5E: Treemap Visualisation with R
+
+# 1 Overview
+
+A treemap is similar to a pie chart in that it visually displays proportions by varying the area of a shape. A treemap has two useful advantages over a pie chart. First, you can display a lot more elements. In a pie chart, there is an upper-limit to the number of wedges that can be comfortably added to the circle. In a treemap, you can display hundreds, or thousands, of pieces of information. Secondly, a treemap allows you to arrange your data elements hierarchically. That is, you can group your proportions using categorical variables in your data.
+
+In this hands-on exercise, we will gain hands-on experiences on designing treemap using appropriate R packages, including: - Manipulating transaction data into a treemap strcuture by using selected functions provided in **dplyr** package - Plotting static treemap by using **treemap** package - Design interactive treemap by using **d3treeR** package
+
+# 2 Getting Starting
+
+::: panel-tabset
+## Installing & Launching R Packages
+
+For this exercise, the **treemap**, **treemapify**, and **tidyverse** packages will be used.
+
+```{r}
+pacman::p_load(treemap, treemapify, tidyverse) 
+```
+
+## Importing Data
+
+In this hands-on exercise, *REALIS2018.csv* will be used. This dataset provides information of private property transaction records in 2018, and was extracted from [REALIS portal](https://spring.ura.gov.sg/lad/ore/login/index.cfm) of Urban Redevelopment Authority (URA).
+
+```{r}
+realis2018 <- read_csv("data/realis2018.csv")
+```
+
+The output is a tibble data frame called **realis2018**, with 23205 observations (rows) across 20 variables (columns).
+
+```{r}
+glimpse(realis2018)
+```
+
+There are 5 Planning Regions and 40 Planning Areas, 2 types of area; 6 property types, 2 types of sale and 3 purchaser address indicators.
+
+```{r}
+n_distinct(realis2018$`Planning Region`)
+n_distinct(realis2018$`Planning Area`)
+n_distinct(realis2018$`Type of Area`)
+n_distinct(realis2018$`Property Type`)
+n_distinct(realis2018$`Type of Sale`)
+n_distinct(realis2018$`Purchaser Address Indicator`)
+```
+
+## Data Wrangling & Manipulation
+
+The data.frame *realis2018* is in trasaction record form, which is highly disaggregated and not appropriate to be used to plot a treemap. In this section, we will perform the following steps to manipulate and prepare a data.frame that is appropriate for treemap visualisation:
+
+-   group transaction records by *Project Name*, *Planning Region*, *Planning Area*, *Property Type* and *Type of Sale*, and
+
+-   compute *Total Unit Sold*, *Total Area*, *Median Unit Price* and *Median Transacted Price* by applying appropriate summary statistics on *No. of Units*, *Area (sqm)*, *Unit Price (\$ psm)* and *Transacted Price (\$)* respectively.
+
+Two key verbs of **dplyr** package, namely: *group_by()* and *summarise()* will be used to perform these steps.
+
+-   *group_by()* breaks down a data.frame into specified groups of rows. When you then apply the verbs above on the resulting object they'll be automatically applied "by group".
+
+-   Grouping affects the verbs as follows:
+
+-   grouped *select()* is the same as ungrouped *select()*, except that grouping variables are always retained.
+
+-   grouped *arrange()* is the same as ungrouped; unless you set *.by_group = TRUE*, in which case it orders first by the grouping variables.
+
+-   *mutate()* and *filter()* are most useful in conjunction with window functions (like *rank()*, or *min(x) == x*).
+
+-   *sample_n()* and *sample_frac()* sample the specified number/fraction of rows in each group.
+
+-   *summarise()* computes the summary for each group.
+
+In our case, *group_by()* will used together with *summarise()* to derive the summarised data.frame.
+
+```{r}
+realis2018_summarised <- realis2018 %>% 
+  group_by(`Project Name`,`Planning Region`, 
+           `Planning Area`, `Property Type`, 
+           `Type of Sale`) %>%
+  summarise(`Total Unit Sold` = sum(`No. of Units`, na.rm = TRUE), 
+            `Total Area` = sum(`Area (sqm)`, na.rm = TRUE),
+            `Median Unit Price ($ psm)` = median(`Unit Price ($ psm)`, na.rm = TRUE),
+            `Median Transacted Price` = median(`Transacted Price ($)`, na.rm = TRUE))
+```
+
+A quick peep at the end result:
+
+```{r}
+head(realis2018_summarised)
+```
+:::
+
+# 3 Designing Static Treemap with treemap Package
+
+In this section, *treemap()* of **Treemap** package is used to plot a treemap showing the distribution of median unit prices and total unit sold of resale condominium by geographic hierarchy in 2017.
+
+First, we will select records belongs to **resale & condominium** property type from *realis2018_selected* data frame using `filter()`.
+
+```{r}
+realis2018_selected <- realis2018_summarised %>%
+  filter(`Property Type` == "Condominium", `Type of Sale` == "Resale")
+```
+
+## 3.1 Using the basic arguments
+
+The code chunk below designed a treemap by using three core arguments of *treemap()*, namely: *index*, *vSize* and *vColor*.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)"
+        )
+```
+
+**Notes from Code Chunk**
+
+-   `index`: List of categorical variables
+    -   The index vector must consist of at least two column names or else no hierarchy treemap will be plotted.
+    -   If multiple column names are provided, such as the code chunk above, the first name is the highest aggregation level, the second name the second highest aggregation level, and so on.
+-   `vSize`: Quantitative variable
+    -   The column must not contain negative values. This is because it's values will be used to map the sizes of the rectangles of the treemaps.
+
+## 3.2 Working with *vColor* and *type* arguments
+
+For a correctly designed treemap, the colours of the rectagles should be in different intensity showing, in our case, median unit prices.
+
+For *treemap()*, *vColor* is used in combination with the argument *type* to determines the colours of the rectangles. Without defining *type*, like the code chunk above, *treemap()* assumes type = index, in our case, the hierarchy of planning areas.
+
+In the code chunk below, *type* argument is define as value.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type = "value",
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)"
+        )
+```
+
+**Notes from Code Chunk**
+
+-   The rectangles are coloured with different intensity of green, reflecting their respective median unit prices.
+-   The legend reveals that the values are binned into ten bins, i.e. 0-5000, 5000-10000, etc. with an equal interval of 5000.
+
+
+## 3.3 Colours in treemap package
+
+There are two arguments that determine the mapping to color palettes: *mapping* and *palette*.
+
+The only difference between "value" and "manual" is the default value for mapping:
+
+-   "value": considers palette to be a diverging color palette (say ColorBrewer's "RdYlBu"), and maps it in such a way that **0 corresponds to the middle color** (typically white or yellow), -max(abs(values)) to the left-end color, and max(abs(values)), to the right-end color.
+
+-   "manual": simply maps min(values) to the left-end color, max(values) to the right-end color, and mean(range(values)) to the middle color.
+
+::: panel-tabset
+## "Value"-type treemap
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="value",
+        palette="RdYlBu", 
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)"
+        )
+```
+
+**Notes from Code Chunk:**
+
+-   although the colour palette used is RdYlBu but there are no red rectangles in the treemap above. This is because all the median unit prices are positive.
+-   The reason why we see only 5000 to 45000 in the legend is because the *range* argument is by default c(min(values, max(values)) with some pretty rounding.
+
+## "Manual"- type treemap
+
+The "manual" type does not interpret the values as the "value" type does. Instead, the value range is mapped linearly to the colour palette.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="manual",
+        palette="RdYlBu", 
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)"
+        )
+```
+
+**Notes from Code Chunk:**
+
+-   The colour scheme used is very copnfusing. This is because mapping = (min(values), mean(range(values)), max(values)). It is not wise to use diverging colour palette such as RdYlBu if the values are all positive or negative.
+-   To overcome this problem, a single colour palette such as Blues should be used.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="manual",
+        palette="Blues", 
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)"
+        )
+```
+:::
+
+## 3.4 Treemap Layout
+
+*treemap()* supports two popular treemap layouts, namely: "squarified" and "pivotSize". The default is "pivotSize".
+
+-   Squarified treemap algorithm produces good aspect ratios, but ignores the sorting order of the rectangles (sortID).
+
+-   Ordered treemap, pivot-by-size, algorithm takes the sorting order (sortID) into account while aspect ratios are still acceptable.
+
+::: panel-tabset
+## Algorithm argument
+
+The code chunk below plots a squarified treemap by changing the *algorithm* argument.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="manual",
+        palette="Blues", 
+        algorithm = "squarified", #<<<
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)"
+        )
+```
+
+## Using sortID
+
+When "pivotSize" algorithm is used, *sortID* argument can be used to dertemine the order in which the rectangles are placed from top left to bottom right.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+treemap(realis2018_selected,
+        index=c("Planning Region", "Planning Area", "Project Name"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="manual",
+        palette="Blues", 
+        algorithm = "pivotSize",
+        sortID = "Median Transacted Price",
+        title="Resale Condominium by Planning Region and Area, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)"
+        )
+```
+:::
+
+# 4 Designing Static Treemap using treemapify Package
+
+**treemapify** is a R package specially developed to draw treemaps in **ggplot2**.
+
+## 4.1 Designing a basic treemap
+
+**Step 1:** Let's now plot the simple treemap with the help of `ggplot()` and `geom_treemap()` functions.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggplot(data=realis2018_selected, 
+       aes(area = `Total Unit Sold`,
+           fill = `Median Unit Price ($ psm)`),
+       layout = "scol",
+       start = "bottomleft") + 
+  geom_treemap() +
+  scale_fill_gradient(low = "light blue", high = "blue")
+```
+
+## 4.2 **Defining hierarchy**
+
+**Step 2:** Group by Planning Region
+
+The subgrouped tree plot in our example refers to planning region a project is located in. It can be plotted by with the `subgroup()` argument in aesthetics (aes) of the plot in ggplot() function as follows.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggplot(data=realis2018_selected, 
+       aes(area = `Total Unit Sold`,
+           fill = `Median Unit Price ($ psm)`,
+           subgroup = `Planning Region`),
+       start = "topleft") + 
+      geom_treemap()
+```
+
+**Step 3:** Adding boundary line, and title for the plot!
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggplot(data=realis2018_selected, 
+       aes(area = `Total Unit Sold`,
+           fill = `Median Unit Price ($ psm)`,
+           subgroup = `Planning Region`,
+           subgroup2 = `Planning Area`,
+           label = `Planning Region`)) + 
+  geom_treemap() +
+  geom_treemap_subgroup2_border(colour = "gray40",
+                                size = 2) +
+  geom_treemap_subgroup_border(colour = "gray20") +
+  #geom_treemap_text(place = "centre",size = 12, color="white")+
+  labs(title="Customized Tree Plot using ggplot and treemapify in R")  
+
+```
+
+# 5 Designing Interactive Treemap using d3treeR
+
+## 5.1 Installing d3treeR package
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+library(devtools)
+
+install_github("timelyportfolio/d3treeR")
+library(d3treeR)
+```
+
+The codes below perform two processes.
+
+**Step 1:** *treemap()* is used to build a treemap by using selected variables in condominium data.frame. The treemap created is save as object called **tm**.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+tm <- treemap(realis2018_summarised,
+        index=c("Planning Region", "Planning Area"),
+        vSize="Total Unit Sold",
+        vColor="Median Unit Price ($ psm)",
+        type="value",
+        title="Private Residential Property Sold, 2017",
+        title.legend = "Median Unit Price (S$ per sq. m)"
+        )
+```
+
+**Step 2:** `d3tree()` is used to build an interactive treemap.
+
+**Note:** `rootname` becomes the title of the plot
+
+```{r}
+d3tree(tm,rootname = "Singapore" )
+```

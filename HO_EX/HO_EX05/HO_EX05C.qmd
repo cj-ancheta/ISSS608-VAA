@@ -1,0 +1,399 @@
+---
+title: "Hands-0n Exercise 5-C:"
+subtitle:  "Heatmap for Visualising and Analysing Multivariate Data"
+date: "12 May 2026"
+date-modified: "last-modified"
+editor: visual
+execute:
+  freeze: auto
+  echo: true
+  eval: true
+  warning: false
+---
+
+# 1 Overview
+
+Heatmaps visualise data through variations in colouring. When applied to a tabular format, heatmaps are useful for cross-examining multivariate data, through placing variables in the columns and observation (or records) in rows and colouring the cells within the table. Heatmaps are good for showing variance across multiple variables, revealing any patterns, displaying whether any variables are similar to each other, and for detecting if any correlations exist in-between them.
+
+In this hands-on exercise, we will gain hands-on experience on using R to plot static and interactive heatmap for visualising and analysing multivariate data.
+
+# 2 Getting Started
+
+::: panel-tabset
+## Installing & Launching R Packages
+
+```{r}
+pacman::p_load(seriation, dendextend, heatmaply, 
+               tidyverse, ggridges, ggtext,
+               patchwork)
+```
+
+## Importing Data
+
+In this hands-on exercise, the data of [World Happiness 2018 report](https://worldhappiness.report/ed/2018/) will be used. The original data set is in Microsoft Excel format. It has been extracted and saved in csv file called **WHData-2018.csv**.
+
+```{r}
+wh <- read_csv("data/WHData-2018.csv")
+```
+
+```{r}
+glimpse(wh)
+```
+:::
+
+Ultimately, we want a heatmap where the different countries are shown along one axis, the explanatory variables on another axis, and the shading/intensity of the cells should reflect the magnitude of values.
+
+## Understanding the Variables
+
+### Target Variable (Happiness Score)
+
+```{r}
+# Calculate Median and Mean values for plotting normal curve
+med_hs <- median(wh$`Happiness score`)
+mean_hs <- mean(wh$`Happiness score`)
+std_hs <- sd(wh$`Happiness score`)
+
+ggplot(
+    wh, 
+    aes(x = `Happiness score`)
+  ) +
+  geom_density(
+    color = "#d18a7d", fill = "#d18a7d",
+    adjust = .2, alpha = .6
+  ) +
+  stat_function(
+    fun = dnorm,
+    args = list(mean = mean_hs, sd = std_hs),
+    col = "#65666a", linewidth = .6
+  ) +
+  geom_vline(aes(xintercept = mean_hs),
+                 color = "#dc7068", linetype = "dotted", linewidth = .8) +
+    annotate("text", x = mean_hs-0.3, y = 0.45,
+      label = paste("Mean: ", round(mean_hs, 2)), color = "#dc7068", size = 3.5) +
+  geom_vline(aes(xintercept = med_hs),
+                 color = "steelblue", linetype = "dotted", linewidth = .8) +  
+    annotate("text", x = med_hs+0.4, y = 0.45,
+      label = paste("Median: ", round(med_hs, 2)), color = "steelblue", size = 3.5) +  
+  labs(
+    title = "Uneven Distribution of Happiness Scores",
+    subtitle = "Median and Mean happiness indicators are similar, with various humps noted",
+    x = "Happiness Score"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_blank(),
+    plot.title = element_text(face="bold"),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+```
+
+### Dependent Variables
+
+**Categorical**
+
+```{r}
+ggplot(data = wh, 
+       aes(x = fct_rev(fct_infreq(Region)))) +
+    geom_bar(fill = "steelblue", alpha = 0.8)+
+    ylim(0, 45) + 
+    geom_text(stat="count", 
+      aes(label=paste0(after_stat(count), ", ", 
+      round(after_stat(count)/sum(after_stat(count))*100, 1), "%")),
+      vjust= 0.5, hjust = -0.2, size= 3.5) +
+    labs(x = "Region",
+         y = "No. of Countries",
+         title = "Number of Countries by Region") + 
+    theme_minimal() +
+    theme(plot.title = element_text(face="bold")) +
+  coord_flip()
+```
+
+**Numerical Distributions**
+
+**Streamlined EDA with facet_wrap** Instead of manually repeating `ggplot` code 8 times for every single variable, we can use `pivot_longer()` to reshape the data and `facet_wrap()` to plot them all instantly. This is a much cleaner and robust "R-way" of handling multiple distributions.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-width: 10
+#| fig-height: 8
+
+wh %>%
+  select(`Whisker-high`, `Whisker-low`, Dystopia, `GDP per capita`, 
+         `Social support`, `Healthy life expectancy`, 
+         `Freedom to make life choices`, Generosity, `Perceptions of corruption`) %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Value)) +
+  geom_density(color = "#EABEC3", fill = "#EABEC3", adjust = 0.2, alpha = 0.6) +
+  facet_wrap(~ Variable, scales = "free", ncol = 3) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.y = element_blank(),
+    strip.text = element_text(face = "bold")
+  ) +
+  labs(title = "Uneven Distribution across explanatory variables", x = NULL)
+```
+
+::: callout-note
+**Insights**
+
+Range of each variable is different. Whisker-high/low varies between 2 to 8, while variables like generosity and life expectancy range from 0 to 1.
+:::
+
+## Data Preparation
+
+**Modification 2: Robust Matrix Conversion** Instead of forcing row names onto a tibble and using confusing column indices like `wh_matrix[, -c(1, 2, 4, 5)]`, we explicitly select the variables we want and use `column_to_rownames()` to generate a clean, named matrix.
+
+```{r}
+# Extract the Region mapping for row annotations later
+wh_region <- wh %>% select(Country, Region) %>% column_to_rownames("Country")
+
+# Convert the data frame into a matrix strictly containing numerical indicators
+wh_matrix <- wh %>%
+  select(Country, `Happiness score`, `GDP per capita`, `Social support`, 
+         `Healthy life expectancy`, `Freedom to make life choices`, 
+         Generosity, `Perceptions of corruption`, Dystopia) %>%
+  column_to_rownames("Country") %>%
+  as.matrix()
+```
+
+# 3 Static Heatmap
+
+There are many R packages and functions can be used to drawing static heatmaps, they are:
+
+-   [heatmap()](https://www.rdocumentation.org/packages/stats/versions/3.6.0/topics/heatmap) of R stats package for simple heatmaps.
+
+-   [heatmap.2()](https://www.rdocumentation.org/packages/gplots/versions/3.0.1.1/topics/heatmap.2) of **gplots** R package for enhanced heatmaps.
+
+-   [pheatmap()](https://www.rdocumentation.org/packages/pheatmap/versions/1.0.12/topics/pheatmap) of [**pheatmap**](https://www.rdocumentation.org/packages/pheatmap/versions/1.0.12) R package.
+
+## 3.1 heatmap() of R Stats
+
+### Basic Heatmap
+
+```{r}
+wh_heatmap <- heatmap(wh_matrix,
+                      Rowv=NA, Colv=NA)
+```
+
+::: callout-note
+By default, `heatmap()` plots a cluster heatmap. The arguments `Rowv=NA` and `Colv=NA` are used to switch off the option of plotting the row and column dendrograms.
+:::
+
+### Cluster Heatmap
+
+```{r}
+wh_heatmap <- heatmap(wh_matrix)
+```
+
+::: callout-note
+-   This heatmap is hard to interpret since we are unable to see colours between the opposing ends of the range of the values.
+
+-   Happiness Score variable have relatively higher values, which makes that the other variables with small values all look the same. Thus, we need to normalize this matrix to "scale" our data.
+:::
+
+### Normalised Heatmap
+
+```{r}
+wh_heatmap <- heatmap(wh_matrix,
+                      scale="column",
+                      cexRow = 0.6, 
+                      cexCol = 0.8,
+                      margins = c(10, 4))
+```
+
+::: callout-note
+-   Notice that the values are scaled now.
+
+-   `Margins` argument is used to ensure that the entire x-axis labels are displayed completely
+
+-   `cexRow` and `cexCol` arguments are used to define the font size used for y-axis and x-axis labels respectively.
+:::
+
+# 4 Interactive Heatmap
+
+[**heatmaply**](http://talgalili.github.io/heatmaply/) is an R package for building interactive cluster heatmap that can be shared online as a stand-alone HTML file.
+
+## 4.1 Working with **heatmaply**
+
+The code chunk below shows the basic syntax needed to create an interactive heatmap by using **heatmaply** package. Because we cleaned our matrix earlier, we simply pass `wh_matrix`.
+
+```{r}
+heatmaply(wh_matrix, 
+          fontsize_col = 7,
+          fontsize_row = 4,
+          margins = c(60,130,10,10))
+```
+
+## 4.2 Data transformation
+
+Three main data transformation methods are supported by *heatmaply()*, namely: `scale`, `normalize`, and `percentize`.
+
+### 4.2.1 Scaling method
+
+```{r}
+heatmaply(wh_matrix,
+          fontsize_col = 7,
+          fontsize_row = 4,          
+          scale = "column")
+```
+
+### 4.2.2 Normalising method
+
+```{r}
+heatmaply(normalize(wh_matrix),
+          fontsize_col = 7,
+          fontsize_row = 4)
+```
+
+### 4.2.3 Percentising method
+
+```{r}
+heatmaply(percentize(wh_matrix),
+          fontsize_col = 7,
+          fontsize_row = 4)
+```
+
+## 4.3 Clustering algorithm
+
+### 4.3.1 Manual approach
+
+```{r}
+heatmaply(normalize(wh_matrix),
+          dist_method = "euclidean",
+          hclust_method = "ward.D",
+          fontsize_col = 7,
+          fontsize_row = 4)
+```
+
+### 4.3.2 Statistical approach
+
+We can use `dend_expend()` to determine the recommended clustering method, and `find_k()` to determine the optimal number of clusters.
+
+```{r}
+wh_d <- dist(normalize(wh_matrix), method = "euclidean")  
+
+# Find best clustering method
+dend_expend(wh_d)[[3]]
+```
+
+```{r}
+# Find optimum k clusters
+wh_clust <- hclust(wh_d, method = "average")
+num_k <- find_k(wh_clust)
+plot(num_k)
+```
+
+Figure above shows that **k=3** would be optimal.
+
+```{r}
+heatmaply(normalize(wh_matrix),
+          dist_method = "euclidean",
+          hclust_method = "average",
+          k_row = 3,
+          fontsize_col = 7,
+          fontsize_row = 4
+          )
+```
+
+## 4.4 Seriation
+
+### OLO
+
+```{r}
+heatmaply(normalize(wh_matrix),
+          seriate = "OLO",
+          fontsize_col = 7,
+          fontsize_row = 4)
+```
+
+### Default (GW)
+
+```{r}
+heatmaply(normalize(wh_matrix),
+          seriate = "GW",
+          fontsize_col = 7,
+          fontsize_row = 4)
+```
+
+### Mean
+
+```{r}
+heatmaply(normalize(wh_matrix),
+          seriate = "mean",
+          fontsize_col = 7,
+          fontsize_row = 4
+          )
+```
+
+### None
+
+```{r}
+heatmaply(normalize(wh_matrix),
+          seriate = "none",
+          fontsize_col = 7,
+          fontsize_row = 4
+          )
+```
+
+## 4.5 Contextual Aesthetics: Row Colors & Palettes
+
+**Adding Geographic Context with `row_side_colors`** By injecting our previously saved `wh_region` dataframe into the `row_side_colors` parameter, `heatmaply` will append a colored bar along the left axis. This allows us to instantly visualize if certain clusters of variables correlate with specific geographic regions (e.g., are European countries clustering together?).
+
+```{r}
+heatmaply(normalize(wh_matrix),
+          dist_method = "euclidean",
+          hclust_method = "average",
+          k_row = 3, 
+          seriate = "OLO",
+          colors = Blues,
+          row_side_colors = wh_region, #<<< Geographic context added here!
+          fontsize_col = 7,
+          fontsize_row = 4
+          )
+```
+
+## 4.6 Final Customised Presentation
+
+```{r}
+#| fig-width: 12
+heatmaply(normalize(wh_matrix),
+          Colv=NA,
+          seriate = "none",
+          colors = Blues,
+          k_row = 5,
+          margins = c(NA,200,60,NA),
+          fontsize_row = 4,
+          fontsize_col = 5,
+          main="World Happiness Score and Variables by Country, 2018 \nDataTransformation using Normalise Method",
+          xlab = "World Happiness Indicators",
+          ylab = "World Countries"
+          )
+```
+
+# 5 Interactive Correlation Heatmap
+
+**Multivariate Correlation Heatmap** Heatmaps aren't just for clustering records (countries)—they are arguably even more useful for clustering *variables* to see how they correlate with one another. Using `heatmaply_cor()`, we can generate an interactive correlation matrix of the World Happiness indicators.
+
+```{r}
+#| fig-width: 8
+#| fig-height: 8
+
+# Calculate the correlation matrix
+wh_cor <- cor(wh_matrix)
+
+# Plot interactive correlation heatmap
+heatmaply_cor(
+  wh_cor,
+  k_col = 2, 
+  k_row = 2,
+  colors = colorRampPalette(c("#d5695d", "white", "#0072B2"))(100),
+  margins = c(50, 50, 50, 50),
+  main = "Interactive Correlation Matrix of World Happiness Variables"
+)
+```

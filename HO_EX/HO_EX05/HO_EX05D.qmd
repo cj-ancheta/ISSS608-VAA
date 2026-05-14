@@ -1,0 +1,255 @@
+---
+title: "Hands-0n Exercise 5-D:"
+subtitle:  "Heatmap for Visualising and Analysing Multivariate Data"
+date: "12 May 2026"
+date-modified: "last-modified"
+editor: visual
+execute:
+  freeze: auto
+  echo: true
+  eval: true
+  warning: false
+---
+
+# 1 Overview
+
+Parallel coordinates plot is a data visualisation specially designed for visualising and analysing multivariate, numerical data. It is ideal for comparing multiple quantitative variables together and seeing the relationships between them. Its strength is that the variables can even be completely different: different ranges and even different units.
+
+# 2 Getting Started
+
+::: panel-tabset
+## Installing & Launching R Packages
+
+For this exercise, the **GGally**, **parcoords**, **parallelPlot** and **tidyverse** packages will be used.
+
+```{r}
+pacman::p_load(GGally, parallelPlot, tidyverse)
+```
+
+## Importing Data
+
+In this hands-on exercise, the data of [World Happiness 2018 report](https://worldhappiness.report/ed/2018/) will be used. The original data set is in Microsoft Excel format. It has been extracted and saved in csv file called **WHData-2018.csv**.
+
+```{r}
+wh <- read_csv("data/WHData-2018.csv")
+```
+
+The output is a tibble data frame called **wh**, with 156 observations (rows) across 12 variables (columns).
+
+```{r}
+glimpse(wh)
+```
+
+```{r}
+n_distinct(wh$Country)
+```
+:::
+
+# 3 Static Parallel Coordinates Plot
+
+The code chunk below plots a basic parallel coordinate plot.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12)) +
+  labs(title = "Basic Parallel Plot") +
+  theme_minimal() +
+  theme(
+      plot.title = element_text(hjust=0, face = "bold"),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(hjust=1, angle=0)
+  ) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+`showPoints = TRUE` and `alphaLines = 0.3` are added to show individual observations and reduce opacity of the lines to reduce visual clutter.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12),
+           showPoints = TRUE,
+           alphaLines = 0.3) +
+  labs(title = "Basic Parallel Plot with Points") +
+  theme_minimal() +
+  theme(
+      plot.title = element_text(hjust=0, face = "bold"),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(hjust=1, angle=0)
+  ) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+**Viridis Color Palette**
+`groupColumn = "Region"` groups and colours the observations by their Region. We apply `scale_color_viridis_d()` to ensure the color palette is accessible and visually distinct.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12),
+           groupColumn = "Region") +
+  labs(title = "Basic Parallel Plot, grouped by Region") +
+  scale_color_viridis_d() +
+  theme_minimal() +
+  theme(
+      plot.title = element_text(hjust=0, face = "bold"),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(hjust=1, angle=0),
+      legend.text = element_text(size=8),
+      legend.position = "bottom"
+  ) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+The highlighting effect is performed manually by assigning a highlight colour via `scale_color_manual()` to the group of interest, while muting the colours of the other groups in the backdrop.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12),
+           groupColumn = "Region") +
+  labs(title = "Basic Parallel Plot, highlighting a group") +
+  scale_color_manual(values=c("#E8E8E8", "#E8E8E8", "#E8E8E8", "#E8E8E8", 
+                              "#E8E8E8", "#E8E8E8", "#E8E8E8", "#E8E8E8", 
+                              "#E8E8E8", "#69b3a2")) +
+  theme_minimal() +
+  theme(
+      plot.title = element_text(hjust=0, face = "bold"),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(hjust=1, angle=0),
+      legend.text = element_text(size=8),
+      legend.position = "bottom"
+  ) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+## 3.1 Parallel Coordinates with Boxplot
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggparcoord(data = wh, 
+           columns = c(7:12), 
+           groupColumn = 2,
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Parallel Coordinates Plot of World Happines Variables") +
+  scale_color_viridis_d() +
+  theme_minimal() +
+  theme(
+      plot.title = element_text(hjust=0, face = "bold"),
+      axis.title.x = element_blank(),
+      axis.title.y = element_text(hjust=1, angle=0),
+      legend.text = element_text(size=8)
+  ) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+::: callout-note
+-   `groupColumn` argument is used to group the observations (i.e. parallel lines) by using a single variable (i.e. Region) and colour the parallel coordinates lines by region name.
+-   `scale` argument is used to scale the variables in the parallel coordinate plot by using `uniminmax` method. The method univariately scales each variable so the minimum is zero and the maximum is one.
+-   `alphaLines` argument is used to reduce the intensity of the line colour to 0.2.
+-   `boxplot` argument is used to turn on the boxplot by using logical `TRUE`.
+:::
+
+## 3.2 Parallel coordinates with facet
+
+Since `ggparcoord()` is developed by extending **ggplot2** package, we can combine it with some ggplot2 functions when plotting.
+
+In the code chunk below, `facet_wrap()` of **ggplot2** is used to plot 10 small multiple parallel coordinates plots. Each plot represents one geographical region.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-height: 8
+#| fig-width: 10
+
+ggparcoord(data = wh, 
+           columns = c(7:12), 
+           groupColumn = 2,
+           scale = "uniminmax",
+           alphaLines = 0.2,
+           boxplot = TRUE, 
+           title = "Multiple Parallel Coordinates Plots by Region") +
+  facet_wrap(~ Region, labeller = labeller(group = label_wrap_gen(width = 25))) +
+  scale_color_viridis_d() +
+  theme_minimal() +
+  theme(
+      plot.title = element_text(hjust=0, face = "bold"),
+      axis.title.x = element_blank(),
+      axis.text.x = element_text(angle=30, hjust=1, size= 8),
+      axis.title.y = element_blank(),
+      strip.text = element_text(size = 9, face = "bold"),
+      legend.position = "none" # Legend is redundant due to faceting
+  )
+```
+
+# 4 Interactive Parallel Coordinates Plot: parallelPlot methods
+
+**Robust Subset and Responsive Sizing** We clean up the `select()` statement to comply with modern `tidyselect` standards, and we remove the hardcoded dimensions so the plot scales responsively to the user's screen.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# Robustly select the target variables
+wh_interactive <- wh %>%
+  select(`Happiness score`, 7:12)
+
+# Generate the interactive plot with continuous color scaling
+parallelPlot(wh_interactive,
+             rotateTitle = TRUE,
+             continuousCS = "YlOrRd")
+```
+
+**Interactivity:**
+
+-   **Click** on a variable of interest (e.g., Happiness score). The monotonous blue color will dynamically change to a heatmap-style gradient reflecting the values of that specific column.
+-   **Hover** over an observation to highlight its trajectory across all variables.
+-   **Click and drag** vertically along any axis to "brush" the data, filtering the visualization to only show countries within that specific range.
+
+## 4.1 Parallel coordinates plot with histogram
+
+In the code chunk below, `histoVisibility` argument is used to plot histograms along the axis of each variable, instantly revealing the underlying distribution of the data.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+histoVisibility <- rep(TRUE, ncol(wh_interactive))
+
+parallelPlot(wh_interactive,
+             rotateTitle = TRUE,
+             continuousCS = "YlOrRd",
+             histoVisibility = histoVisibility)
+```
+
+**Interactivity:**
+
+-   Click on a variable of interest, for example Happiness score, the monotonous blue colour (default) will change a blues with different intensity colour scheme will be used.
+-   Hover over observation of interest to highlight its trajectory across variables.
+
+## 3.1 Parallel coordinates plot with histogram
+
+In the code chunk below, `histoVisibility` argument is used to plot histogram along the axis of each variables.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+histoVisibility <- rep(TRUE, ncol(wh))
+parallelPlot(wh,
+             rotateTitle = TRUE,
+             histoVisibility = histoVisibility)
+```

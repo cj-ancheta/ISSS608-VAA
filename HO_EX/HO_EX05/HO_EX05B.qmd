@@ -1,0 +1,322 @@
+---
+title: "Hands-0n Exercise 5-B:"
+subtitle:  "Visual Correlation Analysis"
+date: "12 May 2026"
+date-modified: "last-modified"
+editor: visual
+execute:
+  freeze: auto
+  echo: true
+  eval: true
+  warning: false
+---
+
+# 1 Overview
+
+Correlation coefficient is a popular statistic that use to measure the type and strength of the relationship between two variables. The values of a correlation coefficient ranges between -1.0 and 1.0. A correlation coefficient of 1 shows a perfect linear relationship between the two variables, while a -1.0 shows a perfect inverse relationship between the two variables. A correlation coefficient of 0.0 shows no linear relationship between the two variables.
+
+When multivariate data are used, the correlation coefficeints of the pair comparisons are displayed in a table form known as correlation matrix or scatterplot matrix.
+
+1.  First, we will learn how to create correlation matrix using *pairs()* of R Graphics.
+2.  Next, you will learn how to plot corrgram using **corrplot** package of R.
+3.  Lastly, you will learn how to create an interactive correlation matrix using plotly R.
+
+# 2 Getting Started
+
+::: panel-tabset
+## Installing & Launching R Packages
+
+**Expanded Toolset:** I have added `PerformanceAnalytics`, `corrr`, and `heatmaply` to the package load list. These modern packages provide superior alternatives to base R plotting functions and will fulfill the interactive requirements of this exercise.
+
+```{r}
+pacman::p_load(corrplot, ggstatsplot, tidyverse,
+               ggplot2, corrgram, ellipse, GGally,
+               PerformanceAnalytics, corrr, heatmaply)
+```
+
+## Importing Data
+
+In this hands-on exercise, the [Wine Quality Data Set](https://archive.ics.uci.edu/ml/datasets/wine+quality) of UCI Machine Learning Repository will be used. The data set consists of 13 variables and 6497 observations. For the purpose of this exercise, we will combine the red wine and white wine data into one data file.
+
+```{r}
+#Reading the data into R environment
+wine <- read_csv("data/wine_quality.csv")
+```
+
+```{r}
+glimpse(wine)
+```
+:::
+
+# 3 Building Correlation Matrix: *pairs()* method
+
+## 3.1 Basic correlation matrix
+
+Figure below shows the scatter plot matrix of Wine Quality Data. It is a 11x11 matrix.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+pairs(wine[,1:11],
+      main = "Correlation Matrix")
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+pairs(wine[, c("residual_sugar", "pH", "alcohol", "quality")],
+      main = "Correlation Matrix with Selected Variables")
+```
+
+### 3.2 Drawing the lower corner
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+pairs(wine[,2:12], 
+      upper.panel = NULL,
+      main = "Correlation Matrix with Lower Panel")
+```
+
+The code chunk below displays the upper half of the correlation matrix.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+pairs(wine[,2:12], 
+      lower.panel = NULL,
+      main = "Correlation Matrix with Upper Panel")
+```
+
+## 3.3 Including Correlation Coefficients
+
+To show the correlation coefficient of each pair of variables instead of a scatter plot, `panel.cor` function will be used. This will also show higher correlations in a larger font.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...) {
+usr <- par("usr")
+on.exit(par(usr))
+par(usr = c(0, 1, 0, 1))
+r <- abs(cor(x, y, use="complete.obs"))
+txt <- format(c(r, 0.123456789), digits=digits)[1]
+txt <- paste(prefix, txt, sep="")
+if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+text(0.5, 0.5, txt, cex = cex.cor * (1 + r) / 2)
+}
+
+pairs(wine[,2:12], 
+      upper.panel = panel.cor,
+      main = "Correlation Matrix with Correlation Coefficients")
+```
+
+## 3.4 Alternative: Information-Dense Correlation Plot
+
+**`PerformanceAnalytics` Package** \
+*Why this is better:* The base R `pairs()` function requires writing a lot of custom functions (like `panel.cor` above) to be useful. The `chart.Correlation()` function from the `PerformanceAnalytics` package does all of this automatically in a single line of code, displaying scatter plots with loess curves, histograms for distributions, and correlation values with significance stars.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-width: 10
+#| fig-height: 8
+
+# Using a subset of variables so the plot is readable
+chart.Correlation(wine[, c(1, 2, 3, 8, 10, 11)], 
+                  histogram = TRUE, 
+                  pch = 19)
+```
+
+# 4 Visualising Correlation Matrix: *ggcorrmat()* of ggstatplot
+
+In this section, we learn how to visualising correlation matrix by using `ggcorrmat()` of **ggstatsplot** package.
+
+## 4.1 Basic plot
+
+`ggcorrmat()` uses the following default arguments:
+
+-   `matrix.type`= "upper"
+
+-   `sig.level` = 0.05
+
+-   `conf.level` = 0.95
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggstatsplot::ggcorrmat(
+  data = wine, 
+  cor.vars = 1:11,
+  title = "Correlation Matrix",
+  tl.cex = 8,
+  colors = c("#E69F00", "white","#d5695d"),
+  pch = "square cross"
+  )
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggstatsplot::ggcorrmat(
+  data = wine, 
+  cor.vars = 1:11,
+  colors = c("#E69F00", "white","#d5695d"),
+  ggcorrplot.args = list(outline.color = "white", 
+                         hc.order = TRUE,
+                         tl.cex = 8),
+  title = "Correlogram for wine dataset",
+  subtitle = "Four pairs are not significant at p < 0.05"
+)
+```
+
+# 5 Building Multiple Plots
+
+`ggstatsplot` provides a special helper function for grouped analysis: `grouped_ggcorrmat()`. It applies `ggcorrmat()` across all **levels** of a specified **grouping variable** and then combines list of individual plots into a single plot.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+grouped_ggcorrmat(
+  data = wine,
+  cor.vars = 1:11,
+  grouping.var = type,
+  colors = c("#E69F00", "white","#d5695d"),
+  type = "robust",
+  p.adjust.method = "holm",
+  plotgrid.args = list(ncol = 2),
+  ggcorrplot.args = list(outline.color = "black", 
+                         hc.order = TRUE,
+                         tl.cex = 10),
+  annotation.args = list(
+    tag_levels = "a",
+    title = "Correlogram for wine dataset",
+    subtitle = "The measures are: alcohol, sulphates, fixed acidity, citric acid, chlorides, residual sugar, density, free sulfur dioxide and volatile acidity",
+    caption = "Dataset: UCI Machine Learning Repository"
+  )
+)
+```
+
+# 6 Visualising Correlation Matrix using **corrplot** package
+
+## 6.1 Getting started with corrplot
+
+Before we can plot a corrgram using `corrplot()`, we need to compute the correlation matrix of wine data frame.
+
+```{r}
+wine.cor <- cor(wine[, 1:11])
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+corrplot(wine.cor,
+         tl.cex = 0.6)
+```
+
+## 6.2 Customizing Aesthetics & Layout
+
+**Custom Diverging Palettes with `RColorBrewer`** \
+*Why this is better:* The default red/blue color scheme can be harsh. Using custom color palettes makes the visualization softer on the eyes and better aligned with modern dashboard design principles. Here, we define a custom color ramp.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+col_custom <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+
+corrplot(wine.cor, 
+         method = "color", col = col_custom(200),  
+         type = "upper", order = "hclust", 
+         addCoef.col = "black", # Add coefficient of correlation
+         tl.col = "black", tl.srt = 45, # Text label color and rotation
+         diag = FALSE,
+         tl.cex = 0.6, number.cex = 0.5)
+```
+
+## 6.3 Reordering a correlation matrix using hclust
+
+If using **hclust**, `corrplot()` can draw rectangles around the corrgram based on the results of hierarchical clustering. `addrect=` specifies number of clusters.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+corrplot(wine.cor, 
+         method = "ellipse", 
+         tl.pos = "lt",
+         tl.col = "black",
+         tl.srt = 45,
+         tl.cex = 0.6,
+         order="hclust",
+         hclust.method = "ward.D",
+         addrect = 3)
+```
+
+# 7 Network Visualisation of Correlations (`corrr` Package)
+
+**Correlation Networks** \
+*Why this is better:* When dealing with many variables, matrices become difficult to read. The `corrr` package, paired with `ggraph`, allows us to visualize correlations as a network map. Nodes closer together are more highly correlated, and edge thickness/color indicates the strength of the relationship. This is highly intuitive for finding "clusters" of related variables.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-width: 8
+#| fig-height: 6
+
+wine[, 1:11] %>%
+  correlate() %>%
+  network_plot(min_cor = 0.2, # Only show edges with correlation > 0.2
+               colors = c("#d5695d", "white", "#0072B2")) + 
+  labs(title = "Network Plot of Wine Quality Variables")
+```
+
+# 8 Enhancing Pair Plots with GGally
+
+While the base R `pairs()` function is straightforward, it lacks the flexibility and aesthetic appeal of the **ggplot2** package. **GGally** is an extension of **ggplot2** that includes the `ggpairs()` function for creating enhanced pairs plots.
+
+**Alpha Blending for Large Datasets** \
+*Why this is better:* The `wine` dataset has nearly 6,500 observations. When you plot this many points natively, they overlap and form giant blobs of color (overplotting), hiding the true density. By injecting `alpha = 0.2` and reducing the point size, we can actually see where the densest clusters of wines are.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+ggpairs(wine[, c(1, 8, 10, 11, 13)], # Using a subset for faster rendering
+        mapping = aes(color = type),
+        # Applying alpha blending to fix overplotting
+        lower = list(continuous = wrap("points", alpha = 0.2, size = 0.5)),
+        upper = list(continuous = wrap("cor", size = 3))
+        ) +
+    theme_bw() +
+    theme(plot.title = element_text(hjust=0.5, face="bold"))
+```
+
+# 9 Interactive Correlation Matrix (`heatmaply`)
+
+The `heatmaply` package translates static correlation matrices into interactive D3.js web graphics. This allows users to hover over individual cells to see exact correlation values, zoom into specific clusters, and highlight variable paths dynamically.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+#| fig-width: 8
+#| fig-height: 8
+
+heatmaply_cor(
+  cor(wine[, 1:11]),
+  k_col = 2, 
+  k_row = 2,
+  colors = colorRampPalette(c("#d5695d", "white", "#0072B2"))(100),
+  margins = c(50, 50, 50, 50),
+  main = "Interactive Correlation Matrix of Wine Variables"
+)
+```
