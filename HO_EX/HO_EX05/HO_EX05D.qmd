@@ -1,6 +1,6 @@
 ---
 title: "Hands-0n Exercise 5-D:"
-subtitle:  "Heatmap for Visualising and Analysing Multivariate Data"
+subtitle:  "Visual Multivariate Analysis with Parallel Coordinates Plot"
 date: "12 May 2026"
 date-modified: "last-modified"
 editor: visual
@@ -85,8 +85,7 @@ ggparcoord(data = wh,
   scale_x_discrete(guide = guide_axis(n.dodge = 2))
 ```
 
-**Viridis Color Palette**
-`groupColumn = "Region"` groups and colours the observations by their Region. We apply `scale_color_viridis_d()` to ensure the color palette is accessible and visually distinct.
+**Viridis Color Palette** `groupColumn = "Region"` groups and colours the observations by their Region. We apply `scale_color_viridis_d()` to ensure the color palette is accessible and visually distinct.
 
 ```{r}
 #| code-fold: true
