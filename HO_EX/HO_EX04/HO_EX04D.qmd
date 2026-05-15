@@ -103,6 +103,7 @@ In the code chunk above:
 -   `group` in this function is different from the scatterplot. Here, it defines the level of the points to be plotted i.e. Sub-district, District or City. If City is chosen, there are only six data points.
 
 -   By default, `data_type`argument is "SR" (stands for standardised Ratio)
+
 -   `limit`: Plot limits, accepted values are: 95 or 99, corresponding to 95% or 99.8% quantiles of the distribution.
 
 ## 3.2 Makeover 1
