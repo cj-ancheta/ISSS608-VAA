@@ -19,7 +19,7 @@ page-layout: custom
 [Hands-on Exercise 5-A]{.poster-label}
 :::
 
-<a href="/HO_EX/HO_EX05HO_EX05A.html" class="stretched-link"></a>
+<a href="/HO_EX/HO_EX05/HO_EX05A.html" class="stretched-link"></a>
 :::::
 :::::::
 

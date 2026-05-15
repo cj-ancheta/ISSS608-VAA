@@ -81,7 +81,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');"}
 :::
 
 ::: poster-info
