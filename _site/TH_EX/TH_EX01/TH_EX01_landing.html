@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Visual Analytics &amp; Applications – Chart Whisperer</title>
+<title>Take Home Exercise 1 – Chart Whisperer</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,24 +26,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-dc37ba3c1cae6ddf925fd6a821c182b0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-dc37ba3c1cae6ddf925fd6a821c182b0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -71,67 +69,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-latest-posts .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-image','listing-title','listing-subtitle','listing-date',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-latest-posts'] = new List('listing-latest-posts', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed fullcontent quarto-light">
@@ -141,7 +81,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Chart Whisperer</span>
     </a>
   </div>
@@ -152,19 +92,19 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./outputs.html"> <i class="bi bi-rocket-takeoff-fill" role="img">
+    <a class="nav-link" href="../../outputs.html"> <i class="bi bi-rocket-takeoff-fill" role="img">
 </i> 
 <span class="menu-text">Adventure</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./techstack.html"> <i class="bi bi-terminal-fill" role="img">
+    <a class="nav-link" href="../../techstack.html"> <i class="bi bi-terminal-fill" role="img">
 </i> 
 <span class="menu-text">Powered By</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="./about.html"> <i class="bi bi-info-circle-fill" role="img" aria-label="About">
+    <a class="nav-link" href="../../about.html"> <i class="bi bi-info-circle-fill" role="img" aria-label="About">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -188,7 +128,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Visual Analytics &amp; Applications</h1>
+<h1 class="title">Take Home Exercise 1</h1>
 </div>
 
 
@@ -205,74 +145,37 @@ window.Quarto = {
 </header>
 
 
-<div class="grid category-grid">
-<section id="expeditions" class="level3 g-col-12 g-col-md-3 category-card">
-<h3 data-anchor-id="expeditions">Expeditions</h3>
-<p><strong><code>Hands-on Exercises</code></strong></p>
-</section>
-<section id="live-sprints" class="level3 g-col-12 g-col-md-3 category-card">
-<h3 data-anchor-id="live-sprints">Live Sprints</h3>
-<p><strong><code>In-class Exercises</code></strong></p>
-</section>
-<section id="deep-dives" class="level3 g-col-12 g-col-md-3 category-card">
-<h3 data-anchor-id="deep-dives">Deep Dives</h3>
-<p><strong><code>Take-home Exercises</code></strong></p>
-</section>
-<section id="the-masterpiece" class="level3 g-col-12 g-col-md-3 category-card masterpiece-card">
-<h3 data-anchor-id="the-masterpiece">The Masterpiece</h3>
-<p><strong><code>Final Project</code></strong></p>
-</section>
+<hr>
+<div class="tech-stack-row">
+<div class="gallery-item">
+<div class="huge-number">
+<p>1</p>
 </div>
-<section id="latest-deployments" class="level3" style="max-width: 950px; margin: 0 auto;">
-<h3 data-anchor-id="latest-deployments">Latest Deployments:</h3>
-<div id="listing-latest-posts" class="quarto-listing quarto-listing-container-grid">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-listing-file-modified-sort="1779641673926" data-listing-reading-time-sort="22" data-listing-word-count-sort="4334">
-<a href="./TH_EX/TH_EX01/TH_EX01_ES.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 200px;">&nbsp;</div>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Take-home Exercise 1: Visual Analytics for Data Discovery
-</h5>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-listing-file-modified-sort="1779618390972" data-listing-reading-time-sort="1" data-listing-word-count-sort="22">
-<a href="./TH_EX/TH_EX01/TH_EX01_landing.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 200px;">&nbsp;</div>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Take Home Exercise 1
-</h5>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="2" data-listing-date-sort="1779033600000" data-listing-file-modified-sort="1779642084254" data-listing-date-modified-sort="1779642084000" data-listing-reading-time-sort="46" data-listing-word-count-sort="9065">
-<a href="./TH_EX/TH_EX01/TH_EX01_deliverable.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="TH_EX\TH_EX01\TH_EX01_deliverable_files\figure-html\unnamed-chunk-8-1.png" style="height: 200px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Take-home Exercise 1: Visual Analytics for Data Discovery
-</h5>
-<div class="card-subtitle listing-subtitle">
-Mythbusting risk stereotypes in a motor insurance portfolio
-</div>
-<div class="card-attribution card-text-small end">
-<div class="listing-date">
-May 18, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div>
-</section>
+<div class="poster-card">
+<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Technical+Report');">
 
+</div>
+<div class="poster-info">
+<p><span class="poster-label">Exercise 1</span></p>
+</div>
+<p><a href="../../TH_EX/TH_EX01/TH_EX01_deliverable.html" class="stretched-link"></a></p>
+</div>
+</div>
+<div class="gallery-item">
+<div class="huge-number">
+<p>2</p>
+</div>
+<div class="poster-card">
+<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Executive+Summary');">
+
+</div>
+<div class="poster-info">
+<p><span class="poster-label">Executive Summary</span></p>
+</div>
+<p><a href="../../TH_EX/TH_EX01/TH_EX01_ES.html" class="stretched-link"></a></p>
+</div>
+</div>
+</div>
 
 
 
