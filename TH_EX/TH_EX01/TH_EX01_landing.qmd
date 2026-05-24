@@ -1,0 +1,42 @@
+---
+title: "Take Home Exercise 1"
+page-layout: custom
+---
+
+------------------------------------------------------------------------
+
+::::::::::::: tech-stack-row
+::::::: gallery-item
+::: huge-number
+1
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Technical+Report');"}
+:::
+
+::: poster-info
+[Exercise 1]{.poster-label}
+:::
+
+<a href="/TH_EX/TH_EX01/TH_EX01_deliverable.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+2
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Executive+Summary');"}
+:::
+
+::: poster-info
+[Executive Summary]{.poster-label}
+:::
+
+<a href="/TH_EX/TH_EX01/TH_EX01_ES.html" class="stretched-link"></a>
+:::::
+:::::::
+:::::::::::::

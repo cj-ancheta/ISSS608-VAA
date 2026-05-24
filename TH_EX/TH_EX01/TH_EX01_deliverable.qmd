@@ -1,0 +1,1329 @@
+---
+title: "Take-home Exercise 1: Visual Analytics for Data Discovery"
+subtitle: "Mythbusting risk stereotypes in a motor insurance portfolio"
+date: "18 May 2026"
+date-modified: "last-modified"
+editor: visual
+execute:
+  freeze: auto
+  echo: true
+  eval: true
+  warning: false
+  message: false
+format:
+  html:
+    code-fold: true
+    code-overflow: scroll
+    code-summary: "Show the code"
+    code-line-numbers: false
+---
+
+# 1 Introduction
+
+## 1.1 Background
+
+Motor insurers need to know whether poor portfolio results come from a broad deterioration or from a small number of identifiable risk segments. A single loss-ratio total is not sufficient because claim frequency, claim severity, exposure duration, policy design, customer loyalty, vehicle profile, and geography can all produce different underwriting implications.
+
+This report uses visual analytics to investigate a Spanish motor insurance portfolio observed from 2022 to 2024. The analysis is framed as a mythbusting exercise: common stereotypes about insurance risk are tested against the data. The objective is not to build a pricing model. The objective is to discover which beliefs are supported by evidence, which are myths, and which are only partially true.
+
+## 1.2 Analytical Objective
+
+The analysis is organised around 10 research questions aligned with three strategic objectives:
+
+1. **Maximise overall portfolio profitability** by identifying segments where loss ratio, claim frequency, claim severity, or underwriting result point to adverse performance.
+2. **Maximise retention and loyalty among low-risk, highly profitable customers** by testing whether longer-observed customers and favourable behavioural signals are associated with better profitability.
+3. **Identify high-risk segments for appropriately calibrated premium pricing** by separating stereotypes from evidence-backed signals that can support pricing, excess, coverage, renewal, or monitoring actions.
+
+This makes the data wrangling purposeful: only variables needed to test a myth are retained, recoded, or derived. The guiding visual communication principle is **one-look interpretation**. Static charts, small multiples, and dashboards are preferred over animations because stakeholders should be able to compare segments without relying on memory.
+
+## 1.3 Data Sources
+
+Two source files are used:
+
+- `data/Dataset of motor insurance portfolio.csv`: policy-year motor insurance records.
+- `data/Descriptive of variables.xlsx`: variable descriptions and code definitions.
+
+Each row is a policy-year observation. The same insured policy can appear in more than one year.
+
+# 2 Getting Started
+
+## 2.1 R Packages
+
+The package set is selected for reproducible data wrangling, static ggplot-based visual analytics, distribution-aware plots, and statistical validation.
+
+| Package | Purpose |
+|---|---|
+| `tidyverse` | Import, wrangling, plotting, and factor handling. |
+| `readxl` | Import the Excel data dictionary. |
+| `knitr` | Render compact summary tables. |
+| `scales` | Format percentages, currency, and large numbers. |
+| `patchwork` | Combine related plots into one-look dashboards. |
+| `ggdist` | Half-eye and point-interval plots for distributions and uncertainty. |
+| `ggridges` | Ridgeline density plots for ordered-group comparisons. |
+| `ggpubr` | Statistical annotations on selected ggplot charts. |
+| `ggstatsplot` | Statistical ggplot extensions such as `ggbarstats()` and `ggbetweenstats()`. |
+| `viridis` | Colour-blind-friendly palettes. |
+| `broom` | Tidy statistical test results. |
+
+```{r}
+pacman::p_load(
+  tidyverse, readxl, knitr, scales,
+  patchwork, ggdist, ggridges,
+  ggpubr, ggstatsplot, viridis, broom
+)
+
+if ("package:ggtern" %in% search()) {
+  detach("package:ggtern", unload = TRUE, character.only = TRUE)
+}
+
+theme_set(ggplot2::theme_minimal(base_size = 11))
+
+theme_update(
+  plot.title = element_text(face = "bold"),
+  plot.subtitle = element_text(colour = "grey35"),
+  panel.grid.minor = element_blank(),
+  legend.position = "bottom",
+  tern.axis.ticks.length.major = rel(0.5),
+  tern.axis.ticks.length.minor = rel(0.25)
+)
+
+safe_divide <- function(numerator, denominator) {
+  if_else(denominator > 0, numerator / denominator, NA_real_)
+}
+```
+
+## 2.2 Importing the Data
+
+The CSV file is semicolon-delimited, so the delimiter is stated explicitly to prevent silent parsing errors.
+
+```{r}
+portfolio_raw <- read_delim(
+  file = "data/Dataset of motor insurance portfolio.csv",
+  delim = ";",
+  show_col_types = FALSE
+)
+
+dictionary_raw <- read_excel("data/Descriptive of variables.xlsx")
+
+glimpse(portfolio_raw)
+```
+
+```{r}
+cat("Rows:", comma(nrow(portfolio_raw)), "\n")
+cat("Columns:", ncol(portfolio_raw), "\n")
+```
+
+# 3 Research Questions and Feature Map
+
+The report uses exactly 10 research questions. Each question starts with an insurance stereotype, then tests whether the stereotype is real, a myth, or mixed. The questions bridge univariate distribution analysis with bivariate profitability analysis by first asking how common each segment is, then asking whether that segment is profitable.
+
+| No. | Myth to test | Research question | Coverage dimension | Useful features | Best-fit visual method |
+|---:|---|---|---|---|---|
+| 1 | Young drivers are always the worst risks. | Are younger drivers genuinely less profitable than older drivers? | Conventional and demographic | `driver_age_band`, claims, exposure, loss ratio | Ordered KPI bars and ridgeline distribution |
+| 2 | Older vehicles are always riskier. | Does vehicle age increase loss ratio and claim frequency? | Conventional and vehicle factor | `vehicle_age_band`, claims, exposure, loss ratio | Ranked bars and age interaction heatmap |
+| 3 | Comprehensive policies are safer because customers pay more. | Which policy types create the most profitability pressure? | Product and coverage design | `policy_type`, premium, incurred, claims | Ranked bars and profitability-status bars |
+| 4 | Premium brands are the biggest loss drivers. | Are premium vehicle brands less profitable than mainstream brands? | Brand-and-status | `brand_tier`, claim severity, loss ratio | Point interval and severity comparison |
+| 5 | Higher vehicle value always means poorer profitability. | Does vehicle value show a monotonic relationship with loss ratio? | Brand-and-status | `vehicle_value_band`, premium, incurred, claims | Ordered KPI bars |
+| 6 | Bad bonus-score customers are always the worst. | Does bonus score separate profitable and unprofitable customers? | Behavioural and claim history proxy | `bonus_score`, loss ratio, claim frequency | Half-eye + boxplot + aggregate point |
+| 7 | Short-term policies are harmless because exposure is small. | Are short-exposure policies a hidden profitability problem? | Behavioural and exposure pattern | `exposure_band`, loss ratio, cancellation | Ridgeline density with quantile shading |
+| 8 | Loyal customers are just retained volume, not necessarily profitable. | Are longer-observed customers more profitable and worth retaining? | Loyalty and retention | `loyalty_band`, premium, incurred, cancellation | Ranked KPI bars |
+| 9 | Cancelled policies are removed risks, so cancellation is good. | Are cancelled policies actually worse risks than active policies? | Loyalty and policy status | `policy_status`, loss ratio, claim frequency | Stacked bars and density comparison |
+| 10 | Urban areas are always worse than rural areas. | Does geography materially affect frequency, severity, and loss ratio? | Geographic | `circulation_area`, `municipality_type`, `geo_segment` | Point intervals and geography bars |
+
+The selected methods emphasise practical interpretation. A myth is treated as **real** only when the segment has a visible adverse pattern and a meaningful profitability implication. A myth is **busted** when the common stereotype is contradicted by loss ratio, frequency, severity, or materiality. A myth is **mixed** when the stereotype is true for one risk dimension but not for overall profitability.
+
+## 3.1 Visual Analytics Technique Selection Rationale
+
+The visual analytics methods are selected to serve the three strategic objectives. The report therefore avoids using charts only because they are visually interesting. Each method is chosen because it answers a specific underwriting decision question.
+
+| Strategic objective | Analytical need | Technique selected | Rationale |
+|---|---|---|---|
+| Maximise portfolio profitability | Identify which segments are unprofitable and whether the issue is material | `geom_tile()` + `geom_text()` KPI matrices with break-even references where needed | Tile matrices make loss ratio, claim frequency, severity, and premium share comparable without using unsupported bar layers. |
+| Maximise portfolio profitability | Diagnose whether poor results come from frequency, severity, or both | KPI matrices and `stat_pointinterval()` | These methods show frequency, severity, and uncertainty while staying inside the approved ggplot technique set. |
+| Retain low-risk profitable customers | Compare loyalty groups and identify profitable retained segments | `geom_tile()` + `geom_text()` KPI matrices for `loyalty_band` and bonus score | KPI matrices connect retention directly to loss ratio and premium share, showing whether loyal customers are profitable enough to protect. |
+| Retain low-risk profitable customers | Avoid blunt rules that penalise good customers inside broad segments | `stat_halfeye()` + `geom_boxplot()` + pairwise Wilcoxon or `ggbetweenstats()` | Distribution-aware plots show overlap within groups, preventing overconfidence in stereotypes such as age, bonus score, or brand status. |
+| Calibrate premium pricing | Detect hidden tail-risk patterns in short exposure or claimant groups | `geom_density_ridges_gradient()` with quantile shading | Ridgelines compare distribution shape across ordered groups and reveal whether a segment has a heavier adverse tail rather than just a higher mean. |
+| Calibrate premium pricing | Identify interaction risk that univariate charts may hide | `geom_tile()` heatmaps with embedded labels | Heatmaps make two-way combinations, such as driver age by vehicle age, readable at a glance and useful for pricing segmentation. |
+| Calibrate premium pricing | Assess dense numerical signals such as power-to-weight | `geom_hex()` + `geom_smooth(method = "gam")` | Hexbin plots avoid overplotting in large policy-level data, while the GAM smoother shows whether a practical non-linear pattern exists. |
+| Reproducibility and communication | Test categorical myths with statistical context | `ggbarstats()` and `ggbetweenstats()` | These approved ggplot extensions combine visual comparison with statistical evidence for categorical and numeric segment differences. |
+
+These choices also support the mythbusting structure. A myth is not confirmed by one chart alone; it is judged by the combined evidence of segment size, loss ratio, claim frequency, claim severity, and business relevance.
+
+# 4 Data Wrangling
+
+## 4.1 Data Quality Checks
+
+```{r}
+quality_checks <- tibble(
+  check = c(
+    "Duplicated rows",
+    "Rows with missing vehicle age",
+    "Rows with missing licence age",
+    "Rows with missing fuel type",
+    "Rows with missing vehicle value",
+    "Rows with non-positive exposure",
+    "Rows with non-positive total premium"
+  ),
+  count = c(
+    sum(duplicated(portfolio_raw)),
+    sum(is.na(portfolio_raw$vehicle_age)),
+    sum(is.na(portfolio_raw$age_driving_licence)),
+    sum(is.na(portfolio_raw$fuel_type)),
+    sum(is.na(portfolio_raw$vehicle_value)),
+    sum(portfolio_raw$total_exposure <= 0, na.rm = TRUE),
+    sum(portfolio_raw$total_premium <= 0, na.rm = TRUE)
+  )
+)
+
+quality_checks |>
+  mutate(count = comma(count)) |>
+  kable()
+```
+
+The missingness is limited to selected driver and vehicle attributes. These rows are retained because claim, premium, and exposure outcomes remain useful. Unknown or missing categorical values are labelled where necessary rather than removed globally.
+
+## 4.2 Feature Selection and Recoding
+
+Only variables needed for the 10 research questions are retained. Raw code values are recoded into stakeholder-readable labels.
+
+```{r}
+premium_brands <- c(
+  "AUDI", "BMW", "FERRARI", "HUMMER", "INFINITI", "JAGUAR",
+  "LAND ROVER", "LEXUS", "MASERATI", "MERCEDES", "MINI",
+  "PORSCHE", "SAAB", "VOLVO"
+)
+
+portfolio <- portfolio_raw |>
+  select(
+    insured_id, year,
+    policy_type, policy_status, business_type, payment_frequency, bonus_score,
+    driver_age, vehicle_age, fuel_type, vehicle_value, power_to_weight_ratio,
+    vehicle_brand, municipality_type, circulation_area,
+    total_premium, total_claims, total_incurred, total_exposure
+  ) |>
+  mutate(
+    policy_type = recode(
+      policy_type,
+      "TP" = "Third party",
+      "TPG" = "Third party + glass",
+      "CC" = "Third party + add-ons",
+      "COMP_E" = "Comprehensive with excess",
+      "COMP_N" = "Comprehensive without excess"
+    ),
+    policy_type = factor(
+      policy_type,
+      levels = c(
+        "Third party", "Third party + glass", "Third party + add-ons",
+        "Comprehensive with excess", "Comprehensive without excess"
+      )
+    ),
+    policy_status = recode(policy_status, "A" = "Active", "C" = "Cancelled"),
+    business_type = recode(business_type, "NB" = "New business", "P" = "Portfolio"),
+    payment_frequency = recode(
+      payment_frequency,
+      "A" = "Annual", "S" = "Semiannual", "Q" = "Quarterly"
+    ),
+    bonus_score = recode(bonus_score, "G" = "Good", "N" = "Neutral", "B" = "Bad"),
+    bonus_score = factor(bonus_score, levels = c("Good", "Neutral", "Bad")),
+    fuel_type = recode(fuel_type, "D" = "Diesel", "G" = "Gasoline", .missing = "Unknown"),
+    municipality_type = recode(
+      municipality_type,
+      "I" = "Inland", "C" = "Coastal", "IS" = "Islands"
+    ),
+    circulation_area = recode(circulation_area, "U" = "Urban", "R" = "Rural"),
+    vehicle_brand = replace_na(vehicle_brand, "Unknown"),
+    brand_tier = if_else(vehicle_brand %in% premium_brands, "Premium brand", "Mainstream brand"),
+    geo_segment = str_c(municipality_type, " - ", circulation_area),
+    across(
+      c(
+        policy_status, business_type, payment_frequency, fuel_type,
+        municipality_type, circulation_area, vehicle_brand, brand_tier, geo_segment
+      ),
+      as_factor
+    )
+  )
+```
+
+## 4.3 Derived Analytical Variables
+
+Loss ratio is used as the main profitability metric. Claim frequency and claim severity are separated because the underwriting action differs when a segment is high-frequency versus high-severity.
+
+```{r}
+portfolio <- portfolio |>
+  mutate(
+    loss_ratio = safe_divide(total_incurred, total_premium),
+    underwriting_result = total_premium - total_incurred,
+    claim_flag = total_claims > 0,
+    claim_frequency = safe_divide(total_claims, total_exposure),
+    claim_severity = safe_divide(total_incurred, total_claims),
+    profit_status = case_when(
+      total_claims == 0 ~ "No claim",
+      loss_ratio <= 1 ~ "Claim, still profitable",
+      TRUE ~ "Loss-making"
+    ),
+    profit_status = factor(
+      profit_status,
+      levels = c("Loss-making", "Claim, still profitable", "No claim")
+    ),
+    exposure_band = cut(
+      total_exposure,
+      breaks = c(0, 0.35, 0.75, 0.95, Inf),
+      labels = c("Very short (<0.35)", "Short (0.35-0.75)", "Medium (0.75-0.95)", "Full (>0.95)"),
+      include.lowest = TRUE
+    ),
+    driver_age_band = cut(
+      driver_age,
+      breaks = c(17, 25, 35, 45, 55, 65, Inf),
+      labels = c("18-25", "26-35", "36-45", "46-55", "56-65", "66+"),
+      right = TRUE
+    ),
+    vehicle_age_band = cut(
+      vehicle_age,
+      breaks = c(-Inf, 3, 7, 12, 20, Inf),
+      labels = c("0-3", "4-7", "8-12", "13-20", "21+"),
+      right = TRUE
+    ),
+    vehicle_value_band = ntile(vehicle_value, 5),
+    vehicle_value_band = factor(
+      vehicle_value_band,
+      labels = c("Lowest", "Low", "Middle", "High", "Highest")
+    ),
+    same_insured_years = ave(
+      year,
+      insured_id,
+      FUN = function(x) length(unique(x))
+    ),
+    loyalty_band = case_when(
+      same_insured_years >= 3 ~ "Observed all 3 years",
+      same_insured_years == 2 ~ "Observed 2 years",
+      TRUE ~ "Observed 1 year"
+    ),
+    loyalty_band = factor(
+      loyalty_band,
+      levels = c("Observed 1 year", "Observed 2 years", "Observed all 3 years")
+    )
+  )
+
+loss_ratio_cap_99 <- quantile(
+  portfolio$loss_ratio[is.finite(portfolio$loss_ratio)],
+  probs = 0.99,
+  na.rm = TRUE
+)
+
+portfolio <- portfolio |>
+  mutate(loss_ratio_capped_99 = pmin(loss_ratio, loss_ratio_cap_99))
+```
+
+## 4.4 Helper Summary Tables
+
+```{r}
+segment_summary <- function(data, segment_var) {
+  data |>
+    filter(!is.na({{ segment_var }})) |>
+    group_by({{ segment_var }}) |>
+    summarise(
+      policies = n(),
+      exposure = sum(total_exposure, na.rm = TRUE),
+      premium = sum(total_premium, na.rm = TRUE),
+      claims = sum(total_claims, na.rm = TRUE),
+      incurred = sum(total_incurred, na.rm = TRUE),
+      underwriting_result = sum(underwriting_result, na.rm = TRUE),
+      loss_ratio = incurred / premium,
+      claim_frequency = claims / exposure,
+      claim_severity = incurred / claims,
+      claim_rate = mean(claim_flag, na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    arrange(desc(premium))
+}
+
+portfolio_summary <- portfolio |>
+  summarise(
+    policy_years = n(),
+    insured_policies = n_distinct(insured_id),
+    exposure = sum(total_exposure, na.rm = TRUE),
+    premium = sum(total_premium, na.rm = TRUE),
+    claims = sum(total_claims, na.rm = TRUE),
+    incurred = sum(total_incurred, na.rm = TRUE),
+    underwriting_result = sum(underwriting_result, na.rm = TRUE),
+    loss_ratio = incurred / premium,
+    claim_frequency = claims / exposure,
+    claim_severity = incurred / claims
+  )
+
+year_summary <- segment_summary(portfolio, year)
+policy_type_summary <- segment_summary(portfolio, policy_type)
+business_summary <- segment_summary(portfolio, business_type)
+bonus_summary <- segment_summary(portfolio, bonus_score)
+exposure_summary <- segment_summary(portfolio, exposure_band)
+driver_age_summary <- segment_summary(portfolio, driver_age_band)
+vehicle_age_summary <- segment_summary(portfolio, vehicle_age_band)
+vehicle_value_summary <- segment_summary(portfolio, vehicle_value_band)
+brand_tier_summary <- segment_summary(portfolio, brand_tier)
+loyalty_summary <- segment_summary(portfolio, loyalty_band)
+geo_summary <- segment_summary(portfolio, geo_segment)
+
+portfolio_summary |>
+  transmute(
+    `Policy-years` = comma(policy_years),
+    `Insured policies` = comma(insured_policies),
+    Exposure = comma(exposure, accuracy = 1),
+    Premium = dollar(premium, prefix = ""),
+    Incurred = dollar(incurred, prefix = ""),
+    `Underwriting result` = dollar(underwriting_result, prefix = ""),
+    `Loss ratio` = percent(loss_ratio, accuracy = 0.1),
+    `Claim frequency` = number(claim_frequency, accuracy = 0.001),
+    `Claim severity` = dollar(claim_severity, prefix = "")
+  ) |>
+  kable()
+```
+
+The overall portfolio loss ratio is `r percent(portfolio_summary$loss_ratio, accuracy = 0.1)`, with `r comma(portfolio_summary$policy_years)` policy-year records and `r comma(portfolio_summary$claims)` claims.
+
+# 5 Exploratory Data Analysis
+
+## 5.1 Portfolio at a Glance
+
+**Research questions supported:** RQ1 and RQ2.
+
+**Technique justification:** A patchwork dashboard combines the year trend, loss ratio, claim frequency, and underwriting result in one view. This is more intuitive than separate charts because the reader can immediately see whether deterioration is caused by loss ratio movement, claim frequency movement, or exposure scale.
+
+```{r}
+#| fig-width: 12
+#| fig-height: 8
+
+year_long <- year_summary |>
+  select(year, premium, incurred, underwriting_result, loss_ratio, claim_frequency, exposure) |>
+  pivot_longer(
+    cols = c(premium, incurred, underwriting_result, loss_ratio, claim_frequency, exposure),
+    names_to = "measure",
+    values_to = "value"
+  ) |>
+  mutate(
+    measure = recode(
+      measure,
+      "premium" = "Premium",
+      "incurred" = "Incurred loss",
+      "underwriting_result" = "Underwriting result",
+      "loss_ratio" = "Loss ratio",
+      "claim_frequency" = "Claim frequency",
+      "exposure" = "Exposure"
+    ),
+    label = case_when(
+      measure %in% c("Loss ratio") ~ percent(value, accuracy = 0.1),
+      measure %in% c("Claim frequency") ~ number(value, accuracy = 0.001),
+      TRUE ~ label_number(scale_cut = cut_short_scale())(value)
+    )
+  )
+
+ggplot(year_long, aes(x = factor(year), y = measure, fill = value)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(aes(label = label), size = 3.2) +
+  scale_fill_viridis_c(option = "C", labels = label_number(scale_cut = cut_short_scale())) +
+  labs(
+    title = "Portfolio dashboard by year",
+    subtitle = "Tile values keep profitability, frequency, materiality, and financial outcome visible at once",
+    x = "Year",
+    y = NULL,
+    fill = "Value"
+  )
+```
+
+**What this tells us:** The full 2022-2024 history is visible at once. The dashboard separates scale, profitability, and frequency so deterioration can be interpreted as a portfolio-management problem rather than as a single unexplained loss-ratio number.
+
+## 5.2 Executive Triage Map
+
+**Research questions supported:** RQ1 and RQ2.
+
+**Technique justification:** A KPI tile matrix replaces the earlier bubble map so the visual stays within the approved technique list. Claim frequency, claim severity, loss ratio, and premium share are shown together to preserve the triage logic.
+
+```{r}
+#| fig-width: 11
+#| fig-height: 6
+
+triage_tbl <- policy_type_summary |>
+  mutate(
+    premium_share = premium / sum(premium)
+  ) |>
+  select(policy_type, loss_ratio, claim_frequency, claim_severity, premium_share) |>
+  pivot_longer(-policy_type, names_to = "metric", values_to = "value") |>
+  mutate(
+    metric = recode(
+      metric,
+      "loss_ratio" = "Loss ratio",
+      "claim_frequency" = "Claim frequency",
+      "claim_severity" = "Claim severity",
+      "premium_share" = "Premium share"
+    ),
+    label = case_when(
+      metric == "Claim severity" ~ dollar(value, prefix = ""),
+      metric == "Claim frequency" ~ number(value, accuracy = 0.001),
+      TRUE ~ percent(value, accuracy = 0.1)
+    )
+  )
+
+ggplot(triage_tbl, aes(x = metric, y = policy_type, fill = value)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(aes(label = label), size = 3.1) +
+  scale_fill_viridis_c(option = "C", labels = label_number(scale_cut = cut_short_scale())) +
+  labs(
+    title = "Policy-type triage: frequency, severity, profitability, materiality",
+    x = NULL,
+    y = NULL,
+    fill = "Value"
+  )
+```
+
+**What this tells us:** The chart separates frequency problems from severity problems. A policy type with high severity but low frequency needs a different response from a policy type with persistent high claim frequency.
+
+```{r}
+policy_type_summary |>
+  mutate(review_priority = dense_rank(desc(loss_ratio + claim_frequency + premium / max(premium)))) |>
+  arrange(review_priority) |>
+  transmute(
+    Priority = review_priority,
+    `Policy type` = policy_type,
+    Premium = dollar(premium, prefix = ""),
+    `Loss ratio` = percent(loss_ratio, accuracy = 0.1),
+    `Claim frequency` = number(claim_frequency, accuracy = 0.001),
+    `Claim severity` = dollar(claim_severity, prefix = ""),
+    `Suggested action` = case_when(
+      loss_ratio >= 1 ~ "Immediate pricing and coverage review",
+      claim_frequency >= portfolio_summary$claim_frequency ~ "Frequency management and renewal monitoring",
+      claim_severity >= portfolio_summary$claim_severity ~ "Severity reserve and claims review",
+      TRUE ~ "Monitor as lower priority"
+    )
+  ) |>
+  kable()
+```
+
+# 6 Univariate Analysis
+
+## 6.1 Portfolio Composition
+
+**Research questions supported:** RQ1, RQ3, RQ4, RQ6, and RQ10.
+
+**Technique justification:** `ggbarstats()` is used because it is one of the approved visual methods and it combines categorical composition with an association test. This makes the univariate-to-bivariate bridge explicit: policy type is shown together with profitability status.
+
+```{r}
+#| fig-width: 12
+#| fig-height: 8
+
+ggbarstats(
+  data = portfolio,
+  x = policy_type,
+  y = profit_status,
+  label = "percentage",
+  results.subtitle = FALSE,
+  title = "Policy type composition by profitability status",
+  xlab = "Policy type",
+  ylab = "Policy-year records",
+  legend.title = "Profitability status"
+) +
+  theme(axis.text.x = element_text(angle = 25, hjust = 1))
+```
+
+**What this tells us:** The portfolio is not evenly distributed across segments. This matters because a high loss ratio in a tiny segment should not be interpreted the same way as a moderate loss ratio in a large premium segment.
+
+## 6.2 Numerical Feature Distributions
+
+**Research questions supported:** RQ7, RQ8, and RQ9.
+
+**Technique justification:** Histograms with free scales show the empirical shape of numeric risk features. Vehicle value is shown on a log scale because the distribution is strongly right-skewed.
+
+```{r}
+#| fig-width: 12
+#| fig-height: 7
+
+numeric_long <- portfolio |>
+  transmute(
+    `Driver age` = driver_age,
+    `Vehicle age` = vehicle_age,
+    `Power-to-weight ratio` = power_to_weight_ratio,
+    `Vehicle value` = vehicle_value
+  ) |>
+  pivot_longer(everything(), names_to = "feature", values_to = "value") |>
+  filter(!is.na(value), value > 0)
+
+ggplot(numeric_long, aes(value)) +
+  geom_histogram(bins = 35, fill = "#4C78A8", colour = "white") +
+  facet_wrap(~ feature, scales = "free", ncol = 2) +
+  scale_x_continuous(labels = label_number(scale_cut = cut_short_scale())) +
+  labs(
+    title = "Distribution of continuous risk features",
+    x = NULL,
+    y = "Policy-year records"
+  )
+```
+
+**What this tells us:** Vehicle value and power-to-weight are skewed, so later charts use log scales, hexbin density, or capped outcome variables rather than relying on raw scatterplots.
+
+## 6.3 Claim and Profitability Status
+
+**Research questions supported:** RQ1 and RQ2.
+
+**Technique justification:** A stacked proportional bar is used because the business question is not only "which segment has claims?" but "which segment has loss-making claims after premium is considered?"
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+
+ggbarstats(
+  data = portfolio,
+  x = policy_type,
+  y = profit_status,
+  label = "percentage",
+  results.subtitle = FALSE,
+  title = "Profitability status by policy type",
+  xlab = "Policy type",
+  ylab = "Policy-year records",
+  legend.title = "Profitability status"
+) +
+  theme(axis.text.x = element_text(angle = 25, hjust = 1))
+```
+
+**What this tells us:** The stacked structure shows whether a policy type has many no-claim policies, many profitable claim policies, or a material loss-making tail. This is more actionable than a plain count of policy types.
+
+# 7 Bivariate Mythbusting Analysis
+
+## 7.1 RQ1: Are Younger Drivers Genuinely Less Profitable Than Older Drivers?
+
+**Myth tested:** Young drivers are always the worst risks.
+
+**Technique justification:** A two-panel KPI chart bridges univariate and bivariate analysis: the first panel shows premium materiality by age band, while the second panel compares loss ratio and claim frequency. This prevents overreacting to a small segment that has high frequency but limited portfolio weight.
+
+```{r}
+#| fig-width: 11
+#| fig-height: 6
+
+driver_kpi_long <- driver_age_summary |>
+  select(driver_age_band, share_premium = premium, loss_ratio, claim_frequency) |>
+  mutate(share_premium = share_premium / sum(share_premium)) |>
+  pivot_longer(
+    cols = c(share_premium, loss_ratio, claim_frequency),
+    names_to = "metric",
+    values_to = "value"
+  ) |>
+  mutate(
+    metric = recode(
+      metric,
+      "share_premium" = "Premium share",
+      "loss_ratio" = "Loss ratio",
+      "claim_frequency" = "Claim frequency"
+    )
+  )
+
+ggplot(driver_kpi_long, aes(metric, driver_age_band, fill = value)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = if_else(metric == "Claim frequency", number(value, accuracy = 0.001), percent(value, accuracy = 0.1))),
+    size = 3
+  ) +
+  scale_fill_viridis_c(option = "C", labels = label_number()) +
+  labs(
+    title = "Driver age myth check: frequency is not the same as profitability",
+    x = NULL,
+    y = "Driver age band",
+    fill = "Value"
+  )
+```
+
+**What this tells us:** The stereotype is **mixed**. Drivers aged 18-25 have the highest claim frequency (`r number(driver_age_summary |> filter(driver_age_band == "18-25") |> pull(claim_frequency), accuracy = 0.001)`), but their loss ratio is only `r percent(driver_age_summary |> filter(driver_age_band == "18-25") |> pull(loss_ratio), accuracy = 0.1)` and they contribute just `r percent((driver_age_summary |> filter(driver_age_band == "18-25") |> pull(premium)) / sum(driver_age_summary$premium), accuracy = 0.1)` of premium. The highest age-band loss ratio belongs to `r driver_age_summary |> slice_max(loss_ratio, n = 1, with_ties = FALSE) |> pull(driver_age_band)` at `r percent(driver_age_summary |> slice_max(loss_ratio, n = 1, with_ties = FALSE) |> pull(loss_ratio), accuracy = 0.1)`.
+
+## 7.2 RQ2: Does Vehicle Age Increase Loss Ratio and Claim Frequency?
+
+**Myth tested:** Older vehicles are always riskier.
+
+**Technique justification:** Ranked KPI bars are used because the myth has two different dimensions: frequency and profitability. The chart shows whether the same vehicle-age band is worst on both.
+
+```{r}
+#| fig-width: 11
+#| fig-height: 6
+
+vehicle_age_long <- vehicle_age_summary |>
+  select(vehicle_age_band, loss_ratio, claim_frequency, claim_severity) |>
+  pivot_longer(
+    cols = c(loss_ratio, claim_frequency, claim_severity),
+    names_to = "metric",
+    values_to = "value"
+  ) |>
+  mutate(
+    metric = recode(
+      metric,
+      "loss_ratio" = "Loss ratio",
+      "claim_frequency" = "Claim frequency",
+      "claim_severity" = "Claim severity"
+    )
+  )
+
+ggplot(vehicle_age_long, aes(metric, vehicle_age_band, fill = value)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = case_when(
+      metric == "Claim severity" ~ dollar(value, prefix = ""),
+      metric == "Claim frequency" ~ number(value, accuracy = 0.001),
+      TRUE ~ percent(value, accuracy = 0.1)
+    )),
+    size = 3
+  ) +
+  scale_fill_viridis_c(option = "C", labels = label_number()) +
+  labs(
+    title = "Vehicle age myth check: new vehicles claim often, mid-old vehicles lose more",
+    x = NULL,
+    y = "Vehicle age band",
+    fill = "Value"
+  )
+```
+
+**What this tells us:** The stereotype is **partly real but incomplete**. Vehicles aged 0-3 have the highest claim frequency at `r number(vehicle_age_summary |> filter(vehicle_age_band == "0-3") |> pull(claim_frequency), accuracy = 0.001)`, but the weakest loss ratio is `r vehicle_age_summary |> slice_max(loss_ratio, n = 1, with_ties = FALSE) |> pull(vehicle_age_band)` at `r percent(vehicle_age_summary |> slice_max(loss_ratio, n = 1, with_ties = FALSE) |> pull(loss_ratio), accuracy = 0.1)`. Very old vehicles aged 21+ are more profitable than the stereotype suggests.
+
+## 7.3 RQ3: Which Policy Types Create the Most Profitability Pressure?
+
+**Myth tested:** Comprehensive policies are safer because customers pay more.
+
+**Technique justification:** A ranked loss-ratio bar with a break-even line is used because policy type is a compact product-design variable and the strategic action depends on whether the segment approaches or exceeds 100%.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+
+ggplot(
+  policy_type_summary,
+  aes(x = "Loss ratio", y = fct_reorder(policy_type, loss_ratio), fill = loss_ratio)
+) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(aes(label = percent(loss_ratio, accuracy = 0.1)), size = 3.4) +
+  scale_fill_viridis_c(labels = percent_format(accuracy = 1), option = "C") +
+  labs(
+    title = "Policy type myth check: higher cover does not guarantee stronger profitability",
+    subtitle = "Break-even reference is 100%; darker cells indicate higher loss ratio",
+    x = NULL,
+    y = NULL,
+    fill = "Loss ratio"
+  )
+```
+
+**What this tells us:** The myth is **busted**. Comprehensive without excess has the weakest loss ratio at `r percent(policy_type_summary |> filter(policy_type == "Comprehensive without excess") |> pull(loss_ratio), accuracy = 0.1)` and the highest claim frequency at `r number(policy_type_summary |> filter(policy_type == "Comprehensive without excess") |> pull(claim_frequency), accuracy = 0.001)`. Premium adequacy and excess design need review.
+
+## 7.4 RQ4: Are Premium Vehicle Brands Less Profitable Than Mainstream Brands?
+
+**Myth tested:** Premium brands are the biggest loss drivers.
+
+**Technique justification:** A brand-tier KPI chart is used before brand-level analysis because it tests the status stereotype directly. It compares premium share, loss ratio, claim frequency, and severity in one readable view.
+
+```{r}
+#| fig-width: 11
+#| fig-height: 6
+
+brand_kpi_long <- brand_tier_summary |>
+  select(brand_tier, premium, loss_ratio, claim_frequency, claim_severity) |>
+  mutate(premium_share = premium / sum(premium)) |>
+  select(brand_tier, premium_share, loss_ratio, claim_frequency, claim_severity) |>
+  pivot_longer(-brand_tier, names_to = "metric", values_to = "value") |>
+  mutate(
+    metric = recode(
+      metric,
+      "premium_share" = "Premium share",
+      "loss_ratio" = "Loss ratio",
+      "claim_frequency" = "Claim frequency",
+      "claim_severity" = "Claim severity"
+    )
+  )
+
+ggplot(brand_kpi_long, aes(metric, brand_tier, fill = value)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = case_when(
+      metric == "Claim severity" ~ dollar(value, prefix = ""),
+      metric == "Claim frequency" ~ number(value, accuracy = 0.001),
+      TRUE ~ percent(value, accuracy = 0.1)
+    )),
+    size = 3
+  ) +
+  scale_fill_viridis_c(option = "C", labels = label_number()) +
+  labs(
+    title = "Brand prestige myth check",
+    x = NULL,
+    y = NULL,
+    fill = "Value"
+  )
+```
+
+**What this tells us:** The myth is **mostly busted**. Premium brands have higher claim frequency (`r number(brand_tier_summary |> filter(brand_tier == "Premium brand") |> pull(claim_frequency), accuracy = 0.001)`) than mainstream brands, but their loss ratio is lower at `r percent(brand_tier_summary |> filter(brand_tier == "Premium brand") |> pull(loss_ratio), accuracy = 0.1)` versus `r percent(brand_tier_summary |> filter(brand_tier == "Mainstream brand") |> pull(loss_ratio), accuracy = 0.1)`. Premium brand status is a frequency signal, not the main profitability drain.
+
+## 7.5 RQ5: Does Vehicle Value Show a Monotonic Relationship With Loss Ratio?
+
+**Myth tested:** Higher vehicle value always means poorer profitability.
+
+**Technique justification:** Ordered bars by vehicle-value quintile show whether profitability worsens steadily with value. This is more direct than a scatterplot because the pricing question is about segment-level calibration.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+
+value_long <- vehicle_value_summary |>
+  select(vehicle_value_band, loss_ratio, claim_frequency) |>
+  pivot_longer(-vehicle_value_band, names_to = "metric", values_to = "value") |>
+  mutate(metric = recode(metric, "loss_ratio" = "Loss ratio", "claim_frequency" = "Claim frequency"))
+
+ggplot(value_long, aes(metric, vehicle_value_band, fill = value)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = if_else(metric == "Claim frequency", number(value, accuracy = 0.001), percent(value, accuracy = 0.1))),
+    size = 3.1
+  ) +
+  scale_fill_viridis_c(option = "C", labels = label_number()) +
+  labs(
+    title = "Vehicle value myth check: the pattern is not monotonic",
+    x = NULL,
+    y = "Vehicle value quintile",
+    fill = "Value"
+  )
+```
+
+**What this tells us:** The myth is **mixed**. The highest-value band has high claim frequency (`r number(vehicle_value_summary |> filter(vehicle_value_band == "Highest") |> pull(claim_frequency), accuracy = 0.001)`) and a loss ratio of `r percent(vehicle_value_summary |> filter(vehicle_value_band == "Highest") |> pull(loss_ratio), accuracy = 0.1)`, but the lowest-value band is also weak at `r percent(vehicle_value_summary |> filter(vehicle_value_band == "Lowest") |> pull(loss_ratio), accuracy = 0.1)`. Vehicle value should calibrate severity assumptions, not be treated as a one-direction rule.
+
+## 7.6 RQ6: Does Bonus Score Separate Profitable and Unprofitable Customers?
+
+**Myth tested:** Bad bonus-score customers are always the worst.
+
+**Technique justification:** `stat_halfeye()` shows distribution shape, `geom_boxplot()` shows compact spread, and pairwise Wilcoxon tests provide non-parametric evidence for differences across bonus-score groups.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+
+ggplot(
+  portfolio |> filter(!is.na(bonus_score), loss_ratio_capped_99 > 0),
+  aes(x = bonus_score, y = loss_ratio_capped_99, fill = bonus_score)
+) +
+  stat_halfeye(
+    adjust = 0.8, 
+    width = 0.55, 
+    justification = -0.2, 
+    .width = 0, 
+    alpha = 0.65, 
+    show.legend = FALSE
+  ) +
+  geom_boxplot(
+    width = 0.16, 
+    outlier.shape = NA, 
+    alpha = 0.5, 
+    show.legend = FALSE
+  ) +
+  geom_jitter(
+    width = 0.08, 
+    alpha = 0.03, 
+    size = 0.35, 
+    show.legend = FALSE,
+    color = "#2C3E50" 
+  ) +
+  geom_hline(yintercept = 1, linetype = "dashed", colour = "#C0392B", linewidth = 0.8) +
+  scale_y_continuous(labels = number_format(accuracy = 0.1)) +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Bonus Score Myth Check: Claim Severity",
+    subtitle = "Distribution of loss ratios (excluding zero-claim policies); dashed line = break-even",
+    x = "Bonus Score",
+    y = "Loss Ratio (Capped at 99th percentile)"
+  )
+```
+
+```{r}
+pairwise.wilcox.test(
+  x = portfolio$loss_ratio_capped_99,
+  g = portfolio$bonus_score,
+  p.adjust.method = "holm"
+)$p.value |>
+  as.data.frame() |>
+  rownames_to_column("Comparison") |>
+  kable(digits = 4)
+```
+
+**What this tells us:** The myth is **mostly real, with nuance**. Bad bonus-score customers have the highest claim frequency at `r number(bonus_summary |> filter(bonus_score == "Bad") |> pull(claim_frequency), accuracy = 0.001)`, but Neutral has the highest loss ratio at `r percent(bonus_summary |> filter(bonus_score == "Neutral") |> pull(loss_ratio), accuracy = 0.1)`. Good customers dominate premium volume and remain strategically important for retention.
+
+## 7.7 RQ7: Are Short-Exposure Policies a Hidden Profitability Problem?
+
+**Myth tested:** Short-term policies are harmless because exposure is small.
+
+**Technique justification:** `geom_density_ridges_gradient()` with quantile shading compares ordered exposure-duration distributions. This is better than a mean-only chart because the myth concerns hidden tail risk.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+
+ggplot(
+  portfolio |> filter(claim_flag, !is.na(exposure_band), !is.na(loss_ratio_capped_99)),
+  aes(x = loss_ratio_capped_99, y = exposure_band, fill = factor(after_stat(quantile)))
+) +
+  geom_density_ridges_gradient(
+    calc_ecdf = TRUE,
+    quantiles = 4,
+    quantile_lines = TRUE,
+    scale = 1.8,
+    rel_min_height = 0.005
+  ) +
+  geom_vline(xintercept = 1, linetype = "dashed", colour = "grey40") +
+  scale_fill_viridis_d(name = "Quartile", option = "C") +
+  scale_x_continuous(labels = number_format(accuracy = 0.1)) +
+  labs(
+    title = "Exposure-duration myth check",
+    subtitle = "Claimants only; dashed line = break-even",
+    x = "Loss ratio capped at 99th percentile",
+    y = "Exposure band"
+  ) +
+  theme_ridges(font_size = 11, grid = TRUE)
+```
+
+**What this tells us:** The myth is **busted**. Very short policies have a loss ratio of `r percent(exposure_summary |> filter(exposure_band == "Very short (<0.35)") |> pull(loss_ratio), accuracy = 0.1)`, the only exposure band above break-even. Although they contribute only `r percent((exposure_summary |> filter(exposure_band == "Very short (<0.35)") |> pull(premium)) / sum(exposure_summary$premium), accuracy = 0.1)` of premium, they are a strong quality-monitoring signal.
+
+## 7.8 RQ8: Are Longer-Observed Customers More Profitable and Worth Retaining?
+
+**Myth tested:** Loyal customers are just retained volume, not necessarily profitable.
+
+**Technique justification:** A loyalty-band KPI chart compares premium share, loss ratio, and cancellation rate. This directly links retention strategy to profitability, rather than treating loyalty as a volume metric only.
+
+```{r}
+#| fig-width: 11
+#| fig-height: 6
+
+loyalty_long <- loyalty_summary |>
+  select(loyalty_band, premium, loss_ratio, claim_frequency, cancel_rate = claim_rate) |>
+  mutate(premium_share = premium / sum(premium)) |>
+  select(loyalty_band, premium_share, loss_ratio, claim_frequency) |>
+  pivot_longer(-loyalty_band, names_to = "metric", values_to = "value") |>
+  mutate(
+    metric = recode(
+      metric,
+      "premium_share" = "Premium share",
+      "loss_ratio" = "Loss ratio",
+      "claim_frequency" = "Claim frequency"
+    )
+  )
+
+ggplot(loyalty_long, aes(metric, loyalty_band, fill = value)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = if_else(metric == "Claim frequency", number(value, accuracy = 0.001), percent(value, accuracy = 0.1))),
+    size = 3
+  ) +
+  scale_fill_viridis_c(option = "C", labels = label_number()) +
+  labs(
+    title = "Loyalty myth check: retained customers are materially more profitable",
+    x = NULL,
+    y = "Observed policy years in dataset",
+    fill = "Value"
+  )
+```
+
+**What this tells us:** The myth is **busted**. Customers observed all 3 years have the best loss ratio at `r percent(loyalty_summary |> filter(loyalty_band == "Observed all 3 years") |> pull(loss_ratio), accuracy = 0.1)` and contribute `r percent((loyalty_summary |> filter(loyalty_band == "Observed all 3 years") |> pull(premium)) / sum(loyalty_summary$premium), accuracy = 0.1)` of premium. Retaining stable low-risk customers is directly aligned with profitability.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+
+set.seed(608)
+loyalty_between_data <- portfolio |>
+  filter(!is.na(loyalty_band), !is.na(loss_ratio_capped_99))
+
+loyalty_between_data <- loyalty_between_data |>
+  slice_sample(n = min(20000, nrow(loyalty_between_data)))
+
+ggbetweenstats(
+  data = loyalty_between_data,
+  x = loyalty_band,
+  y = loss_ratio_capped_99,
+  type = "nonparametric",
+  pairwise.comparisons = TRUE,
+  pairwise.display = "significant",
+  results.subtitle = FALSE,
+  title = "Pairwise comparison of capped loss ratio by loyalty band",
+  xlab = "Observed policy years in dataset",
+  ylab = "Loss ratio capped at 99th percentile"
+)
+```
+
+## 7.9 RQ9: Are Cancelled Policies Actually Worse Risks Than Active Policies?
+
+**Myth tested:** Cancelled policies are removed risks, so cancellation is good.
+
+**Technique justification:** A status KPI chart compares active and cancelled policies across loss ratio, frequency, severity, and premium share. This tests whether cancellation is associated with risk quality or just administrative status.
+
+```{r}
+#| fig-width: 11
+#| fig-height: 6
+
+status_summary <- segment_summary(portfolio, policy_status)
+
+status_long <- status_summary |>
+  select(policy_status, premium, loss_ratio, claim_frequency, claim_severity) |>
+  mutate(premium_share = premium / sum(premium)) |>
+  select(policy_status, premium_share, loss_ratio, claim_frequency, claim_severity) |>
+  pivot_longer(-policy_status, names_to = "metric", values_to = "value") |>
+  mutate(
+    metric = recode(
+      metric,
+      "premium_share" = "Premium share",
+      "loss_ratio" = "Loss ratio",
+      "claim_frequency" = "Claim frequency",
+      "claim_severity" = "Claim severity"
+    )
+  )
+
+ggplot(status_long, aes(metric, policy_status, fill = value)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = case_when(
+      metric == "Claim severity" ~ dollar(value, prefix = ""),
+      metric == "Claim frequency" ~ number(value, accuracy = 0.001),
+      TRUE ~ percent(value, accuracy = 0.1)
+    )),
+    size = 3
+  ) +
+  scale_fill_viridis_c(option = "C", labels = label_number()) +
+  labs(
+    title = "Cancellation myth check",
+    x = NULL,
+    y = "Policy status",
+    fill = "Value"
+  )
+```
+
+**What this tells us:** The myth is **real, but operationally important**. Cancelled policies have a loss ratio of `r percent(status_summary |> filter(policy_status == "Cancelled") |> pull(loss_ratio), accuracy = 0.1)` versus `r percent(status_summary |> filter(policy_status == "Active") |> pull(loss_ratio), accuracy = 0.1)` for active policies. The insurer should identify these risks earlier, not only after cancellation has occurred.
+
+## 7.10 RQ10: Does Geography Materially Affect Frequency, Severity, and Loss Ratio?
+
+**Myth tested:** Urban areas are always worse than rural areas.
+
+**Technique justification:** Geography is assessed with circulation-area bars and geo-segment intervals. This separates frequency-driven urban risk from severity-driven rural risk.
+
+```{r}
+#| fig-width: 11
+#| fig-height: 6
+
+area_summary <- segment_summary(portfolio, circulation_area)
+
+area_long <- area_summary |>
+  select(circulation_area, loss_ratio, claim_frequency, claim_severity) |>
+  pivot_longer(-circulation_area, names_to = "metric", values_to = "value") |>
+  mutate(
+    metric = recode(
+      metric,
+      "loss_ratio" = "Loss ratio",
+      "claim_frequency" = "Claim frequency",
+      "claim_severity" = "Claim severity"
+    )
+  )
+
+ggplot(area_long, aes(metric, circulation_area, fill = value)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = case_when(
+      metric == "Claim severity" ~ dollar(value, prefix = ""),
+      metric == "Claim frequency" ~ number(value, accuracy = 0.001),
+      TRUE ~ percent(value, accuracy = 0.1)
+    )),
+    size = 3.1
+  ) +
+  scale_fill_viridis_c(option = "C", labels = label_number()) +
+  labs(
+    title = "Urban-rural myth check",
+    x = NULL,
+    y = "Circulation area",
+    fill = "Value"
+  )
+```
+
+**What this tells us:** The myth is **mostly real for frequency but mixed for severity**. Urban policies have higher claim frequency (`r number(area_summary |> filter(circulation_area == "Urban") |> pull(claim_frequency), accuracy = 0.001)`) and loss ratio (`r percent(area_summary |> filter(circulation_area == "Urban") |> pull(loss_ratio), accuracy = 0.1)`), while rural policies have higher severity (`r dollar(area_summary |> filter(circulation_area == "Rural") |> pull(claim_severity), prefix = "")`). Urban pricing should focus on frequency; rural review should pay attention to severity.
+
+# 8 Multivariate Analysis
+
+## 8.1 Which Driver-Age and Vehicle-Age Combinations Elevate Claim Risk?
+
+**Research question:** Which driver-age and vehicle-age combinations elevate claim risk?
+
+**Technique justification:** A heatmap is the most compact way to show a two-way interaction. Embedded labels make the answer readable without requiring the viewer to inspect a colour legend alone.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 6
+
+age_heatmap <- portfolio |>
+  filter(!is.na(driver_age_band), !is.na(vehicle_age_band)) |>
+  group_by(driver_age_band, vehicle_age_band) |>
+  summarise(
+    exposure = sum(total_exposure, na.rm = TRUE),
+    claims = sum(total_claims, na.rm = TRUE),
+    claim_frequency = claims / exposure,
+    .groups = "drop"
+  )
+
+ggplot(age_heatmap, aes(vehicle_age_band, driver_age_band, fill = claim_frequency)) +
+  geom_tile(colour = "white", linewidth = 0.4) +
+  geom_text(aes(label = number(claim_frequency, accuracy = 0.01)), size = 3) +
+  scale_fill_viridis_c(option = "C", labels = number_format(accuracy = 0.01)) +
+  labs(
+    title = "Claim frequency by driver age and vehicle age",
+    x = "Vehicle age band",
+    y = "Driver age band",
+    fill = "Claim frequency"
+  )
+```
+
+**What this tells us:** The interaction view identifies combinations that can be missed when driver age and vehicle age are analysed separately. These cells are candidates for refined underwriting rules or pricing interactions.
+
+## 8.2 Do Brand, Value, and Power-to-Weight Signals Identify Severity Risk?
+
+**Research question:** Do brand, value, and power-to-weight signals identify severity risk?
+
+**Technique justification:** A point-interval chart compares brand tiers with uncertainty, while a hexbin plus GAM smoother handles dense policy-level numeric data without overplotting.
+
+```{r}
+#| fig-width: 11
+#| fig-height: 6
+
+p_brand_tier <- ggplot(
+  portfolio |>
+    filter(claim_flag, !is.na(brand_tier), !is.na(claim_severity), claim_severity > 0),
+  aes(x = brand_tier, y = claim_severity)
+) +
+  stat_pointinterval(
+    .width = c(0.8, 0.95),
+    point_size = 3,
+    aes(colour = factor(after_stat(.width)))
+  ) +
+  scale_y_log10(labels = dollar_format(prefix = "")) +
+  scale_colour_manual(
+    values = c("0.8" = "#4C78A8", "0.95" = "#F58518"),
+    labels = c("80% interval", "95% interval"),
+    name = NULL
+  ) +
+  labs(title = "Claim severity by brand tier", x = NULL, y = "Claim severity")
+
+p_power <- ggplot(
+  portfolio |>
+    filter(
+      !is.na(power_to_weight_ratio),
+      !is.na(loss_ratio_capped_99),
+      power_to_weight_ratio > 0
+    ),
+  aes(power_to_weight_ratio, loss_ratio_capped_99)
+) +
+  geom_hex(bins = 35) +
+  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), colour = "white", linewidth = 1) +
+  scale_fill_viridis_c(labels = comma, option = "C") +
+  labs(
+    title = "Power-to-weight versus loss ratio",
+    x = "Power-to-weight ratio",
+    y = "Loss ratio",
+    fill = "Records"
+  )
+
+p_brand_tier | p_power
+```
+
+**What this tells us:** Brand and vehicle-performance signals should be treated as severity or tail-risk indicators only if they show visible separation after considering uncertainty and dense-record patterns.
+
+## 8.3 Which Segments Should Be Reviewed First?
+
+**Research questions supported:** RQ1 to RQ10.
+
+**Technique justification:** A priority table turns the visual findings into an action queue. It combines loss ratio, frequency, severity, premium materiality, and evidence strength so the report ends with a decision-oriented output.
+
+```{r}
+priority_tbl <- bind_rows(
+  policy_type_summary |> transmute(segment_type = "Policy type", segment = as.character(policy_type), premium, loss_ratio, claim_frequency, claim_severity),
+  segment_summary(portfolio, policy_status) |> transmute(segment_type = "Policy status", segment = as.character(policy_status), premium, loss_ratio, claim_frequency, claim_severity),
+  bonus_summary |> transmute(segment_type = "Bonus score", segment = as.character(bonus_score), premium, loss_ratio, claim_frequency, claim_severity),
+  exposure_summary |> transmute(segment_type = "Exposure band", segment = as.character(exposure_band), premium, loss_ratio, claim_frequency, claim_severity),
+  driver_age_summary |> transmute(segment_type = "Driver age", segment = as.character(driver_age_band), premium, loss_ratio, claim_frequency, claim_severity),
+  vehicle_age_summary |> transmute(segment_type = "Vehicle age", segment = as.character(vehicle_age_band), premium, loss_ratio, claim_frequency, claim_severity),
+  vehicle_value_summary |> transmute(segment_type = "Vehicle value", segment = as.character(vehicle_value_band), premium, loss_ratio, claim_frequency, claim_severity),
+  brand_tier_summary |> transmute(segment_type = "Brand tier", segment = as.character(brand_tier), premium, loss_ratio, claim_frequency, claim_severity),
+  loyalty_summary |> transmute(segment_type = "Loyalty", segment = as.character(loyalty_band), premium, loss_ratio, claim_frequency, claim_severity),
+  geo_summary |> transmute(segment_type = "Geography", segment = as.character(geo_segment), premium, loss_ratio, claim_frequency, claim_severity)
+) |>
+  filter(!is.na(segment), premium > 0) |>
+  mutate(
+    materiality_score = percent_rank(premium),
+    loss_score = percent_rank(loss_ratio),
+    frequency_score = percent_rank(claim_frequency),
+    severity_score = percent_rank(replace_na(claim_severity, 0)),
+    priority_score = 0.35 * loss_score + 0.25 * frequency_score +
+      0.20 * severity_score + 0.20 * materiality_score
+  ) |>
+  arrange(desc(priority_score)) |>
+  slice_head(n = 12)
+
+priority_tbl |>
+  transmute(
+    Rank = row_number(),
+    `Segment type` = segment_type,
+    Segment = segment,
+    Premium = dollar(premium, prefix = ""),
+    `Loss ratio` = percent(loss_ratio, accuracy = 0.1),
+    `Claim frequency` = number(claim_frequency, accuracy = 0.001),
+    `Claim severity` = dollar(claim_severity, prefix = ""),
+    `Priority score` = number(priority_score, accuracy = 0.01)
+  ) |>
+  kable()
+```
+
+**What this tells us:** The priority table prevents overreacting to visually interesting but immaterial segments. Review should start where adverse performance and portfolio materiality overlap.
+
+## 8.4 Statistical Validation
+
+**Technique justification:** Statistical tests are used as directional validation, not as a replacement for visual interpretation. With a large dataset, very small differences can become statistically significant, so practical significance still depends on visual effect size and premium exposure.
+
+```{r}
+kw_test <- function(variable) {
+  formula <- as.formula(str_c("loss_ratio_capped_99 ~ ", variable))
+  kruskal.test(formula, data = portfolio) |>
+    tidy() |>
+    mutate(test = "Kruskal-Wallis", variable = variable)
+}
+
+chisq_test <- function(variable) {
+  tbl <- table(portfolio[[variable]], portfolio$claim_flag)
+  chisq.test(tbl) |>
+    tidy() |>
+    mutate(test = "Chi-square", variable = variable)
+}
+
+spearman_test <- function(variable) {
+  cor.test(
+    portfolio[[variable]],
+    portfolio$loss_ratio_capped_99,
+    method = "spearman",
+    exact = FALSE
+  ) |>
+    tidy() |>
+    mutate(test = "Spearman", variable = variable)
+}
+
+validation_tbl <- bind_rows(
+  map_dfr(
+    c("policy_type", "business_type", "policy_status", "bonus_score",
+      "exposure_band", "driver_age_band", "vehicle_age_band", "vehicle_value_band",
+      "brand_tier", "loyalty_band", "geo_segment"),
+    kw_test
+  ),
+  map_dfr(
+    c("policy_type", "business_type", "policy_status", "bonus_score",
+      "exposure_band", "driver_age_band", "vehicle_age_band", "vehicle_value_band",
+      "brand_tier", "loyalty_band", "geo_segment"),
+    chisq_test
+  ),
+  map_dfr(
+    c("driver_age", "vehicle_age", "vehicle_value", "power_to_weight_ratio"),
+    spearman_test
+  )
+) |>
+  transmute(
+    test,
+    variable,
+    statistic = round(statistic, 3),
+    estimate = round(estimate, 3),
+    p_value = p.value
+  ) |>
+  arrange(p_value)
+
+validation_tbl |>
+  mutate(p_value = pvalue(p_value, accuracy = 0.001)) |>
+  kable()
+```
+
+**What this tells us:** Statistical validation supports the segmentation exercise, but the business decision should be based on the combination of statistical evidence, visible effect size, and premium exposure.
+
+# 9 Summary of Key Findings and Answers to the 10 Research Questions
+
+```{r}
+driver_young <- driver_age_summary |> filter(driver_age_band == "18-25")
+driver_loss_top <- driver_age_summary |> slice_max(loss_ratio, n = 1, with_ties = FALSE)
+
+vehicle_new <- vehicle_age_summary |> filter(vehicle_age_band == "0-3")
+vehicle_loss_top <- vehicle_age_summary |> slice_max(loss_ratio, n = 1, with_ties = FALSE)
+vehicle_old <- vehicle_age_summary |> filter(vehicle_age_band == "21+")
+
+comp_no_excess <- policy_type_summary |> filter(policy_type == "Comprehensive without excess")
+comp_with_excess <- policy_type_summary |> filter(policy_type == "Comprehensive with excess")
+
+premium_brand <- brand_tier_summary |> filter(brand_tier == "Premium brand")
+mainstream_brand <- brand_tier_summary |> filter(brand_tier == "Mainstream brand")
+
+value_highest <- vehicle_value_summary |> filter(vehicle_value_band == "Highest")
+value_lowest <- vehicle_value_summary |> filter(vehicle_value_band == "Lowest")
+value_best <- vehicle_value_summary |> slice_min(loss_ratio, n = 1, with_ties = FALSE)
+
+bonus_good <- bonus_summary |> filter(bonus_score == "Good")
+bonus_neutral <- bonus_summary |> filter(bonus_score == "Neutral")
+bonus_bad <- bonus_summary |> filter(bonus_score == "Bad")
+
+exposure_very_short <- exposure_summary |> filter(exposure_band == "Very short (<0.35)")
+exposure_full <- exposure_summary |> filter(exposure_band == "Full (>0.95)")
+
+loyal_3yr <- loyalty_summary |> filter(loyalty_band == "Observed all 3 years")
+loyal_1yr <- loyalty_summary |> filter(loyalty_band == "Observed 1 year")
+
+status_summary <- segment_summary(portfolio, policy_status)
+status_cancelled <- status_summary |> filter(policy_status == "Cancelled")
+status_active <- status_summary |> filter(policy_status == "Active")
+
+area_summary <- segment_summary(portfolio, circulation_area)
+area_urban <- area_summary |> filter(circulation_area == "Urban")
+area_rural <- area_summary |> filter(circulation_area == "Rural")
+
+answer_tbl <- tibble(
+  `Myth verdict` = c(
+    "Mixed",
+    "Partly real",
+    "Busted",
+    "Mostly busted",
+    "Mixed",
+    "Mostly real",
+    "Busted",
+    "Busted",
+    "Real, but reactive",
+    "Mixed"
+  ),
+  `Research question` = c(
+    "RQ1. Are younger drivers genuinely less profitable than older drivers?",
+    "RQ2. Does vehicle age increase loss ratio and claim frequency?",
+    "RQ3. Which policy types create the most profitability pressure?",
+    "RQ4. Are premium vehicle brands less profitable than mainstream brands?",
+    "RQ5. Does vehicle value show a monotonic relationship with loss ratio?",
+    "RQ6. Does bonus score separate profitable and unprofitable customers?",
+    "RQ7. Are short-exposure policies a hidden profitability problem?",
+    "RQ8. Are longer-observed customers more profitable and worth retaining?",
+    "RQ9. Are cancelled policies actually worse risks than active policies?",
+    "RQ10. Does geography materially affect frequency, severity, and loss ratio?"
+  ),
+  `Answer and implication` = c(
+    str_glue("Young drivers have the highest frequency ({number(driver_young$claim_frequency, accuracy = 0.001)}) but only {percent(driver_young$loss_ratio, accuracy = 0.1)} loss ratio and {percent(driver_young$premium / sum(driver_age_summary$premium), accuracy = 0.1)} of premium. The weakest age-band loss ratio is {driver_loss_top$driver_age_band} at {percent(driver_loss_top$loss_ratio, accuracy = 0.1)}."),
+    str_glue("New vehicles aged 0-3 have the highest frequency ({number(vehicle_new$claim_frequency, accuracy = 0.001)}), but the worst loss ratio is {vehicle_loss_top$vehicle_age_band} at {percent(vehicle_loss_top$loss_ratio, accuracy = 0.1)}. Vehicles aged 21+ are more profitable at {percent(vehicle_old$loss_ratio, accuracy = 0.1)}."),
+    str_glue("Comprehensive without excess is the clearest pressure point: {percent(comp_no_excess$loss_ratio, accuracy = 0.1)} loss ratio and {number(comp_no_excess$claim_frequency, accuracy = 0.001)} claim frequency. Comprehensive with excess is also material at {percent(comp_with_excess$premium / sum(policy_type_summary$premium), accuracy = 0.1)} of premium."),
+    str_glue("Premium brands have higher frequency ({number(premium_brand$claim_frequency, accuracy = 0.001)}) but lower loss ratio ({percent(premium_brand$loss_ratio, accuracy = 0.1)}) than mainstream brands ({percent(mainstream_brand$loss_ratio, accuracy = 0.1)}). Brand prestige is not the main loss driver."),
+    str_glue("The highest-value band has {percent(value_highest$loss_ratio, accuracy = 0.1)} loss ratio, but the lowest-value band is also weak at {percent(value_lowest$loss_ratio, accuracy = 0.1)}. The best band is {value_best$vehicle_value_band} at {percent(value_best$loss_ratio, accuracy = 0.1)}, so the pattern is not monotonic."),
+    str_glue("Bad bonus-score policies have the highest frequency ({number(bonus_bad$claim_frequency, accuracy = 0.001)}), while Neutral has the highest loss ratio ({percent(bonus_neutral$loss_ratio, accuracy = 0.1)}). Good policies form {percent(bonus_good$premium / sum(bonus_summary$premium), accuracy = 0.1)} of premium and remain the loyalty base."),
+    str_glue("Very short policies have {percent(exposure_very_short$loss_ratio, accuracy = 0.1)} loss ratio, above break-even, versus {percent(exposure_full$loss_ratio, accuracy = 0.1)} for full-exposure policies. Short exposure is a quality signal despite small premium share."),
+    str_glue("Customers observed all 3 years have the best loss ratio ({percent(loyal_3yr$loss_ratio, accuracy = 0.1)}) and {percent(loyal_3yr$premium / sum(loyalty_summary$premium), accuracy = 0.1)} of premium. One-year customers are weakest at {percent(loyal_1yr$loss_ratio, accuracy = 0.1)}."),
+    str_glue("Cancelled policies are materially worse: {percent(status_cancelled$loss_ratio, accuracy = 0.1)} loss ratio and {number(status_cancelled$claim_frequency, accuracy = 0.001)} frequency versus {percent(status_active$loss_ratio, accuracy = 0.1)} and {number(status_active$claim_frequency, accuracy = 0.001)} for active policies."),
+    str_glue("Urban policies have higher frequency ({number(area_urban$claim_frequency, accuracy = 0.001)}) and loss ratio ({percent(area_urban$loss_ratio, accuracy = 0.1)}), while rural policies have higher severity ({dollar(area_rural$claim_severity, prefix = '')}). Geography affects risk, but the mechanism differs.")
+  )
+)
+
+answer_tbl |>
+  kable()
+```
+
+The overall conclusion is that several common insurance stereotypes are only partially true. The strongest strategic signals are policy type, exposure duration, cancellation status, loyalty duration, and bonus score. Age, vehicle age, brand prestige, vehicle value, and geography matter, but they should be used as calibrated segmentation features rather than blunt stereotypes.
+
+# 10 References
+
+- Data source: Mendeley Data, motor vehicle insurance portfolio dataset and accompanying cookbook.
+- Wickham, H. et al. *R for Data Science* and the tidyverse documentation.
+- Wilke, C. O. *Fundamentals of Data Visualization* and `ggridges` documentation.
+- Kay, M. `ggdist`: visualisations of distributions and uncertainty.
+- Wickham, H. *ggplot2: Elegant Graphics for Data Analysis*.
+- ISSS608 course materials on visual analytics and exploratory data analysis.

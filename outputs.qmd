@@ -3,7 +3,7 @@ title: ""
 page-layout: custom
 ---
 
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: panel-tabset
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: panel-tabset
 ## Expeditions
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::: center-row
@@ -354,21 +354,21 @@ page-layout: custom
 
 ## Deep Dives
 
-::::::::::::::::::::::: center-row
+:::::::::::::::::: center-row
 ::::::: gallery-item
 ::: huge-number
 1
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=CLICK+HERE');"}
 :::
 
 ::: poster-info
 [Take-home Exercise 1]{.poster-label}
 :::
 
-<a href="TH_EX/TH_EX01/TH_EX01.html" class="stretched-link"></a>
+<a href="TH_EX/TH_EX01/TH_EX01_landing.html" class="stretched-link"></a>
 :::::
 :::::::
 
@@ -405,24 +405,7 @@ page-layout: custom
 <a href="TH_EX/TH_EX03/TH_EX03.html" class="stretched-link"></a>
 :::::
 :::::::
-
-::::::: gallery-item
-::: huge-number
-4
-:::
-
-::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
-:::
-
-::: poster-info
-[Take-home Exercise 4]{.poster-label}
-:::
-
-<a href="TH_EX/TH_EX04/TH_EX04.html" class="stretched-link"></a>
-:::::
-:::::::
-:::::::::::::::::::::::
+::::::::::::::::::
 
 ## The Masterpiece
 
@@ -444,4 +427,4 @@ page-layout: custom
 :::::
 :::::::
 ::::::::
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
