@@ -6,8 +6,8 @@ format:
     show-slide-number: all
     chalkboard: true
     preview-links: auto
-    width: 1280
-    height: 720
+    width: 1980
+    height: 1080
 execute:
   echo: false
   warning: false
@@ -25,13 +25,26 @@ if ("package:ggtern" %in% search()) {
   detach("package:ggtern", unload = TRUE, character.only = TRUE)
 }
 
-theme_set(ggplot2::theme_minimal(base_size = 17))
+theme_set(ggplot2::theme_minimal(base_size = 15))
 
 theme_update(
-  plot.title = element_text(face = "bold"),
-  plot.subtitle = element_text(colour = "grey35"),
+  text = element_text(color = "#1F2937"),
+  plot.background = element_rect(fill = "white", color = NA),
+  panel.background = element_rect(fill = "white", color = NA),
+  panel.grid.major = element_line(color = "#E5E7EB", linewidth = 0.35),
   panel.grid.minor = element_blank(),
+  axis.text = element_text(color = "#4B5563", size = 9),
+  axis.title = element_text(color = "#111827", face = "bold", size = 10),
+  plot.title = element_text(color = "#111827", face = "bold", size = 16),
+  plot.subtitle = element_text(color = "#4B5563", size = 11),
   legend.position = "bottom",
+  legend.background = element_rect(fill = "white", color = NA),
+  legend.text = element_text(color = "#374151", size = 8),
+  legend.title = element_text(color = "#111827", face = "bold", size = 9),
+  strip.text = element_text(color = "#111827", face = "bold", size = 10)
+)
+
+theme_update(
   tern.axis.ticks.length.major = rel(0.5),
   tern.axis.ticks.length.minor = rel(0.25)
 )
@@ -185,61 +198,76 @@ geo_summary <- segment_summary(portfolio, geo_segment)
 
 ## Take-home Exercise 1: Visual Analytics for Data Discovery
 
-### Motor Insurance Portfolio Profitability and Volatility
+### Mythbusting Risk Stereotypes in Motor Insurance
 
 **Method:** 10 mythbusting research questions, tidyverse data wrangling, and best-fit ggplot visual analytics
 
 ::: notes
-This executive summary presents the motor insurance portfolio investigation as a mythbusting exercise. The 10 research questions test common insurance stereotypes against the data. The analysis uses loss ratio, claim frequency, claim severity, underwriting result, retention, and exposure to distinguish real risk signals from assumptions.
+I am framing this presentation as a mythbusting investigation of motor insurance risk. Instead of assuming common stereotypes are true, I test them against portfolio data from 2022 to 2024. I focus on loss ratio, claim frequency, claim severity, underwriting result, exposure, and retention because these measures show whether a segment is actually profitable, risky, or worth protecting.
+:::
+
+## Executive Summary
+
+The portfolio is profitable overall, but profitability is uneven.
+
+|  |  |  |
+|------------------------|------------------------|------------------------|
+| **Strategic objective** | **Main finding** | **Business action** |
+| Profitability | Comprehensive without excess and very short-exposure policies create the clearest pressure. | Review excess design, short-duration loading, and claims controls. |
+| Retention | Customers observed all 3 years are materially more profitable than one-year customers. | Protect low-risk loyal customers from blunt repricing. |
+| Calibrated pricing | Some stereotypes are real, but many are mixed. | Price using frequency, severity, materiality, and evidence together. |
+
+::: notes
+My overall message is that the portfolio is profitable, but the profitability is uneven. I want to show that stereotypes can be useful starting hypotheses, but they should not become pricing rules by themselves. The clearest actions are to review comprehensive without excess, monitor very short-exposure policies, retain profitable loyal customers, and use age, brand, vehicle value, and geography as calibrated supporting signals.
 :::
 
 ## Contents
 
-1. Analytical objective and research questions
-2. Reproducible sandbox
-3. Portfolio trend and triage
-4. Key univariate and bivariate findings
-5. Multivariate risk signals
-6. Answers and recommendations
+1.  Executive summary and objectives
+
+2.  Methodology, data, and technique rationale
+
+3.  Portfolio trend and policy-type triage
+
+4.  Mythbusting findings by risk dimension
+
+5.  Answers to the 10 research questions
+
+6.  Recommendations
 
 ::: notes
-The deck follows the same logic as the technical report. It first explains the analytical frame, then shows the portfolio at a glance, then moves through the strongest visual findings. The goal is to keep the executive story concise while preserving traceability to the reproducible technical report.
+I will first explain the objective, data preparation, and technique choices, then move into the key visual findings. The flow is designed to move from overall portfolio performance into segment-level mythbusting. I end by answering the 10 research questions and linking the evidence back to profitability, retention, and calibrated pricing.
 :::
 
-## Analytical Objective
+## Methodology and Data
 
 **Core question:** which insurance stereotypes are real, and which are myths?
 
 The strategic objectives are to:
 
-- maximise overall portfolio profitability;
-- maximise retention and loyalty among low-risk, highly profitable customers;
-- identify high-risk segments for appropriately calibrated premium pricing.
+-   maximise overall portfolio profitability;
+-   maximise retention and loyalty among low-risk, highly profitable customers;
+-   identify high-risk segments for appropriately calibrated premium pricing.
 
 The analysis answers 10 research questions covering:
 
-- conventional and demographic factors;
-- brand-and-status factors;
-- behavioural and claim-history factors;
-- loyalty and policy-status factors;
-- geographic frequency and severity differences.
+-   conventional and demographic factors;
+-   brand-and-status factors;
+-   behavioural and claim-history factors;
+-   loyalty and policy-status factors;
+-   geographic frequency and severity differences.
 
-::: notes
-The assignment is framed as an underwriting investigation that tests myths against the three strategic objectives. Technique selection is tied to decisions: ranked bars identify profitability pressure, bubble maps separate frequency and severity, loyalty bars support retention, half-eye plots reveal stereotype overlap, ridgelines expose tail risk, and heatmaps show interactions.
-:::
+## Technique Rationale
 
-### Technique Rationale
-
-| Decision need | Visual technique |
-|---|---|
+|  |  |
+|------------------------------------|------------------------------------|
+| **Decision need** | **Visual technique** |
 | Profitability pressure | KPI tiles with embedded `geom_text()` labels |
 | Frequency vs severity diagnosis | KPI matrices and `stat_pointinterval()` |
 | Retention and loyalty value | KPI bars by observed customer duration |
 | Stereotype overlap | Half-eye distributions and boxplots |
 | Hidden short-exposure risk | Ridgelines with quantile shading |
 | Interaction risk | Heatmaps with embedded labels |
-
-## Analytical Sandbox
 
 ```{r}
 portfolio_summary |>
@@ -256,7 +284,7 @@ portfolio_summary |>
 ```
 
 ::: notes
-The sandbox is prepared directly from the raw CSV in the data folder. Variables are recoded into readable labels, and derived KPIs are created for loss ratio, claim frequency, claim severity, underwriting result, exposure band, age bands, brand tier, and geography. The same derived dataset supports both the report and this presentation.
+Here I am showing how the analysis is made reproducible. The sandbox starts from the raw CSV and Excel dictionary, then derives loss ratio, frequency, severity, exposure bands, age bands, loyalty, brand tier, and geography. I also match each visual technique to a decision need: tiles summarise KPI pressure, half-eye plots show distribution overlap, ridgelines show tail risk, and heatmaps reveal interaction effects.
 :::
 
 ## One-Look Portfolio Trend
@@ -273,30 +301,48 @@ year_long <- year_summary |>
     values_to = "value"
   ) |>
   mutate(
-    measure = recode(
+    measure = factor(
       measure,
-      "premium" = "Premium",
-      "incurred" = "Incurred loss",
-      "underwriting_result" = "Underwriting result",
-      "loss_ratio" = "Loss ratio",
-      "claim_frequency" = "Claim frequency"
+      levels = c("claim_frequency", "loss_ratio", "underwriting_result", "incurred", "premium"),
+      labels = c("Claim Frequency", "Loss Ratio", "Underwriting Result", "Incurred Loss", "Premium")
     ),
     label = case_when(
-      measure == "Loss ratio" ~ percent(value, accuracy = 0.1),
-      measure == "Claim frequency" ~ number(value, accuracy = 0.001),
+      measure == "Loss Ratio" ~ percent(value, accuracy = 0.1),
+      measure == "Claim Frequency" ~ number(value, accuracy = 0.001),
       TRUE ~ label_number(scale_cut = cut_short_scale())(value)
     )
   )
 
-ggplot(year_long, aes(factor(year), measure, fill = value)) +
-  geom_tile(colour = "white", linewidth = 0.5) +
-  geom_text(aes(label = label), size = 4) +
-  scale_fill_viridis_c(option = "C", labels = label_number(scale_cut = cut_short_scale())) +
-  labs(title = "Portfolio trend dashboard", x = "Year", y = NULL, fill = "Value")
+ggplot(year_long, aes(x = factor(year), y = "1", fill = value)) +
+  geom_tile(colour = "white", linewidth = 0.6) +
+  geom_text(
+    aes(
+      label = label, 
+      colour = value > median(value) 
+    ), 
+    size = 3.2, 
+    fontface = "bold"
+  ) +
+  scale_colour_manual(values = c("TRUE" = "#111827", "FALSE" = "#FFFFFF"), guide = "none") +
+  facet_grid(measure ~ ., switch = "y") +
+  scale_fill_viridis_c(option = "C", guide = "none") +
+  theme(
+    axis.text.y = element_blank(),    
+    axis.ticks.y = element_blank(),
+    panel.grid = element_blank(),   
+    strip.text.y.left = element_text(angle = 0, hjust = 1, face = "bold", size = 9), 
+    strip.placement = "outside",      
+    panel.spacing = unit(0.1, "lines") 
+  ) +
+  labs(
+    title = "Portfolio Trend Dashboard", 
+    x = "Year", 
+    y = NULL
+  )
 ```
 
 ::: notes
-The trend slide is designed as a static dashboard rather than an animation. Premium, incurred loss, loss ratio, and claim frequency can be compared in one view. This avoids forcing the audience to remember earlier frames and makes the portfolio movement easier to interpret.
+This slide gives the portfolio-level baseline before I discuss segments. I use a static dashboard so premium, incurred loss, underwriting result, loss ratio, and claim frequency can be compared at once. The main pattern I want the audience to see is whether deterioration is driven by profitability, claim activity, or portfolio scale, rather than treating the loss ratio as a standalone number.
 :::
 
 ## Policy-Type Triage
@@ -305,32 +351,51 @@ The trend slide is designed as a static dashboard rather than an animation. Prem
 #| fig-width: 11
 #| fig-height: 5.6
 
-policy_type_summary |>
+triage_matrix_data <- policy_type_summary |>
   mutate(premium_share = premium / sum(premium)) |>
-  select(policy_type, loss_ratio, claim_frequency, claim_severity, premium_share) |>
+  select(policy_type, claim_frequency, claim_severity, loss_ratio, premium_share) |>
   pivot_longer(-policy_type, names_to = "metric", values_to = "value") |>
   mutate(
-    metric = recode(metric, loss_ratio = "Loss ratio", claim_frequency = "Claim frequency", claim_severity = "Claim severity", premium_share = "Premium share"),
+    metric = factor(
+      metric,
+      levels = c("claim_frequency", "claim_severity", "loss_ratio", "premium_share"),
+      labels = c("Claim Frequency", "Claim Severity", "Loss Ratio", "Premium Share")
+    ),
     label = case_when(
-      metric == "Claim severity" ~ dollar(value, prefix = ""),
-      metric == "Claim frequency" ~ number(value, accuracy = 0.001),
+      metric == "Claim Severity" ~ dollar(value, prefix = ""),
+      metric == "Claim Frequency" ~ number(value, accuracy = 0.001),
       TRUE ~ percent(value, accuracy = 0.1)
     )
   ) |>
-  ggplot(aes(metric, policy_type, fill = value)) +
-  geom_tile(colour = "white", linewidth = 0.5) +
-  geom_text(aes(label = label), size = 3.6) +
-  scale_fill_viridis_c(labels = label_number(scale_cut = cut_short_scale()), option = "C") +
+  group_by(metric) |>
+  mutate(scaled_value = rescale(value)) |>
+  ungroup()
+
+ggplot(triage_matrix_data, aes(x = metric, y = policy_type, fill = scaled_value)) +
+  geom_tile(colour = "white", linewidth = 0.6) +
+  geom_text(
+    aes(label = label, colour = scaled_value > 0.6),
+    size = 3,
+    fontface = "bold"
+  ) +
+  scale_colour_manual(values = c("TRUE" = "#111827", "FALSE" = "#FFFFFF"), guide = "none") +
+  scale_fill_viridis_c(option = "C", guide = "none") +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_text(face = "bold", size = 8),
+    axis.text.y = element_text(size = 8),
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
+  ) +
   labs(
-    title = "Policy-type triage matrix",
+    title = "Policy-Type Triage Matrix",
+    subtitle = "Color intensity indicates relative highs and lows within each specific metric",
     x = NULL,
-    y = NULL,
-    fill = "Value"
+    y = NULL
   )
 ```
 
 ::: notes
-This is the first prioritisation view. It separates high-frequency from high-severity policy types and overlays premium materiality. That makes the underwriting response clearer: frequent claiming suggests product or deductible review, while high severity suggests claims, reserves, or coverage design review.
+This slide is my first prioritisation view. I compare policy type across loss ratio, claim frequency, claim severity, and premium share. The important point is that not every weak segment needs the same response. A high-frequency segment suggests product, deductible, or renewal controls, while a high-severity segment suggests reserve, claims, or coverage review.
 :::
 
 ## Profitability Status
@@ -345,16 +410,17 @@ ggbarstats(
   y = profit_status,
   label = "percentage",
   results.subtitle = FALSE,
+  ggtheme = ggplot2::theme_get(),
   title = "Policy-year profitability status by policy type",
   xlab = "Policy type",
   ylab = "Policy-year records",
   legend.title = "Profitability status"
 ) +
-  theme(axis.text.x = element_text(angle = 25, hjust = 1))
+  theme(axis.text.x = element_text(angle = 25, hjust = 1, size = 8))
 ```
 
 ::: notes
-This view turns the portfolio into three states: no claim, claim but still profitable, and loss-making. It is more intuitive than a raw policy count because it links policy design to claim and premium outcome. It also shows whether concern comes from a broad loss-making share or from a smaller adverse tail.
+Here I break each policy type into no-claim, claim-but-profitable, and loss-making records. This helps me show whether a product problem is broad-based or concentrated in a loss-making tail. The key interpretation is that comprehensive without excess should be treated as a frequency-management concern, and we should not assume that higher cover automatically means stronger profitability.
 :::
 
 ## Bonus Score Signal
@@ -383,15 +449,14 @@ ggplot(
   ) +
   geom_jitter(
     width = 0.08, 
-    alpha = 0.03, 
-    size = 0.35, 
+    alpha = 0.05, 
+    size = 0.3, 
     show.legend = FALSE,
-    color = "#2C3E50" 
+    color = "#64748B" 
   ) +
-  geom_hline(yintercept = 1, linetype = "dashed", colour = "#C0392B", linewidth = 0.8) +
+  geom_hline(yintercept = 1, linetype = "dashed", colour = "#EF4444", linewidth = 1) +
   scale_y_continuous(labels = number_format(accuracy = 0.1)) +
   scale_fill_brewer(palette = "Set2") +
-  theme_minimal(base_size = 14) +
   labs(
     title = "Bonus Score Myth Check: Claim Severity",
     subtitle = "Distribution of loss ratios (excluding zero-claim policies); dashed line = break-even",
@@ -401,7 +466,7 @@ ggplot(
 ```
 
 ::: notes
-The half-eye plot shows why bonus score should be treated as a supporting signal. If the groups overlap substantially, a bonus score rule alone will misclassify many policies. The aggregate point is still useful because it shows the portfolio-level direction, while the distribution warns against a blunt rule.
+This slide tests whether bonus score cleanly separates good and bad risks. The half-eye plot shows the shape and overlap of the loss-ratio distributions, while the boxplot summarises the central spread. My interpretation is that bonus score is directionally useful, especially for frequency, but the overlap means it should support pricing rather than act as a single blunt rule.
 :::
 
 ## Exposure Duration and Loyalty
@@ -421,13 +486,12 @@ p_exposure <- ggplot(
     scale = 1.6,
     rel_min_height = 0.005,
     colour = "white",   
-    linewidth = 0.5
+    linewidth = 0.35
   ) +
-  geom_vline(xintercept = 1, linetype = "dashed", colour = "#C0392B", linewidth = 0.8) +
+  geom_vline(xintercept = 1, linetype = "dashed", colour = "#EF4444", linewidth = 1) +
   scale_fill_viridis_d(option = "C", guide = "none") +
-  theme_minimal(base_size = 14) +
   theme(plot.margin = margin(t = 10, r = 20, b = 10, l = 10)) +
-  labs(title = "Claimant LR by exposure duration", x = "Loss ratio", y = NULL)
+  labs(title = "Claimant LR by duration", x = "Loss ratio", y = NULL)
 
 p_loyalty <- loyalty_summary |>
   mutate(premium_share = premium / sum(premium)) |>
@@ -441,28 +505,25 @@ p_loyalty <- loyalty_summary |>
       label = percent(value, accuracy = 0.1),
       colour = value > 0.70 
     ),
-    size = 4.5,
+    size = 3.2,
     fontface = "bold",
     show.legend = FALSE
   ) +
-  scale_colour_manual(values = c("TRUE" = "black", "FALSE" = "white")) +
+  scale_colour_manual(values = c("TRUE" = "#111827", "FALSE" = "#FFFFFF")) +
   scale_fill_viridis_c(option = "C", guide = "none") +
-  theme_minimal(base_size = 14) +
   theme(
     panel.grid = element_blank(), 
     plot.margin = margin(t = 10, r = 10, b = 10, l = 10)
   ) +
-  labs(title = "Retention value by observed years", x = NULL, y = NULL)
+  labs(title = "Retention value", x = NULL, y = NULL)
 
 final_plot <- p_exposure + p_loyalty + plot_layout(widths = c(1.3, 1))
-
-ggsave("exposure_and_loyalty.png", plot = final_plot, width = 14, height = 6, dpi = 300)
 
 final_plot
 ```
 
 ::: notes
-This slide tests two strategic myths. Short-exposure policies are not harmless if their claimant loss ratios shift right. Loyal customers are not just retained volume if their loss ratio is materially better. Together, these views connect profitability with retention and early-duration quality monitoring.
+This slide connects two strategic questions: early-duration risk and customer loyalty. On the left, I use ridgelines to check whether short-exposure policies have a heavier adverse loss-ratio distribution. On the right, I compare premium share and loss ratio by observed customer duration. The pattern supports monitoring short-exposure policies while protecting longer-observed customers that show stronger profitability.
 :::
 
 ## Cancellation Quality
@@ -471,51 +532,23 @@ This slide tests two strategic myths. Short-exposure policies are not harmless i
 #| fig-width: 11
 #| fig-height: 5.6
 
-cancel_mix <- portfolio |>
-  filter(!is.na(policy_status), !is.na(bonus_score)) |>
-  count(policy_status, bonus_score) |>
-  group_by(policy_status) |>
-  mutate(
-    pct = n / sum(n),
-    total_n = sum(n),
-    axis_label = paste0(policy_status, "\n(n = ", comma(total_n), ")")
-  ) |>
-  ungroup() |>
-  mutate(bonus_score = factor(bonus_score, levels = c("Bad", "Neutral", "Good")))
-
-p_cancel <- ggplot(cancel_mix, aes(x = axis_label, y = pct, fill = bonus_score)) +
-  geom_col(width = 0.65, colour = "white", linewidth = 0.8) +
-  geom_text(
-    aes(label = percent(pct, accuracy = 1)),
-    position = position_stack(vjust = 0.5),
-    size = 4.5,
-    fontface = "bold",
-    colour = "white"
-  ) +
-  scale_fill_manual(
-    values = c("Good" = "#4A90E2", "Neutral" = "#E74C3C", "Bad" = "#F1C40F")
-  ) +
-  scale_y_continuous(labels = label_percent()) +
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.grid.major.x = element_blank(), 
-    panel.grid.minor = element_blank()
-  ) +
-  labs(
-    title = "Cancellation rate by bonus score",
-    subtitle = "Cancellation is helpful only if it removes poor risks faster than good risks",
-    x = "Policy Status",
-    y = "Share of Policy-Year Records",
-    fill = "Bonus Score"
-  )
-
-ggsave("cancellation_rate_mix.png", plot = p_cancel, width = 8, height = 7, dpi = 300)
-
-p_cancel
+ggbarstats(
+  data = portfolio |> filter(!is.na(policy_status), !is.na(bonus_score)),
+  x = bonus_score,
+  y = policy_status,
+  label = "percentage",
+  results.subtitle = FALSE,
+  ggtheme = ggplot2::theme_get(),
+  title = "Cancellation quality by bonus score",
+  subtitle = "Cancellation is useful only if poor risks leave faster than good risks",
+  xlab = "Bonus score",
+  ylab = "Policy-year records",
+  legend.title = "Policy status"
+)
 ```
 
 ::: notes
-Cancellation cannot automatically be interpreted as good or bad. If weaker risks cancel more often, attrition may reduce pressure. If good risks also leave materially, the portfolio can deteriorate. The technical report pairs this bar view with density overlays to check the quality of leaving policies.
+Here I explain why cancellation should not be interpreted too casually. If high-risk policies cancel, attrition may reduce pressure, but if profitable customers leave, retention quality worsens. I use the bonus-score split to show whether weaker risks are actually leaving. My main takeaway is that the insurer should detect poor risks earlier instead of relying on cancellation to clean the portfolio.
 :::
 
 ## Driver and Vehicle Interaction
@@ -530,24 +563,43 @@ age_heatmap <- portfolio |>
   summarise(
     exposure = sum(total_exposure, na.rm = TRUE),
     claims = sum(total_claims, na.rm = TRUE),
-    claim_frequency = claims / exposure,
+    claim_frequency = if_else(exposure > 0, claims / exposure, 0),
     .groups = "drop"
   )
 
-ggplot(age_heatmap, aes(vehicle_age_band, driver_age_band, fill = claim_frequency)) +
-  geom_tile(colour = "white", linewidth = 0.4) +
-  geom_text(aes(label = number(claim_frequency, accuracy = 0.01)), size = 4) +
-  scale_fill_viridis_c(option = "C", labels = number_format(accuracy = 0.01)) +
+ggplot(age_heatmap, aes(x = vehicle_age_band, y = driver_age_band, fill = claim_frequency)) +
+  geom_tile(colour = "white", linewidth = 0.5) +
+  geom_text(
+    aes(
+      label = number(claim_frequency, accuracy = 0.01),
+      colour = claim_frequency > 0.50
+    ), 
+    size = 3.2, 
+    fontface = "bold"
+  ) +
+  scale_colour_manual(values = c("TRUE" = "#111827", "FALSE" = "#FFFFFF"), guide = "none") +
+  scale_fill_viridis_c(
+    option = "C", 
+    limits = c(0, 0.75), 
+    oob = scales::squish, 
+    guide = "none"
+  ) +
+  theme(
+    panel.grid = element_blank(),
+    axis.title = element_text(face = "bold"),
+    axis.text.x = element_text(size = 8),
+    axis.text.y = element_text(size = 8)
+  ) +
   labs(
-    title = "Claim frequency interaction: driver age x vehicle age",
-    x = "Vehicle age band",
-    y = "Driver age band",
-    fill = "Claim frequency"
+    title = "Claim frequency interaction: Driver Age x Vehicle Age",
+    subtitle = "Color scale capped at 0.75 to prevent low-exposure outliers from washing out the gradient",
+    x = "Vehicle Age Band",
+    y = "Driver Age Band"
   )
 ```
 
 ::: notes
-The heatmap is included because single-variable charts can miss interactions. A driver-age group may not look extreme overall, but a specific vehicle-age combination may have high claim frequency. These cells are suitable candidates for follow-up pricing interactions or underwriting rules.
+This heatmap shows why I include multivariate analysis. Looking only at driver age or vehicle age separately can hide important combinations. Each cell shows claim frequency for a driver-age and vehicle-age pairing. The cells with higher frequency indicate where pricing interactions or underwriting rules may be more useful than a simple age-only or vehicle-age-only adjustment.
 :::
 
 ## Brand, Value, and Geography
@@ -560,22 +612,20 @@ p_brand <- ggplot(
   portfolio |> filter(claim_flag, !is.na(brand_tier), !is.na(claim_severity), claim_severity > 0),
   aes(x = brand_tier, y = claim_severity)
 ) +
-  stat_pointinterval(.width = c(0.8, 0.95), point_size = 3, aes(colour = factor(after_stat(.width)))) +
+  stat_pointinterval(.width = c(0.8, 0.95), point_size = 2.6, aes(colour = factor(after_stat(.width)))) +
   scale_y_log10(labels = dollar_format(prefix = "")) +
   scale_colour_manual(values = c("0.8" = "#4C78A8", "0.95" = "#F58518"), guide = "none") +
-  theme_minimal(base_size = 14) +
-  labs(title = "Severity by brand tier", x = NULL, y = "Claim severity")
+  labs(title = "Severity by brand", x = NULL, y = "Claim severity")
 
 p_value <- ggplot(
   vehicle_value_summary,
   aes(x = vehicle_value_band, y = "Loss ratio", fill = loss_ratio)
 ) +
   geom_tile(colour = "white", linewidth = 0.5) +
-  geom_text(aes(label = percent(loss_ratio, accuracy = 0.1)), size = 4, colour = "white", fontface = "bold") +
+  geom_text(aes(label = percent(loss_ratio, accuracy = 0.1)), size = 2.8, colour = "white", fontface = "bold") +
   scale_fill_viridis_c(option = "C", guide = "none") +
-  theme_minimal(base_size = 14) +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.x = element_text(angle = 35, hjust = 1, size = 7),
     axis.text.y = element_blank(),                   
     panel.grid = element_blank()                     
   ) +
@@ -586,66 +636,22 @@ p_geo <- ggplot(
   aes(x = fct_reorder(geo_segment, loss_ratio), y = "Loss ratio", fill = loss_ratio)
 ) +
   geom_tile(colour = "white", linewidth = 0.5) +
-  geom_text(aes(label = percent(loss_ratio, accuracy = 0.1)), size = 4, colour = "white", fontface = "bold") +
+  geom_text(aes(label = percent(loss_ratio, accuracy = 0.1)), size = 2.7, colour = "white", fontface = "bold") +
   scale_fill_viridis_c(option = "C", guide = "none") + 
-  theme_minimal(base_size = 14) +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.x = element_text(angle = 35, hjust = 1, size = 6.5),
     axis.text.y = element_blank(),                 
     panel.grid = element_blank()                       
   ) +
-  labs(title = "Loss ratio by geography", x = NULL, y = NULL)
+  labs(title = "LR by geography", x = NULL, y = NULL)
 
 final_plot <- p_brand | p_value | p_geo
-
-ggsave("univariate_drivers.png", plot = final_plot, width = 14, height = 6, dpi = 300)
 
 final_plot
 ```
 
 ::: notes
-Brand, vehicle value, and geography are supporting lenses, not automatic pricing answers. Premium brand status tests a prestige stereotype. Vehicle value tests whether value risk is monotonic. Geography checks whether location creates visible loss-ratio separation. These views should be interpreted with materiality and uncertainty.
-:::
-
-## Validation and Priority Queue
-
-```{r}
-priority_tbl <- bind_rows(
-  policy_type_summary |> transmute(segment_type = "Policy type", segment = as.character(policy_type), premium, loss_ratio, claim_frequency, claim_severity),
-  segment_summary(portfolio, policy_status) |> transmute(segment_type = "Policy status", segment = as.character(policy_status), premium, loss_ratio, claim_frequency, claim_severity),
-  bonus_summary |> transmute(segment_type = "Bonus score", segment = as.character(bonus_score), premium, loss_ratio, claim_frequency, claim_severity),
-  exposure_summary |> transmute(segment_type = "Exposure band", segment = as.character(exposure_band), premium, loss_ratio, claim_frequency, claim_severity),
-  driver_age_summary |> transmute(segment_type = "Driver age", segment = as.character(driver_age_band), premium, loss_ratio, claim_frequency, claim_severity),
-  vehicle_age_summary |> transmute(segment_type = "Vehicle age", segment = as.character(vehicle_age_band), premium, loss_ratio, claim_frequency, claim_severity),
-  vehicle_value_summary |> transmute(segment_type = "Vehicle value", segment = as.character(vehicle_value_band), premium, loss_ratio, claim_frequency, claim_severity),
-  brand_tier_summary |> transmute(segment_type = "Brand tier", segment = as.character(brand_tier), premium, loss_ratio, claim_frequency, claim_severity),
-  loyalty_summary |> transmute(segment_type = "Loyalty", segment = as.character(loyalty_band), premium, loss_ratio, claim_frequency, claim_severity),
-  geo_summary |> transmute(segment_type = "Geography", segment = as.character(geo_segment), premium, loss_ratio, claim_frequency, claim_severity)
-) |>
-  filter(!is.na(segment), premium > 0) |>
-  mutate(
-    priority_score = 0.35 * percent_rank(loss_ratio) +
-      0.25 * percent_rank(claim_frequency) +
-      0.20 * percent_rank(replace_na(claim_severity, 0)) +
-      0.20 * percent_rank(premium)
-  ) |>
-  arrange(desc(priority_score)) |>
-  slice_head(n = 8)
-
-priority_tbl |>
-  transmute(
-    Rank = row_number(),
-    `Segment type` = segment_type,
-    Segment = segment,
-    `Loss ratio` = percent(loss_ratio, accuracy = 0.1),
-    `Claim freq.` = number(claim_frequency, accuracy = 0.001),
-    Premium = dollar(premium, prefix = "")
-  ) |>
-  kable()
-```
-
-::: notes
-The priority queue converts the visual findings into an underwriting action list. The score is not a pricing model. It is a transparent triage device that combines loss ratio, claim frequency, claim severity, and premium materiality so the review starts with segments that are both adverse and commercially relevant.
+This slide tests three common status and location stereotypes. I use point intervals for brand severity because uncertainty matters, and tile views for vehicle value and geography so the loss-ratio differences are easy to compare. My interpretation is that these variables are useful supporting lenses, but they should lead to calibrated loadings, not automatic surcharges.
 :::
 
 ## Answers to the 10 Research Questions
@@ -692,17 +698,20 @@ tibble(
 ```
 
 ::: notes
-This slide links the executive story back to the mythbusting research-question design. The findings are deliberately phrased as evidence-backed verdicts. The central answer is that stereotypes can be useful starting points, but pricing and retention decisions need profitability, frequency, severity, and materiality together.
+This slide summarises the 10 research questions as evidence-backed verdicts. I use "mixed", "busted", or "real" to make the conclusions easy to follow. The important point is that a stereotype may be true for frequency but false for overall profitability, so I interpret each myth using loss ratio, frequency, severity, materiality, and loyalty evidence together.
 :::
 
 ## Recommendations
+1.  Retain longer-observed customers with strong profitability.
 
-1. Retain longer-observed customers with strong profitability.
-2. Review comprehensive without excess and very short-exposure policies first.
-3. Detect cancellation-prone poor risks earlier, before losses emerge.
-4. Use age, brand, vehicle value, and geography as calibrated signals, not stereotypes.
-5. Treat the priority queue as a review list, not as a pricing model.
+2.  Review comprehensive without excess and very short-exposure policies first.
+
+3.  Detect cancellation-prone poor risks earlier, before losses emerge.
+
+4.  Use age, brand, vehicle value, and geography as calibrated signals, not stereotypes.
+
+5.  Treat the priority queue as a review list, not as a pricing model.
 
 ::: notes
-The recommendations connect directly to the three strategic objectives. Profitability comes from reviewing high-loss segments first. Retention comes from protecting longer-observed profitable customers. Calibrated pricing comes from using mythbusted evidence, not blunt assumptions about age, brand, value, or geography.
+I close by translating the visual findings into actions. For profitability, I would review comprehensive without excess and very short-exposure policies first. For retention, I would protect longer-observed profitable customers. For pricing, I would use the mythbusting evidence to calibrate age, brand, value, geography, and cancellation signals instead of applying broad stereotype-based rules.
 :::

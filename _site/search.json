@@ -1089,104 +1089,104 @@
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#take-home-exercise-1-visual-analytics-for-data-discovery",
     "title": "Chart Whisperer",
     "section": "Take-home Exercise 1: Visual Analytics for Data Discovery",
-    "text": "Take-home Exercise 1: Visual Analytics for Data Discovery\nMotor Insurance Portfolio Profitability and Volatility\nMethod: 10 mythbusting research questions, tidyverse data wrangling, and best-fit ggplot visual analytics\n\nThis executive summary presents the motor insurance portfolio investigation as a mythbusting exercise. The 10 research questions test common insurance stereotypes against the data. The analysis uses loss ratio, claim frequency, claim severity, underwriting result, retention, and exposure to distinguish real risk signals from assumptions."
+    "text": "Take-home Exercise 1: Visual Analytics for Data Discovery\nMythbusting Risk Stereotypes in Motor Insurance\nMethod: 10 mythbusting research questions, tidyverse data wrangling, and best-fit ggplot visual analytics\n\nI am framing this presentation as a mythbusting investigation of motor insurance risk. Instead of assuming common stereotypes are true, I test them against portfolio data from 2022 to 2024. I focus on loss ratio, claim frequency, claim severity, underwriting result, exposure, and retention because these measures show whether a segment is actually profitable, risky, or worth protecting."
+  },
+  {
+    "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#executive-summary",
+    "href": "TH_EX/TH_EX01/TH_EX01_ES.html#executive-summary",
+    "title": "Chart Whisperer",
+    "section": "Executive Summary",
+    "text": "Executive Summary\nThe portfolio is profitable overall, but profitability is uneven.\n\n\n\n\n\n\n\n\nStrategic objective\nMain finding\nBusiness action\n\n\nProfitability\nComprehensive without excess and very short-exposure policies create the clearest pressure.\nReview excess design, short-duration loading, and claims controls.\n\n\nRetention\nCustomers observed all 3 years are materially more profitable than one-year customers.\nProtect low-risk loyal customers from blunt repricing.\n\n\nCalibrated pricing\nSome stereotypes are real, but many are mixed.\nPrice using frequency, severity, materiality, and evidence together.\n\n\n\n\nMy overall message is that the portfolio is profitable, but the profitability is uneven. I want to show that stereotypes can be useful starting hypotheses, but they should not become pricing rules by themselves. The clearest actions are to review comprehensive without excess, monitor very short-exposure policies, retain profitable loyal customers, and use age, brand, vehicle value, and geography as calibrated supporting signals."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#contents",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#contents",
     "title": "Chart Whisperer",
     "section": "Contents",
-    "text": "Contents\n\nAnalytical objective and research questions\nReproducible sandbox\nPortfolio trend and triage\nKey univariate and bivariate findings\nMultivariate risk signals\nAnswers and recommendations\n\n\nThe deck follows the same logic as the technical report. It first explains the analytical frame, then shows the portfolio at a glance, then moves through the strongest visual findings. The goal is to keep the executive story concise while preserving traceability to the reproducible technical report."
+    "text": "Contents\n\nExecutive summary and objectives\nMethodology, data, and technique rationale\nPortfolio trend and policy-type triage\nMythbusting findings by risk dimension\nAnswers to the 10 research questions\nRecommendations\n\n\nI will first explain the objective, data preparation, and technique choices, then move into the key visual findings. The flow is designed to move from overall portfolio performance into segment-level mythbusting. I end by answering the 10 research questions and linking the evidence back to profitability, retention, and calibrated pricing."
   },
   {
-    "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#analytical-objective",
-    "href": "TH_EX/TH_EX01/TH_EX01_ES.html#analytical-objective",
+    "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#methodology-and-data",
+    "href": "TH_EX/TH_EX01/TH_EX01_ES.html#methodology-and-data",
     "title": "Chart Whisperer",
-    "section": "Analytical Objective",
-    "text": "Analytical Objective\nCore question: which insurance stereotypes are real, and which are myths?\nThe strategic objectives are to:\n\nmaximise overall portfolio profitability;\nmaximise retention and loyalty among low-risk, highly profitable customers;\nidentify high-risk segments for appropriately calibrated premium pricing.\n\nThe analysis answers 10 research questions covering:\n\nconventional and demographic factors;\nbrand-and-status factors;\nbehavioural and claim-history factors;\nloyalty and policy-status factors;\ngeographic frequency and severity differences.\n\n\nThe assignment is framed as an underwriting investigation that tests myths against the three strategic objectives. Technique selection is tied to decisions: ranked bars identify profitability pressure, bubble maps separate frequency and severity, loyalty bars support retention, half-eye plots reveal stereotype overlap, ridgelines expose tail risk, and heatmaps show interactions.\n\nTechnique Rationale\n\n\n\n\n\n\n\nDecision need\nVisual technique\n\n\n\n\nProfitability pressure\nKPI tiles with embedded geom_text() labels\n\n\nFrequency vs severity diagnosis\nKPI matrices and stat_pointinterval()\n\n\nRetention and loyalty value\nKPI bars by observed customer duration\n\n\nStereotype overlap\nHalf-eye distributions and boxplots\n\n\nHidden short-exposure risk\nRidgelines with quantile shading\n\n\nInteraction risk\nHeatmaps with embedded labels"
+    "section": "Methodology and Data",
+    "text": "Methodology and Data\nCore question: which insurance stereotypes are real, and which are myths?\nThe strategic objectives are to:\n\nmaximise overall portfolio profitability;\nmaximise retention and loyalty among low-risk, highly profitable customers;\nidentify high-risk segments for appropriately calibrated premium pricing.\n\nThe analysis answers 10 research questions covering:\n\nconventional and demographic factors;\nbrand-and-status factors;\nbehavioural and claim-history factors;\nloyalty and policy-status factors;\ngeographic frequency and severity differences."
   },
   {
-    "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#analytical-sandbox",
-    "href": "TH_EX/TH_EX01/TH_EX01_ES.html#analytical-sandbox",
+    "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#technique-rationale",
+    "href": "TH_EX/TH_EX01/TH_EX01_ES.html#technique-rationale",
     "title": "Chart Whisperer",
-    "section": "Analytical Sandbox",
-    "text": "Analytical Sandbox\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPolicy-years\nInsured policies\nExposure\nPremium\nIncurred\nLoss ratio\nClaim frequency\n\n\n\n\n354,140\n185,678\n250,326\n105,079,669\n73,864,811\n70.3%\n0.308\n\n\n\n\n\n\nThe sandbox is prepared directly from the raw CSV in the data folder. Variables are recoded into readable labels, and derived KPIs are created for loss ratio, claim frequency, claim severity, underwriting result, exposure band, age bands, brand tier, and geography. The same derived dataset supports both the report and this presentation."
+    "section": "Technique Rationale",
+    "text": "Technique Rationale\n\n\n\n\n\n\n\nDecision need\nVisual technique\n\n\nProfitability pressure\nKPI tiles with embedded geom_text() labels\n\n\nFrequency vs severity diagnosis\nKPI matrices and stat_pointinterval()\n\n\nRetention and loyalty value\nKPI bars by observed customer duration\n\n\nStereotype overlap\nHalf-eye distributions and boxplots\n\n\nHidden short-exposure risk\nRidgelines with quantile shading\n\n\nInteraction risk\nHeatmaps with embedded labels\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPolicy-years\nInsured policies\nExposure\nPremium\nIncurred\nLoss ratio\nClaim frequency\n\n\n\n\n354,140\n185,678\n250,326\n105,079,669\n73,864,811\n70.3%\n0.308\n\n\n\n\n\n\nHere I am showing how the analysis is made reproducible. The sandbox starts from the raw CSV and Excel dictionary, then derives loss ratio, frequency, severity, exposure bands, age bands, loyalty, brand tier, and geography. I also match each visual technique to a decision need: tiles summarise KPI pressure, half-eye plots show distribution overlap, ridgelines show tail risk, and heatmaps reveal interaction effects."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#one-look-portfolio-trend",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#one-look-portfolio-trend",
     "title": "Chart Whisperer",
     "section": "One-Look Portfolio Trend",
-    "text": "One-Look Portfolio Trend\n\n\nThe trend slide is designed as a static dashboard rather than an animation. Premium, incurred loss, loss ratio, and claim frequency can be compared in one view. This avoids forcing the audience to remember earlier frames and makes the portfolio movement easier to interpret."
+    "text": "One-Look Portfolio Trend\n\n\nThis slide gives the portfolio-level baseline before I discuss segments. I use a static dashboard so premium, incurred loss, underwriting result, loss ratio, and claim frequency can be compared at once. The main pattern I want the audience to see is whether deterioration is driven by profitability, claim activity, or portfolio scale, rather than treating the loss ratio as a standalone number."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#policy-type-triage",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#policy-type-triage",
     "title": "Chart Whisperer",
     "section": "Policy-Type Triage",
-    "text": "Policy-Type Triage\n\n\nThis is the first prioritisation view. It separates high-frequency from high-severity policy types and overlays premium materiality. That makes the underwriting response clearer: frequent claiming suggests product or deductible review, while high severity suggests claims, reserves, or coverage design review."
+    "text": "Policy-Type Triage\n\n\nThis slide is my first prioritisation view. I compare policy type across loss ratio, claim frequency, claim severity, and premium share. The important point is that not every weak segment needs the same response. A high-frequency segment suggests product, deductible, or renewal controls, while a high-severity segment suggests reserve, claims, or coverage review."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#profitability-status",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#profitability-status",
     "title": "Chart Whisperer",
     "section": "Profitability Status",
-    "text": "Profitability Status\n\n\nThis view turns the portfolio into three states: no claim, claim but still profitable, and loss-making. It is more intuitive than a raw policy count because it links policy design to claim and premium outcome. It also shows whether concern comes from a broad loss-making share or from a smaller adverse tail."
+    "text": "Profitability Status\n\n\nHere I break each policy type into no-claim, claim-but-profitable, and loss-making records. This helps me show whether a product problem is broad-based or concentrated in a loss-making tail. The key interpretation is that comprehensive without excess should be treated as a frequency-management concern, and we should not assume that higher cover automatically means stronger profitability."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#bonus-score-signal",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#bonus-score-signal",
     "title": "Chart Whisperer",
     "section": "Bonus Score Signal",
-    "text": "Bonus Score Signal\n\n\nThe half-eye plot shows why bonus score should be treated as a supporting signal. If the groups overlap substantially, a bonus score rule alone will misclassify many policies. The aggregate point is still useful because it shows the portfolio-level direction, while the distribution warns against a blunt rule."
+    "text": "Bonus Score Signal\n\n\nThis slide tests whether bonus score cleanly separates good and bad risks. The half-eye plot shows the shape and overlap of the loss-ratio distributions, while the boxplot summarises the central spread. My interpretation is that bonus score is directionally useful, especially for frequency, but the overlap means it should support pricing rather than act as a single blunt rule."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#exposure-duration-and-loyalty",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#exposure-duration-and-loyalty",
     "title": "Chart Whisperer",
     "section": "Exposure Duration and Loyalty",
-    "text": "Exposure Duration and Loyalty\n\n\nThis slide tests two strategic myths. Short-exposure policies are not harmless if their claimant loss ratios shift right. Loyal customers are not just retained volume if their loss ratio is materially better. Together, these views connect profitability with retention and early-duration quality monitoring."
+    "text": "Exposure Duration and Loyalty\n\n\nThis slide connects two strategic questions: early-duration risk and customer loyalty. On the left, I use ridgelines to check whether short-exposure policies have a heavier adverse loss-ratio distribution. On the right, I compare premium share and loss ratio by observed customer duration. The pattern supports monitoring short-exposure policies while protecting longer-observed customers that show stronger profitability."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#cancellation-quality",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#cancellation-quality",
     "title": "Chart Whisperer",
     "section": "Cancellation Quality",
-    "text": "Cancellation Quality\n\n\nCancellation cannot automatically be interpreted as good or bad. If weaker risks cancel more often, attrition may reduce pressure. If good risks also leave materially, the portfolio can deteriorate. The technical report pairs this bar view with density overlays to check the quality of leaving policies."
+    "text": "Cancellation Quality\n\n\nHere I explain why cancellation should not be interpreted too casually. If high-risk policies cancel, attrition may reduce pressure, but if profitable customers leave, retention quality worsens. I use the bonus-score split to show whether weaker risks are actually leaving. My main takeaway is that the insurer should detect poor risks earlier instead of relying on cancellation to clean the portfolio."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#driver-and-vehicle-interaction",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#driver-and-vehicle-interaction",
     "title": "Chart Whisperer",
     "section": "Driver and Vehicle Interaction",
-    "text": "Driver and Vehicle Interaction\n\n\nThe heatmap is included because single-variable charts can miss interactions. A driver-age group may not look extreme overall, but a specific vehicle-age combination may have high claim frequency. These cells are suitable candidates for follow-up pricing interactions or underwriting rules."
+    "text": "Driver and Vehicle Interaction\n\n\nThis heatmap shows why I include multivariate analysis. Looking only at driver age or vehicle age separately can hide important combinations. Each cell shows claim frequency for a driver-age and vehicle-age pairing. The cells with higher frequency indicate where pricing interactions or underwriting rules may be more useful than a simple age-only or vehicle-age-only adjustment."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#brand-value-and-geography",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#brand-value-and-geography",
     "title": "Chart Whisperer",
     "section": "Brand, Value, and Geography",
-    "text": "Brand, Value, and Geography\n\n\nBrand, vehicle value, and geography are supporting lenses, not automatic pricing answers. Premium brand status tests a prestige stereotype. Vehicle value tests whether value risk is monotonic. Geography checks whether location creates visible loss-ratio separation. These views should be interpreted with materiality and uncertainty."
-  },
-  {
-    "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#validation-and-priority-queue",
-    "href": "TH_EX/TH_EX01/TH_EX01_ES.html#validation-and-priority-queue",
-    "title": "Chart Whisperer",
-    "section": "Validation and Priority Queue",
-    "text": "Validation and Priority Queue\n\n\n\n\n\n\n\n\n\n\n\n\n\nRank\nSegment type\nSegment\nLoss ratio\nClaim freq.\nPremium\n\n\n\n\n1\nPolicy status\nCancelled\n128.0%\n0.506\n9,679,856\n\n\n2\nExposure band\nVery short\n103.3%\n0.347\n4,768,791\n\n\n3\nBonus score\nBad\n79.0%\n0.624\n2,786,084\n\n\n4\nBonus score\nNeutral\n81.4%\n0.478\n3,268,691\n\n\n5\nPolicy type\nComprehensive with excess\n73.8%\n0.410\n35,712,392\n\n\n6\nVehicle value\nHighest\n73.3%\n0.410\n28,700,748\n\n\n7\nLoyalty\nObserved 1 year\n88.2%\n0.297\n13,043,675\n\n\n8\nLoyalty\nObserved 2 years\n74.1%\n0.320\n37,211,398\n\n\n\n\n\n\nThe priority queue converts the visual findings into an underwriting action list. The score is not a pricing model. It is a transparent triage device that combines loss ratio, claim frequency, claim severity, and premium materiality so the review starts with segments that are both adverse and commercially relevant."
+    "text": "Brand, Value, and Geography\n\n\nThis slide tests three common status and location stereotypes. I use point intervals for brand severity because uncertainty matters, and tile views for vehicle value and geography so the loss-ratio differences are easy to compare. My interpretation is that these variables are useful supporting lenses, but they should lead to calibrated loadings, not automatic surcharges."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#answers-to-the-10-research-questions",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#answers-to-the-10-research-questions",
     "title": "Chart Whisperer",
     "section": "Answers to the 10 Research Questions",
-    "text": "Answers to the 10 Research Questions\n\n\n\n\n\n\n\n\n\n\nRQ\nVerdict\nAnswer\n\n\n\n\nRQ1\nMixed\n18-25 has highest frequency (0.488) but only 62.5% LR; worst age LR is 26-35.\n\n\nRQ2\nPartly real\n0-3 vehicles claim most often (0.524), but worst LR is 13-20 (75.2%).\n\n\nRQ3\nBusted\nComprehensive without excess has 93.9% LR and 1.046 frequency.\n\n\nRQ4\nMostly busted\nPremium brands have higher frequency but lower LR (68.9%) than mainstream brands (70.7%).\n\n\nRQ5\nMixed\nHighest-value LR is 73.3%, but lowest-value LR is also weak at 72.3%.\n\n\nRQ6\nMostly real\nBad has highest frequency (0.624); Neutral has highest LR (81.4%).\n\n\nRQ7\nBusted\nVery short exposure is above break-even at 103.3% LR.\n\n\nRQ8\nBusted\nObserved all 3 years has best LR (63.4%) versus one-year customers (88.2%).\n\n\nRQ9\nReal\nCancelled policies are worse: 128.0% LR versus active 64.4%.\n\n\nRQ10\nMixed\nUrban has higher frequency and LR; rural has higher severity (995.91).\n\n\n\n\n\n\nThis slide links the executive story back to the mythbusting research-question design. The findings are deliberately phrased as evidence-backed verdicts. The central answer is that stereotypes can be useful starting points, but pricing and retention decisions need profitability, frequency, severity, and materiality together."
+    "text": "Answers to the 10 Research Questions\n\n\n\n\n\n\n\n\n\n\nRQ\nVerdict\nAnswer\n\n\n\n\nRQ1\nMixed\n18-25 has highest frequency (0.488) but only 62.5% LR; worst age LR is 26-35.\n\n\nRQ2\nPartly real\n0-3 vehicles claim most often (0.524), but worst LR is 13-20 (75.2%).\n\n\nRQ3\nBusted\nComprehensive without excess has 93.9% LR and 1.046 frequency.\n\n\nRQ4\nMostly busted\nPremium brands have higher frequency but lower LR (68.9%) than mainstream brands (70.7%).\n\n\nRQ5\nMixed\nHighest-value LR is 73.3%, but lowest-value LR is also weak at 72.3%.\n\n\nRQ6\nMostly real\nBad has highest frequency (0.624); Neutral has highest LR (81.4%).\n\n\nRQ7\nBusted\nVery short exposure is above break-even at 103.3% LR.\n\n\nRQ8\nBusted\nObserved all 3 years has best LR (63.4%) versus one-year customers (88.2%).\n\n\nRQ9\nReal\nCancelled policies are worse: 128.0% LR versus active 64.4%.\n\n\nRQ10\nMixed\nUrban has higher frequency and LR; rural has higher severity (995.91).\n\n\n\n\n\n\nThis slide summarises the 10 research questions as evidence-backed verdicts. I use “mixed”, “busted”, or “real” to make the conclusions easy to follow. The important point is that a stereotype may be true for frequency but false for overall profitability, so I interpret each myth using loss ratio, frequency, severity, materiality, and loyalty evidence together."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#recommendations",
     "href": "TH_EX/TH_EX01/TH_EX01_ES.html#recommendations",
     "title": "Chart Whisperer",
     "section": "Recommendations",
-    "text": "Recommendations\n\nRetain longer-observed customers with strong profitability.\nReview comprehensive without excess and very short-exposure policies first.\nDetect cancellation-prone poor risks earlier, before losses emerge.\nUse age, brand, vehicle value, and geography as calibrated signals, not stereotypes.\nTreat the priority queue as a review list, not as a pricing model.\n\n\nThe recommendations connect directly to the three strategic objectives. Profitability comes from reviewing high-loss segments first. Retention comes from protecting longer-observed profitable customers. Calibrated pricing comes from using mythbusted evidence, not blunt assumptions about age, brand, value, or geography."
+    "text": "Recommendations\n\nRetain longer-observed customers with strong profitability.\nReview comprehensive without excess and very short-exposure policies first.\nDetect cancellation-prone poor risks earlier, before losses emerge.\nUse age, brand, vehicle value, and geography as calibrated signals, not stereotypes.\nTreat the priority queue as a review list, not as a pricing model.\n\n\nI close by translating the visual findings into actions. For profitability, I would review comprehensive without excess and very short-exposure policies first. For retention, I would protect longer-observed profitable customers. For pricing, I would use the mythbusting evidence to calibrate age, brand, value, geography, and cancellation signals instead of applying broad stereotype-based rules."
   }
 ]

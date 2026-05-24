@@ -133,10 +133,56 @@
 
 <section id="take-home-exercise-1-visual-analytics-for-data-discovery" class="slide level2">
 <h2>Take-home Exercise 1: Visual Analytics for Data Discovery</h2>
-<h3 id="motor-insurance-portfolio-profitability-and-volatility">Motor Insurance Portfolio Profitability and Volatility</h3>
+<h3 id="mythbusting-risk-stereotypes-in-motor-insurance">Mythbusting Risk Stereotypes in Motor Insurance</h3>
 <p><strong>Method:</strong> 10 mythbusting research questions, tidyverse data wrangling, and best-fit ggplot visual analytics</p>
 <aside class="notes">
-<p>This executive summary presents the motor insurance portfolio investigation as a mythbusting exercise. The 10 research questions test common insurance stereotypes against the data. The analysis uses loss ratio, claim frequency, claim severity, underwriting result, retention, and exposure to distinguish real risk signals from assumptions.</p>
+<p>I am framing this presentation as a mythbusting investigation of motor insurance risk. Instead of assuming common stereotypes are true, I test them against portfolio data from 2022 to 2024. I focus on loss ratio, claim frequency, claim severity, underwriting result, exposure, and retention because these measures show whether a segment is actually profitable, risky, or worth protecting.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="executive-summary" class="slide level2">
+<h2>Executive Summary</h2>
+<p>The portfolio is profitable overall, but profitability is uneven.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td><strong>Strategic objective</strong></td>
+<td><strong>Main finding</strong></td>
+<td><strong>Business action</strong></td>
+</tr>
+<tr class="even">
+<td>Profitability</td>
+<td>Comprehensive without excess and very short-exposure policies create the clearest pressure.</td>
+<td>Review excess design, short-duration loading, and claims controls.</td>
+</tr>
+<tr class="odd">
+<td>Retention</td>
+<td>Customers observed all 3 years are materially more profitable than one-year customers.</td>
+<td>Protect low-risk loyal customers from blunt repricing.</td>
+</tr>
+<tr class="even">
+<td>Calibrated pricing</td>
+<td>Some stereotypes are real, but many are mixed.</td>
+<td>Price using frequency, severity, materiality, and evidence together.</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<p>My overall message is that the portfolio is profitable, but the profitability is uneven. I want to show that stereotypes can be useful starting hypotheses, but they should not become pricing rules by themselves. The clearest actions are to review comprehensive without excess, monitor very short-exposure policies, retain profitable loyal customers, and use age, brand, vehicle value, and geography as calibrated supporting signals.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -152,15 +198,15 @@
 <section id="contents" class="slide level2">
 <h2>Contents</h2>
 <ol type="1">
-<li>Analytical objective and research questions</li>
-<li>Reproducible sandbox</li>
-<li>Portfolio trend and triage</li>
-<li>Key univariate and bivariate findings</li>
-<li>Multivariate risk signals</li>
-<li>Answers and recommendations</li>
+<li><p>Executive summary and objectives</p></li>
+<li><p>Methodology, data, and technique rationale</p></li>
+<li><p>Portfolio trend and policy-type triage</p></li>
+<li><p>Mythbusting findings by risk dimension</p></li>
+<li><p>Answers to the 10 research questions</p></li>
+<li><p>Recommendations</p></li>
 </ol>
 <aside class="notes">
-<p>The deck follows the same logic as the technical report. It first explains the analytical frame, then shows the portfolio at a glance, then moves through the strongest visual findings. The goal is to keep the executive story concise while preserving traceability to the reproducible technical report.</p>
+<p>I will first explain the objective, data preparation, and technique choices, then move into the key visual findings. The flow is designed to move from overall portfolio performance into segment-level mythbusting. I end by answering the 10 research questions and linking the evidence back to profitability, retention, and calibrated pricing.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -173,8 +219,8 @@
           display:block!important;
       }</style></aside>
 </section>
-<section id="analytical-objective" class="slide level2">
-<h2>Analytical Objective</h2>
+<section id="methodology-and-data" class="slide level2">
+<h2>Methodology and Data</h2>
 <p><strong>Core question:</strong> which insurance stereotypes are real, and which are myths?</p>
 <p>The strategic objectives are to:</p>
 <ul>
@@ -190,61 +236,45 @@
 <li>loyalty and policy-status factors;</li>
 <li>geographic frequency and severity differences.</li>
 </ul>
-<aside class="notes">
-<p>The assignment is framed as an underwriting investigation that tests myths against the three strategic objectives. Technique selection is tied to decisions: ranked bars identify profitability pressure, bubble maps separate frequency and severity, loyalty bars support retention, half-eye plots reveal stereotype overlap, ridgelines expose tail risk, and heatmaps show interactions.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-<h3 id="technique-rationale">Technique Rationale</h3>
+</section>
+<section id="technique-rationale" class="slide level2">
+<h2>Technique Rationale</h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 50%">
 <col style="width: 50%">
 </colgroup>
-<thead>
-<tr class="header">
-<th>Decision need</th>
-<th>Visual technique</th>
-</tr>
-</thead>
 <tbody>
 <tr class="odd">
+<td><strong>Decision need</strong></td>
+<td><strong>Visual technique</strong></td>
+</tr>
+<tr class="even">
 <td>Profitability pressure</td>
 <td>KPI tiles with embedded <code>geom_text()</code> labels</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Frequency vs severity diagnosis</td>
 <td>KPI matrices and <code>stat_pointinterval()</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Retention and loyalty value</td>
 <td>KPI bars by observed customer duration</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Stereotype overlap</td>
 <td>Half-eye distributions and boxplots</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Hidden short-exposure risk</td>
 <td>Ridgelines with quantile shading</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Interaction risk</td>
 <td>Heatmaps with embedded labels</td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="analytical-sandbox" class="slide level2">
-<h2>Analytical Sandbox</h2>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top" style="width:100%;">
@@ -283,7 +313,7 @@
 </div>
 </div>
 <aside class="notes">
-<p>The sandbox is prepared directly from the raw CSV in the data folder. Variables are recoded into readable labels, and derived KPIs are created for loss ratio, claim frequency, claim severity, underwriting result, exposure band, age bands, brand tier, and geography. The same derived dataset supports both the report and this presentation.</p>
+<p>Here I am showing how the analysis is made reproducible. The sandbox starts from the raw CSV and Excel dictionary, then derives loss ratio, frequency, severity, exposure bands, age bands, loyalty, brand tier, and geography. I also match each visual technique to a decision need: tiles summarise KPI pressure, half-eye plots show distribution overlap, ridgelines show tail risk, and heatmaps reveal interaction effects.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -300,7 +330,7 @@
 <h2>One-Look Portfolio Trend</h2>
 
 <img data-src="TH_EX01_ES_files/figure-revealjs/unnamed-chunk-3-1.png" width="1152" class="r-stretch"><aside class="notes">
-<p>The trend slide is designed as a static dashboard rather than an animation. Premium, incurred loss, loss ratio, and claim frequency can be compared in one view. This avoids forcing the audience to remember earlier frames and makes the portfolio movement easier to interpret.</p>
+<p>This slide gives the portfolio-level baseline before I discuss segments. I use a static dashboard so premium, incurred loss, underwriting result, loss ratio, and claim frequency can be compared at once. The main pattern I want the audience to see is whether deterioration is driven by profitability, claim activity, or portfolio scale, rather than treating the loss ratio as a standalone number.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -317,7 +347,7 @@
 <h2>Policy-Type Triage</h2>
 
 <img data-src="TH_EX01_ES_files/figure-revealjs/unnamed-chunk-4-1.png" width="1056" class="r-stretch"><aside class="notes">
-<p>This is the first prioritisation view. It separates high-frequency from high-severity policy types and overlays premium materiality. That makes the underwriting response clearer: frequent claiming suggests product or deductible review, while high severity suggests claims, reserves, or coverage design review.</p>
+<p>This slide is my first prioritisation view. I compare policy type across loss ratio, claim frequency, claim severity, and premium share. The important point is that not every weak segment needs the same response. A high-frequency segment suggests product, deductible, or renewal controls, while a high-severity segment suggests reserve, claims, or coverage review.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -334,7 +364,7 @@
 <h2>Profitability Status</h2>
 
 <img data-src="TH_EX01_ES_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"><aside class="notes">
-<p>This view turns the portfolio into three states: no claim, claim but still profitable, and loss-making. It is more intuitive than a raw policy count because it links policy design to claim and premium outcome. It also shows whether concern comes from a broad loss-making share or from a smaller adverse tail.</p>
+<p>Here I break each policy type into no-claim, claim-but-profitable, and loss-making records. This helps me show whether a product problem is broad-based or concentrated in a loss-making tail. The key interpretation is that comprehensive without excess should be treated as a frequency-management concern, and we should not assume that higher cover automatically means stronger profitability.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -351,7 +381,7 @@
 <h2>Bonus Score Signal</h2>
 
 <img data-src="TH_EX01_ES_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"><aside class="notes">
-<p>The half-eye plot shows why bonus score should be treated as a supporting signal. If the groups overlap substantially, a bonus score rule alone will misclassify many policies. The aggregate point is still useful because it shows the portfolio-level direction, while the distribution warns against a blunt rule.</p>
+<p>This slide tests whether bonus score cleanly separates good and bad risks. The half-eye plot shows the shape and overlap of the loss-ratio distributions, while the boxplot summarises the central spread. My interpretation is that bonus score is directionally useful, especially for frequency, but the overlap means it should support pricing rather than act as a single blunt rule.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -368,7 +398,7 @@
 <h2>Exposure Duration and Loyalty</h2>
 
 <img data-src="TH_EX01_ES_files/figure-revealjs/unnamed-chunk-7-1.png" width="1152" class="r-stretch"><aside class="notes">
-<p>This slide tests two strategic myths. Short-exposure policies are not harmless if their claimant loss ratios shift right. Loyal customers are not just retained volume if their loss ratio is materially better. Together, these views connect profitability with retention and early-duration quality monitoring.</p>
+<p>This slide connects two strategic questions: early-duration risk and customer loyalty. On the left, I use ridgelines to check whether short-exposure policies have a heavier adverse loss-ratio distribution. On the right, I compare premium share and loss ratio by observed customer duration. The pattern supports monitoring short-exposure policies while protecting longer-observed customers that show stronger profitability.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -385,7 +415,7 @@
 <h2>Cancellation Quality</h2>
 
 <img data-src="TH_EX01_ES_files/figure-revealjs/unnamed-chunk-8-1.png" width="1056" class="r-stretch"><aside class="notes">
-<p>Cancellation cannot automatically be interpreted as good or bad. If weaker risks cancel more often, attrition may reduce pressure. If good risks also leave materially, the portfolio can deteriorate. The technical report pairs this bar view with density overlays to check the quality of leaving policies.</p>
+<p>Here I explain why cancellation should not be interpreted too casually. If high-risk policies cancel, attrition may reduce pressure, but if profitable customers leave, retention quality worsens. I use the bonus-score split to show whether weaker risks are actually leaving. My main takeaway is that the insurer should detect poor risks earlier instead of relying on cancellation to clean the portfolio.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -402,7 +432,7 @@
 <h2>Driver and Vehicle Interaction</h2>
 
 <img data-src="TH_EX01_ES_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"><aside class="notes">
-<p>The heatmap is included because single-variable charts can miss interactions. A driver-age group may not look extreme overall, but a specific vehicle-age combination may have high claim frequency. These cells are suitable candidates for follow-up pricing interactions or underwriting rules.</p>
+<p>This heatmap shows why I include multivariate analysis. Looking only at driver age or vehicle age separately can hide important combinations. Each cell shows claim frequency for a driver-age and vehicle-age pairing. The cells with higher frequency indicate where pricing interactions or underwriting rules may be more useful than a simple age-only or vehicle-age-only adjustment.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -419,113 +449,7 @@
 <h2>Brand, Value, and Geography</h2>
 
 <img data-src="TH_EX01_ES_files/figure-revealjs/unnamed-chunk-10-1.png" width="1152" class="r-stretch"><aside class="notes">
-<p>Brand, vehicle value, and geography are supporting lenses, not automatic pricing answers. Premium brand status tests a prestige stereotype. Vehicle value tests whether value risk is monotonic. Geography checks whether location creates visible loss-ratio separation. These views should be interpreted with materiality and uncertainty.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="validation-and-priority-queue" class="slide level2">
-<h2>Validation and Priority Queue</h2>
-<div class="cell">
-<div class="cell-output-display">
-<table class="caption-top" style="width:100%;">
-<colgroup>
-<col style="width: 6%">
-<col style="width: 17%">
-<col style="width: 32%">
-<col style="width: 13%">
-<col style="width: 15%">
-<col style="width: 13%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: right;">Rank</th>
-<th style="text-align: left;">Segment type</th>
-<th style="text-align: left;">Segment</th>
-<th style="text-align: left;">Loss ratio</th>
-<th style="text-align: left;">Claim freq.</th>
-<th style="text-align: left;">Premium</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">Policy status</td>
-<td style="text-align: left;">Cancelled</td>
-<td style="text-align: left;">128.0%</td>
-<td style="text-align: left;">0.506</td>
-<td style="text-align: left;">9,679,856</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2</td>
-<td style="text-align: left;">Exposure band</td>
-<td style="text-align: left;">Very short</td>
-<td style="text-align: left;">103.3%</td>
-<td style="text-align: left;">0.347</td>
-<td style="text-align: left;">4,768,791</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">3</td>
-<td style="text-align: left;">Bonus score</td>
-<td style="text-align: left;">Bad</td>
-<td style="text-align: left;">79.0%</td>
-<td style="text-align: left;">0.624</td>
-<td style="text-align: left;">2,786,084</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">4</td>
-<td style="text-align: left;">Bonus score</td>
-<td style="text-align: left;">Neutral</td>
-<td style="text-align: left;">81.4%</td>
-<td style="text-align: left;">0.478</td>
-<td style="text-align: left;">3,268,691</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">5</td>
-<td style="text-align: left;">Policy type</td>
-<td style="text-align: left;">Comprehensive with excess</td>
-<td style="text-align: left;">73.8%</td>
-<td style="text-align: left;">0.410</td>
-<td style="text-align: left;">35,712,392</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">6</td>
-<td style="text-align: left;">Vehicle value</td>
-<td style="text-align: left;">Highest</td>
-<td style="text-align: left;">73.3%</td>
-<td style="text-align: left;">0.410</td>
-<td style="text-align: left;">28,700,748</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">7</td>
-<td style="text-align: left;">Loyalty</td>
-<td style="text-align: left;">Observed 1 year</td>
-<td style="text-align: left;">88.2%</td>
-<td style="text-align: left;">0.297</td>
-<td style="text-align: left;">13,043,675</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">8</td>
-<td style="text-align: left;">Loyalty</td>
-<td style="text-align: left;">Observed 2 years</td>
-<td style="text-align: left;">74.1%</td>
-<td style="text-align: left;">0.320</td>
-<td style="text-align: left;">37,211,398</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<aside class="notes">
-<p>The priority queue converts the visual findings into an underwriting action list. The score is not a pricing model. It is a transparent triage device that combines loss ratio, claim frequency, claim severity, and premium materiality so the review starts with segments that are both adverse and commercially relevant.</p>
+<p>This slide tests three common status and location stereotypes. I use point intervals for brand severity because uncertainty matters, and tile views for vehicle value and geography so the loss-ratio differences are easy to compare. My interpretation is that these variables are useful supporting lenses, but they should lead to calibrated loadings, not automatic surcharges.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -611,7 +535,7 @@
 </div>
 </div>
 <aside class="notes">
-<p>This slide links the executive story back to the mythbusting research-question design. The findings are deliberately phrased as evidence-backed verdicts. The central answer is that stereotypes can be useful starting points, but pricing and retention decisions need profitability, frequency, severity, and materiality together.</p>
+<p>This slide summarises the 10 research questions as evidence-backed verdicts. I use “mixed”, “busted”, or “real” to make the conclusions easy to follow. The important point is that a stereotype may be true for frequency but false for overall profitability, so I interpret each myth using loss ratio, frequency, severity, materiality, and loyalty evidence together.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -627,14 +551,14 @@
 <section id="recommendations" class="slide level2">
 <h2>Recommendations</h2>
 <ol type="1">
-<li>Retain longer-observed customers with strong profitability.</li>
-<li>Review comprehensive without excess and very short-exposure policies first.</li>
-<li>Detect cancellation-prone poor risks earlier, before losses emerge.</li>
-<li>Use age, brand, vehicle value, and geography as calibrated signals, not stereotypes.</li>
-<li>Treat the priority queue as a review list, not as a pricing model.</li>
+<li><p>Retain longer-observed customers with strong profitability.</p></li>
+<li><p>Review comprehensive without excess and very short-exposure policies first.</p></li>
+<li><p>Detect cancellation-prone poor risks earlier, before losses emerge.</p></li>
+<li><p>Use age, brand, vehicle value, and geography as calibrated signals, not stereotypes.</p></li>
+<li><p>Treat the priority queue as a review list, not as a pricing model.</p></li>
 </ol>
 <aside class="notes">
-<p>The recommendations connect directly to the three strategic objectives. Profitability comes from reviewing high-loss segments first. Retention comes from protecting longer-observed profitable customers. Calibrated pricing comes from using mythbusted evidence, not blunt assumptions about age, brand, value, or geography.</p>
+<p>I close by translating the visual findings into actions. For profitability, I would review comprehensive without excess and very short-exposure policies first. For retention, I would protect longer-observed profitable customers. For pricing, I would use the mythbusting evidence to calibrate age, brand, value, geography, and cancellation signals instead of applying broad stereotype-based rules.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -832,9 +756,9 @@
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1280,
+        width: 1980,
 
-        height: 720,
+        height: 1080,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,
