@@ -12,7 +12,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('HO_EX/HO_EX05/images/ho_ex05a_poster.png');"}
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=5-A');"}
 :::
 
 ::: poster-info
@@ -29,7 +29,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('HO_EX/HO_EX05/images/ho_ex05b_poster.png');"}
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=5-B');"}
 :::
 
 ::: poster-info
@@ -46,7 +46,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('HO_EX/HO_EX05/images/ho_ex05c_poster.png');"}
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=5-C');"}
 :::
 
 ::: poster-info
@@ -63,7 +63,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('HO_EX/HO_EX05/images/ho_ex05d_poster.png');"}
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=5-D');"}
 :::
 
 ::: poster-info
@@ -80,7 +80,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('HO_EX/HO_EX05/images/ho_ex05e_poster.png');"}
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=5-E');"}
 :::
 
 ::: poster-info
