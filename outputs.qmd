@@ -115,14 +115,14 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=CLICK+HERE');"}
 :::
 
 ::: poster-info
 [Hands-on Exercise 7]{.poster-label}
 :::
 
-<a href="HO_EX/HO_EX07/HO_EX07.html" class="stretched-link"></a>
+<a href="landing_pages/HO_EX07_landing/HO_EX07_landing.html" class="stretched-link"></a>
 :::::
 :::::::
 

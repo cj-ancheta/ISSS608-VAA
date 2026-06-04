@@ -1,0 +1,592 @@
+---
+title: "Hands-on Exercise 7B:"
+subtitle: "Visualising and Analysing Text Data with R — tidytext methods"
+date: "2 Jun 2026"
+date-modified: "last-modified"
+format: html
+execute:
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+---
+
+# 1 Overview
+
+This hands-on exercise covers [Chapter 29: Visualising and Analysing Text Data with R: tidytext methods](https://r4va.netlify.app/chap29).
+
+By the end of this exercise, I will be able to:
+
+-   understand the tidytext framework for processing, analysing and visualising text data,
+
+-   write a function for importing multiple files into R,
+
+-   combine multiple files into a single data frame,
+
+-   clean and wrangle text data using the tidyverse approach,
+
+-   visualise words with a Word Cloud,
+
+-   compute term frequency–inverse document frequency (TF-IDF) using tidytext, and
+
+-   visualise the relationships between texts and terms.
+
+# 2 Getting Started
+
+## 2.1 Loading the required packages
+
+For this exercise we will use the following R packages:
+
+-   **tidytext** and **tidyverse** (mainly readr, purrr, stringr, ggplot2) for the tidy text workflow,
+
+-   **widyr** for pairwise counts/correlations,
+
+-   **wordcloud** and **ggwordcloud** for word clouds,
+
+-   **textplot** (which depends on **igraph**, **tidygraph** and **ggraph**) for term networks,
+
+-   **DT** for interactive tables, and
+
+-   **lubridate** and **hms** for date/time handling.
+
+```{r}
+#| label: setup
+pacman::p_load(tidytext, widyr, wordcloud, DT, ggwordcloud,
+               textplot, lubridate, hms, tidyverse,
+               tidygraph, ggraph, igraph)
+
+# Set seed so the stochastic layouts/word clouds are reproducible
+set.seed(1234)
+```
+
+## 2.2 Importing Multiple Text Files from Multiple Folders
+
+### 2.2.1 Creating a folder list
+
+```{r}
+news20 <- "data/20news"
+```
+
+### 2.2.2 Define a function to read all files from a folder into a data frame
+
+```{r}
+read_folder <- function(infolder) {
+  tibble(file = dir(infolder,
+                    full.names = TRUE)) %>%
+    mutate(text = map(file,
+                      read_lines)) %>%
+    transmute(id = basename(file),
+              text) %>%
+    unnest(text)
+}
+```
+
+## 2.3 Importing Multiple Text Files from Multiple Folders
+
+### 2.3.1 Reading in all the messages from the 20news folder
+
+```{r}
+raw_text <- tibble(folder =
+                     dir(news20,
+                         full.names = TRUE)) %>%
+  mutate(folder_out = map(folder,
+                          read_folder)) %>%
+  unnest(cols = c(folder_out)) %>%
+  transmute(newsgroup = basename(folder),
+            id, text)
+
+# Make sure the output folder exists before writing the cache
+if (!dir.exists("data/rds")) dir.create("data/rds", recursive = TRUE)
+write_rds(raw_text, "data/rds/news20.rds")
+```
+
+# 3 Initial EDA
+
+We can visualise the frequency of messages by newsgroup.
+
+```{r}
+raw_text %>%
+  group_by(newsgroup) %>%
+  summarize(messages = n_distinct(id)) %>%
+  ggplot(aes(messages, newsgroup)) +
+  geom_col(fill = "lightblue") +
+  labs(y = NULL)
+```
+
+::: {.callout-tip appearance="simple"}
+For each newsgroup, there are 10 different ids (messages).
+:::
+
+# 4 Introducing tidytext
+
+-   Using tidy data principles in processing, analysing and visualising text data.
+
+-   Much of the infrastructure needed for text mining with tidy data frames already exists in packages like *dplyr*, *broom*, *tidyr*, and *ggplot2*.
+
+The workflow using the tidytext approach is: **read text → unnest tokens → remove stop words → summarise / visualise**.
+
+## 4.1 Removing header and automated email signatures
+
+Each message has some structure and extra text we don't want to include. Every message has a header (fields such as "from:" or "in_reply_to:"), and some have automated email signatures that occur after a line like "--".
+
+```{r}
+cleaned_text <- raw_text %>%
+  group_by(newsgroup, id) %>%
+  filter(cumsum(text == "") > 0,
+         cumsum(str_detect(
+           text, "^--")) == 0) %>%
+  ungroup()
+```
+
+::: {.callout-note appearance="simple"}
+This code chunk removes the non-message text from the raw text.
+:::
+
+## 4.2 Removing lines with nested text representing quotes from other users
+
+```{r}
+cleaned_text <- cleaned_text %>%
+  filter(str_detect(text, "^[^>]+[A-Za-z\\d]")
+         | text == "",
+         !str_detect(text,
+                     "writes(:|\\.\\.\\.)$"),
+         !str_detect(text,
+                     "^In article <")
+  )
+```
+
+::: {.callout-tip appearance="simple"}
+This removed quotes from other users so they are not double counted / analysed.
+:::
+
+## 4.3 Text Data Processing
+
+[`unnest_tokens()`](https://www.rdocumentation.org/packages/tidytext/topics/unnest_tokens) of **tidytext** is used to split the dataset into tokens, while `stop_words` is used to remove stop words.
+
+```{r}
+usenet_words <- cleaned_text %>%
+  unnest_tokens(word, text) %>%
+  filter(str_detect(word, "[a-z']$"),
+         !word %in% stop_words$word)
+```
+
+Now that we've removed the headers, signatures, and formatting, we can explore the most common words.
+
+::: panel-tabset
+### Most common words overall
+
+```{r}
+usenet_words %>%
+  count(word, sort = TRUE) %>%
+  datatable()
+```
+
+### Most common words by newsgroup
+
+```{r}
+words_by_newsgroup <- usenet_words %>%
+  count(newsgroup, word, sort = TRUE) %>%
+  ungroup()
+
+words_by_newsgroup %>% datatable()
+```
+:::
+
+## 4.4 Visualising Words in newsgroups using the wordcloud package
+
+We can add colours for convenience using palettes from **RColorBrewer**.
+
+```{r}
+wordcloud(words_by_newsgroup$word,
+          words_by_newsgroup$n,
+          max.words = 300,
+          colors = brewer.pal(9, "Dark2"))
+```
+
+A DT table can complement the visual discovery. We specify `filter` to add a text filter per column.
+
+```{r}
+datatable(words_by_newsgroup, filter = "top")
+```
+
+## 4.5 Visualising Words in newsgroups using the ggwordcloud package
+
+This can be used along with **ggplot2**. Below we render facets for each newsgroup.
+
+**Note:** We use `n > 8` so the word cloud renders faster and the words do not overlap.
+
+```{r}
+#| fig-width: 11
+#| fig-height: 9
+words_by_newsgroup %>%
+  filter(n > 8) %>%
+  ggplot(aes(label = word,
+             size = n)) +
+  geom_text_wordcloud() +
+  theme_minimal() +
+  facet_wrap(~newsgroup)
+```
+
+# 5 Basic Concept of TF-IDF
+
+[tf–idf](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) — term frequency–inverse document frequency — is a numerical statistic intended to reflect how important a word is to a document within a [corpus](https://en.wikipedia.org/wiki/Text_corpus).
+
+$$tf\text{-}idf(t, d) = tf(t, d) \times \ln\left(\frac{N}{n_t}\right)$$
+
+where $tf(t,d)$ is the frequency of term $t$ in document $d$, $N$ is the number of documents, and $n_t$ is the number of documents containing $t$.
+
+## 5.1 Computing tf-idf within newsgroups
+
+`bind_tf_idf()` of **tidytext** computes and binds the term frequency, inverse document frequency and tf-idf of a tidy text dataset.
+
+```{r}
+tf_idf <- words_by_newsgroup %>%
+  bind_tf_idf(word, newsgroup, n) %>%
+  arrange(desc(tf_idf))
+```
+
+## 5.2 Visualising tf-idf as an interactive table
+
+We use `formatRound()` to format the numeric columns and `formatStyle()` to add styling.
+
+```{r}
+datatable(tf_idf, filter = "top") %>%
+  formatRound(c("tf", "idf", "tf_idf"), 3) %>%
+  formatStyle(0,
+              target = 'row',
+              lineHeight = '25%')
+```
+
+## 5.3 Visualising tf-idf within newsgroups
+
+A faceted bar chart is used to visualise the tf-idf values of the science-related newsgroups.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 7
+tf_idf %>%
+  filter(str_detect(newsgroup, "^sci\\.")) %>%
+  group_by(newsgroup) %>%
+  slice_max(tf_idf,
+            n = 12) %>%
+  ungroup() %>%
+  mutate(word = reorder(word,
+                        tf_idf)) %>%
+  ggplot(aes(tf_idf,
+             word,
+             fill = newsgroup)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ newsgroup,
+             scales = "free") +
+  labs(x = "tf-idf",
+       y = NULL)
+```
+
+# 6 Word Correlations
+
+## 6.1 Counting and correlating pairs of words with the widyr package
+
+-   To count the number of times that two words appear within the same document, or to see how correlated they are.
+
+-   Most operations for finding pairwise counts or correlations need to turn the data into a wide matrix first.
+
+-   The [**widyr**](https://cran.r-project.org/web/packages/widyr/) package first 'casts' a tidy dataset into a wide matrix, performs an operation such as a correlation on it, then re-tidies the result.
+
+`pairwise_cor()` of **widyr** computes the correlation between newsgroups based on their common words.
+
+```{r}
+newsgroup_cors <- words_by_newsgroup %>%
+  pairwise_cor(newsgroup,
+               word,
+               n,
+               sort = TRUE)
+```
+
+## 6.2 Visualising correlation as a network
+
+We can visualise the relationship between newsgroups in a network graph.
+
+```{r}
+set.seed(1234)
+
+newsgroup_cors %>%
+  filter(correlation > .025) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(alpha = correlation,
+                     width = correlation)) +
+  geom_node_point(size = 6,
+                  color = "lightblue") +
+  geom_node_text(aes(label = name),
+                 color = "red",
+                 repel = TRUE) +
+  theme_minimal()
+```
+
+::: {.callout-note appearance="simple"}
+Result differs from the original chapter as we are using seed `1234` instead of `2017`.
+:::
+
+## 6.3 Bigram
+
+A bigram data frame is created by using `unnest_tokens()` of tidytext with `token = "ngrams"` and `n = 2`.
+
+```{r}
+bigrams <- cleaned_text %>%
+  unnest_tokens(bigram,
+                text,
+                token = "ngrams",
+                n = 2)
+bigrams
+```
+
+## 6.4 Counting bigrams
+
+```{r}
+bigrams_count <- bigrams %>%
+  filter(bigram != 'NA') %>%
+  count(bigram, sort = TRUE)
+bigrams_count
+```
+
+## 6.5 Cleaning bigram
+
+The code chunk below separates the bigram into two words and removes stop words.
+
+```{r}
+bigrams_separated <- bigrams %>%
+  filter(bigram != 'NA') %>%
+  separate(bigram, c("word1", "word2"),
+           sep = " ")
+
+bigrams_filtered <- bigrams_separated %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word)
+
+bigrams_filtered
+```
+
+## 6.6 Counting the bigram again
+
+After filtering out the bigrams with stop words, we recount.
+
+```{r}
+bigram_counts <- bigrams_filtered %>%
+  count(word1, word2, sort = TRUE)
+bigram_counts
+```
+
+## 6.7 Create a network graph from the bigram data frame
+
+A network graph is created using `graph_from_data_frame()` of **igraph**.
+
+```{r}
+bigram_graph <- bigram_counts %>%
+  filter(n > 3) %>%
+  graph_from_data_frame()
+bigram_graph
+```
+
+## 6.8 Visualising a network of bigrams with ggraph
+
+```{r}
+set.seed(1234)
+
+ggraph(bigram_graph, layout = "fr") +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name),
+                 vjust = 1,
+                 hjust = 1)
+```
+
+## 6.9 Revised version
+
+We can improve the visualisation by adding colour and directional arrows.
+
+```{r}
+set.seed(1234)
+
+a <- grid::arrow(type = "closed",
+                 length = unit(.15,
+                               "inches"))
+
+ggraph(bigram_graph,
+       layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n),
+                 show.legend = FALSE,
+                 arrow = a,
+                 end_cap = circle(.02,
+                                  'inches')) +
+  geom_node_point(color = "lightblue",
+                  size = 2) +
+  geom_node_text(aes(label = name),
+                 vjust = 1,
+                 hjust = 1) +
+  theme_minimal()
+```
+
+# 7 Extras
+
+Beyond the guided exercise, I explored five additional text-analytics ideas. They reuse the `usenet_words`, `words_by_newsgroup` and `bigrams_filtered` objects built above.
+
+## 7.1 Sentiment analysis with the Bing lexicon
+
+I join the tokens with the **Bing** sentiment lexicon (bundled with **tidytext** as the `sentiments` dataset, so no interactive download is needed) and chart the words that contribute most to positive and negative sentiment.
+
+```{r}
+# Robustly obtain the Bing lexicon across tidytext versions, offline
+bing_lex <- sentiments
+if ("lexicon" %in% names(bing_lex)) {
+  bing_lex <- dplyr::filter(bing_lex, lexicon == "bing")
+}
+bing_lex <- bing_lex %>%
+  select(word, sentiment) %>%
+  filter(sentiment %in% c("positive", "negative"))
+
+word_sentiments <- usenet_words %>%
+  inner_join(bing_lex, by = "word") %>%
+  count(word, sentiment, sort = TRUE)
+
+word_sentiments %>%
+  group_by(sentiment) %>%
+  slice_max(n, n = 15, with_ties = FALSE) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(n, word, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(title = "Words contributing most to sentiment",
+       x = "Contribution to sentiment", y = NULL) +
+  theme_minimal()
+```
+
+## 7.2 Which newsgroups are most positive or negative?
+
+Aggregating the same lexicon by newsgroup gives a **net sentiment** score (positive minus negative word counts) per group.
+
+```{r}
+newsgroup_sentiment <- usenet_words %>%
+  inner_join(bing_lex, by = "word") %>%
+  count(newsgroup, sentiment) %>%
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = 0) %>%
+  mutate(net_sentiment = positive - negative) %>%
+  arrange(net_sentiment)
+
+ggplot(newsgroup_sentiment,
+       aes(x = reorder(newsgroup, net_sentiment),
+           y = net_sentiment,
+           fill = net_sentiment > 0)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  scale_fill_manual(values = c("FALSE" = "#d73027", "TRUE" = "#1a9850")) +
+  labs(title = "Net sentiment by newsgroup (Bing lexicon)",
+       x = NULL, y = "Net sentiment (positive − negative)") +
+  theme_minimal()
+```
+
+::: {.callout-note appearance="simple"}
+Newsgroups such as `talk.politics.*` tend toward negative net sentiment, while `misc.forsale` and the sports groups skew positive — a sanity check that the pipeline captures meaningful signal.
+:::
+
+## 7.3 Word-correlation network *within* a single newsgroup
+
+In §6 we correlated whole newsgroups. Here I zoom into **sci.space** and use `pairwise_cor()` on *words* across messages (`id`) to find which terms tend to co-occur, then draw the correlation network.
+
+```{r}
+set.seed(1234)
+
+space_word_cors <- usenet_words %>%
+  filter(newsgroup == "sci.space") %>%
+  group_by(word) %>%
+  filter(n() >= 15) %>%      # keep reasonably frequent words
+  ungroup() %>%
+  pairwise_cor(word, id, sort = TRUE)
+
+space_word_cors %>%
+  filter(correlation > 0.15) %>%
+  graph_from_data_frame() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(alpha = correlation, width = correlation),
+                 show.legend = FALSE) +
+  geom_node_point(size = 5, color = "lightblue") +
+  geom_node_text(aes(label = name), repel = TRUE) +
+  labs(title = "Word correlations within sci.space") +
+  theme_minimal()
+```
+
+The strongest pairs as a table:
+
+```{r}
+space_word_cors %>%
+  slice_max(correlation, n = 15) %>%
+  datatable() %>%
+  formatRound("correlation", 3)
+```
+
+## 7.4 Most distinctive *bigrams* with TF-IDF
+
+TF-IDF is not limited to single words. By computing TF-IDF on **bigrams**, we surface the two-word phrases that most distinguish each science newsgroup.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 7
+bigram_tf_idf <- bigrams_filtered %>%
+  unite(bigram, word1, word2, sep = " ") %>%
+  count(newsgroup, bigram, sort = TRUE) %>%
+  bind_tf_idf(bigram, newsgroup, n) %>%
+  arrange(desc(tf_idf))
+
+bigram_tf_idf %>%
+  filter(str_detect(newsgroup, "^sci\\.")) %>%
+  group_by(newsgroup) %>%
+  slice_max(tf_idf, n = 10, with_ties = FALSE) %>%
+  ungroup() %>%
+  mutate(bigram = reorder_within(bigram, tf_idf, newsgroup)) %>%
+  ggplot(aes(tf_idf, bigram, fill = newsgroup)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~newsgroup, scales = "free") +
+  scale_y_reordered() +
+  labs(title = "Most distinctive bigrams (TF-IDF) in sci.* newsgroups",
+       x = "tf-idf", y = NULL)
+```
+
+## 7.5 A reusable per-newsgroup word-cloud function
+
+Finally I wrap the word-cloud logic in a small reusable function, so any newsgroup can be visualised on demand. I demonstrate it on two contrasting groups in a tabset.
+
+```{r}
+plot_newsgroup_cloud <- function(ng, max_words = 80) {
+  dat <- words_by_newsgroup %>% filter(newsgroup == ng)
+  wordcloud(dat$word, dat$n,
+            max.words = max_words,
+            scale = c(3, 0.4),
+            colors = brewer.pal(8, "Dark2"))
+}
+```
+
+::: panel-tabset
+### sci.space
+
+```{r}
+plot_newsgroup_cloud("sci.space")
+```
+
+### rec.sport.hockey
+
+```{r}
+plot_newsgroup_cloud("rec.sport.hockey")
+```
+:::
+
+::: {.callout-tip appearance="simple"}
+Because the function returns to the standard `wordcloud()` call, the same helper can be dropped into any report and pointed at any of the 20 newsgroups.
+:::
+
+# 8 References
+
+-   Kam, T.S. (2024). [Visualising and Analysing Text Data with R: tidytext methods](https://r4va.netlify.app/chap29). *R for Visual Analytics.*
+
+-   Silge, J. & Robinson, D. *Text Mining with R: A Tidy Approach.* <https://www.tidytextmining.com/>

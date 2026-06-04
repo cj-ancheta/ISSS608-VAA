@@ -1,0 +1,42 @@
+---
+title: "Hands-on Exercise 7"
+page-layout: custom
+---
+
+--------------------------------------------------------------------------------
+
+::::::::::::: tech-stack-row
+::::::: gallery-item
+::: huge-number
+1
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX07/images/ho_ex07a_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 7-A]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX07/HO_EX07A.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+2
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('HO_EX/HO_EX07/images/ho_ex07b_poster.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 7-B]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX07/HO_EX07B.html" class="stretched-link"></a>
+:::::
+:::::::
+:::::::::::::
