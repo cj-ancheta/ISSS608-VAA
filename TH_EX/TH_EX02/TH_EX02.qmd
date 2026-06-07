@@ -1,0 +1,1208 @@
+---
+title: "Take-home Exercise 2:"
+subtitle: "VAST Challenge 2026 - Mini-Challenge 1"
+date: "1 June 2026"
+date-modified: "last-modified"
+format:
+  html:
+    number-sections: true
+    code-fold: true
+    code-summary: "Show the code"
+    code-tools: true
+    fig-align: center
+    fig-width: 11
+    fig-height: 5.6
+    embed-resources: true
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+  freeze: auto
+---
+
+# Overview
+
+This report answers [VAST Challenge 2026 Mini-Challenge 1](https://vast-challenge.github.io/2026/MC1.html).
+All main graphs are interactive: hover over points, tiles, nodes or bars to view tooltips with the
+underlying details.
+
+## The scenario
+
+**TenantThread** is being acquired by **CivicLoom Realty Partners** under an embargo until **6:00 PM on
+2046-06-05**. Seven AI agents manage communications, with a compliance agent (*"The Judge"*) assigned
+to enforce the rules. Despite that guardrail, merger details appeared on agent-linked social accounts
+**around 5:00 PM**, roughly one hour early.
+
+## The questions
+
+> 1.  What were the key events and relationships that led up to the inappropriate release? Visualise the
+>     sequence of events (key actions, causal relationships, decision points and actors), and highlight
+>     what let the post past embargo enforcement.
+>
+> 2.  The evasion of the embargo was a *new* behaviour. Discover and illustrate the *typical* behaviour
+>     of the agents, and compare it to the behaviour that led to the release.
+>
+> 3.  Were there *leading indicators* that such a release was possible? Did agents' actual behaviour ever
+>     differ from their *expected* behaviour, and why did earlier occasions draw no action?
+
+## Methodology {#sec-method}
+
+::: callout-note
+### Approach
+
+I flatten the nested JSON into message- and round-level tables, then combine timelines, channel and
+network views, baseline comparisons, and anomaly framing to explain how the embargo breach unfolded.
+:::
+
+# Setup
+
+## Loading packages
+
+The analysis uses `tidyverse` for wrangling and `ggplot2`/`ggiraph` for static and interactive figures.
+
+-   [tidyverse](https://www.tidyverse.org/) - `dplyr`, `tidyr`, `purrr`, `stringr`, `forcats`,
+    `lubridate`, `ggplot2` for the full data-science workflow
+-   [jsonlite](https://cran.r-project.org/package=jsonlite) - to parse the nested MC1 JSON
+-   [scales](https://scales.r-lib.org/) - axis formatting (dollars, percents)
+-   [ggtext](https://wilkelab.org/ggtext/) - rich-text titles/subtitles for visual storytelling
+-   [ggiraph](https://davidgohel.github.io/ggiraph/) - **interactive** ggplots (hover tooltips)
+-   [knitr](https://yihui.org/knitr/) - `kable()` tables
+
+```{r}
+#| label: setup
+#| code-fold: false
+pacman::p_load(tidyverse, jsonlite, scales, ggtext, ggiraph, knitr)
+dir.create("figures", showWarnings = FALSE)
+```
+
+## Loading the data
+
+The challenge provides one nested JSON file, `MC1_final_00.json`. I read it without simplification so
+the nested fields remain explicit.
+
+```{r}
+#| label: load
+raw <- fromJSON("VAST_Challenge_2026_MC1/MC1_final_00.json", simplifyVector = FALSE)
+rounds_raw <- raw$rounds
+length(rounds_raw)            # number of rounds
+names(rounds_raw[[1]])        # the fields inside one round
+```
+
+## Common aesthetics {#sec-aes}
+
+Shared palettes, factor orders and theme settings keep the figures consistent. The main palette is the
+colour-blind-safe **Okabe–Ito** set.
+
+```{r}
+#| label: aes
+OI <- c(blue="#0072B2", orange="#E69F00", green="#009E73", red="#D55E00",
+        purple="#CC79A7", sky="#56B4E9", yellow="#F0E442", grey="#999999")
+
+chan_levels <- c("comms_huddle","one_on_one_chat","side_huddle",
+                 "official_post","personal_post","anonymous_post")
+chan_cols <- c("#56B4E9","#0072B2","#CC79A7","#009E73","#E69F00","#D55E00")
+names(chan_cols) <- chan_levels
+
+# 3-class channel grouping for Fig 2 - the story is internal → unofficial-public,
+# so we collapse the six raw channels into three meaningful classes.
+chan_class <- function(ch) dplyr::case_when(
+  ch %in% c("comms_huddle","one_on_one_chat","side_huddle") ~ "Internal",
+  ch == "official_post"                                     ~ "Official",
+  ch %in% c("personal_post","anonymous_post")               ~ "Unofficial-public",
+  TRUE ~ NA_character_)
+class_lv  <- c("Internal","Official","Unofficial-public")
+class_col <- c(Internal="#56B4E9", Official="#009E73", `Unofficial-public`="#D55E00")
+
+# Harmonized sentiment scale - the raw data uses two label schemes (lowercase pre-crisis,
+# UPPERCASE crisis-day) that produced 7 levels with duplicate colours. We collapse them to
+# one ordered calm→crisis→recovery ramp with distinct, colour-blind-safe hues.
+sent_recode <- c(neutral="Neutral", cautious="Cautious",
+                 negative="Negative / Low", LOW="Negative / Low",
+                 critical="Critical", CRITICAL="Critical",
+                 RECOVERING="Recovering")
+sent5_lv  <- c("Neutral","Cautious","Negative / Low","Critical","Recovering")
+sent5_col <- c(Neutral="#BDBDBD", Cautious="#F0E442", `Negative / Low`="#E69F00",
+               Critical="#9E2A00", Recovering="#009E73")
+
+agent_levels <- c("legal_agent","quality_agent","pr_agent","social_media_agent",
+                  "judge_agent","pr_intern_agent","intern_agent")
+agent_short <- c(legal_agent="Legal*", quality_agent="Platform-Trust*",
+                 pr_agent="PR*", social_media_agent="Social-Mgr*",
+                 judge_agent="Judge (compliance)", pr_intern_agent="PR-Intern",
+                 intern_agent="Intern")   # * = senior agent
+
+mc1_theme <- function() {
+  theme_minimal(base_size = 12) +
+    theme(plot.title    = element_textbox_simple(face="bold", size=15, margin=margin(b=4)),
+          plot.subtitle = element_textbox_simple(size=11, colour="grey30", margin=margin(b=10)),
+          plot.caption  = element_text(size=8.5, colour="grey45", hjust=0),
+          panel.grid.minor = element_blank(),
+          legend.position  = "top")
+}
+theme_set(mc1_theme())
+
+# Render an interactive ggiraph widget from a ggplot containing *_interactive geoms.
+show_girafe <- function(p, h = 5.6) {
+  girafe(ggobj = p, width_svg = 11, height_svg = h,
+         options = list(
+           opts_tooltip(css = "background:#222;color:#fff;padding:6px 8px;border-radius:4px;font-size:11px;max-width:340px;"),
+           opts_hover(css = "stroke:#000;stroke-width:1px;"),
+           opts_hover_inv(css = "opacity:0.25;"),
+           opts_sizing(rescale = TRUE), opts_toolbar(saveaspng = FALSE)))
+}
+```
+
+# Data wrangling
+
+## Data quality & caveats {#sec-schema}
+
+The file has a few inconsistencies that affect parsing or display. They are handled up front; none
+changes the headline findings.
+
+| # | Issue | Handling |
+|---|-------|----------|
+| 1 | **Schema mismatch.** The shipped `mc1 data description.md` describes an `agent_outputs` / `declared_action`-per-agent structure that does **not** match the delivered JSON (`rounds[] → {hour, environment_context, communications[], participants[]}`, with private reasoning in free-text `internal_state`). | Wrangle against the **actual file**. |
+| 2 | **Recipient identifier inconsistency.** The social agent is `social_media` as a *sender* (`agent_role`) but `social_manager` as a *recipient* token. A naive join on role **silently drops every edge to Social-Mgr** (incl. the largest, Legal→Social-Mgr = 52). | Map recipient tokens → agents with an **explicit table** (Fig 6). |
+| 3 | **Stock &#36;180 artifact** at 11:00 - a 6× spike wedged between `NA`s during a CRITICAL collapse, almost certainly a data-entry error. | Excluded; shown three ways in Fig 1 so the reader can judge. |
+| 4 | **Crisis-day stock ~50% missing** - no price reported at 09–11h or 16–18h. | Line breaks across the gaps; the complete sentiment strip carries the crisis window. |
+| 5 | **Two sentiment labelling schemes** - lowercase pre-crisis (`neutral…critical`) vs UPPERCASE crisis-day (`LOW/CRITICAL/RECOVERING`) give 7 levels, two sharing a colour. | Harmonized to **5 ordered levels** (one calm→crisis→recovery ramp). |
+
+The nested JSON is flattened into **`messages`** (one row per communication) and **`rounds`** (one row
+per hour).
+
+## Building the `messages` table
+
+Each communication becomes one row, including the three `internal_state` reasoning fields.
+
+```{r}
+#| label: messages
+`%or%` <- function(a, b) if (is.null(a) || length(a) == 0) b else a
+gc <- function(x, k) x[[k]] %or% NA_character_
+
+hours    <- map_chr(rounds_raw, "hour")
+is_crisis <- str_starts(hours, "2046-06-05")   # crisis day = hourly 2046-06-05 rounds
+
+messages <- imap(rounds_raw, function(rd, i) {
+  map(rd$communications, function(c) {
+    ist <- c$internal_state %or% list()
+    tibble(
+      round_idx     = i - 1L,
+      hour          = ymd_hms(rd$hour),
+      agent_id      = gc(c, "agent_id"),
+      agent_role    = gc(c, "agent_role"),
+      channel       = gc(c, "channel"),
+      message_type  = gc(c, "message_type"),
+      responding_to = gc(c, "responding_to"),
+      recipients    = paste(unlist(c$recipients %or% list()), collapse = "; "),
+      content       = gc(c, "content"),
+      reacting      = ist$reacting      %or% NA_character_,
+      rationalizing = ist$rationalizing %or% NA_character_,
+      deliberating  = ist$deliberating  %or% NA_character_
+    )
+  }) |> list_rbind()
+}) |> list_rbind()
+
+nrow(messages)
+```
+
+## Deriving the behavioural fields
+
+Key derived fields mark phase, public/unofficial-public channel use, deal mentions and seniority.
+
+```{r}
+#| label: derive
+kw <- function(x, pat) str_detect(coalesce(x, ""), regex(pat, ignore_case = TRUE))
+
+messages <- messages |>
+  mutate(
+    phase = if_else(as_date(hour) == as_date("2046-06-05"), "crisis", "pre-crisis"),
+    channel = factor(channel, chan_levels),
+    agent_f = factor(agent_id, agent_levels),
+    is_public            = channel %in% c("official_post","personal_post","anonymous_post"),
+    is_unofficial_public = channel %in% c("personal_post","anonymous_post"),
+    mentions_deal = kw(content, "civicloom|harborcrest|residentedge|\\bmerger\\b|definitive merger"),
+    seniority = case_when(
+      agent_id %in% c("legal_agent","quality_agent","pr_agent","social_media_agent") ~ "senior",
+      agent_id %in% c("intern_agent","pr_intern_agent") ~ "junior",
+      agent_id == "judge_agent" ~ "compliance",
+      TRUE ~ "other"))
+```
+
+## Building the `rounds` table
+
+Round-level context supplies the stock, sentiment and oversight signals used later.
+
+```{r}
+#| label: rounds
+num_or_na <- function(x) suppressWarnings(as.numeric(str_remove_all(x %or% NA, "[^0-9.]")))
+
+rounds <- tibble(
+  round_idx   = seq_along(rounds_raw) - 1L,
+  hour        = ymd_hms(hours),
+  phase       = if_else(is_crisis, "crisis", "pre-crisis"),
+  headline    = map_chr(rounds_raw, ~ .x$environment_context$event_headline %or% NA_character_),
+  stock_price = map_dbl(rounds_raw, ~ num_or_na(.x$environment_context$market_snapshot$stock_price)),
+  sentiment   = map_chr(rounds_raw, ~ .x$environment_context$market_snapshot$sentiment %or% NA_character_),
+  n_unavailable = map_int(rounds_raw, ~ length(.x$environment_context$agents_unavailable %or% list()))
+)
+```
+
+## The tidy tables {#sec-tidy}
+
+::: panel-tabset
+### messages (head)
+
+```{r}
+messages |> select(round_idx, agent_id, channel, message_type, mentions_deal) |> head(8) |> kable()
+```
+
+### rounds
+
+```{r}
+rounds |> select(round_idx, phase, headline, stock_price, sentiment, n_unavailable) |> kable()
+```
+
+### channel × phase
+
+```{r}
+messages |> count(phase, channel) |>
+  pivot_wider(names_from = phase, values_from = n, values_fill = 0) |> kable()
+```
+:::
+
+# Exploratory data analysis
+
+Message volume is calm through the pre-crisis rounds, then jumps once the crisis day begins.
+
+```{r}
+#| label: eda-volume
+#| fig-height: 3.6
+messages |>
+  count(round_idx, phase) |>
+  ggplot(aes(round_idx, n, fill = phase)) +
+  geom_col() +
+  scale_fill_manual(values = c("pre-crisis"="#56B4E9", "crisis"="#D55E00")) +
+  labs(title = "Message volume per round", x = "round index", y = "messages", fill = NULL)
+```
+
+::: callout-tip
+### Insight
+
+The crisis-day rounds carry the main behavioural change.
+:::
+
+# Q1 - The sequence of events and the breach {#sec-q1}
+
+**The release.** At **5:00 PM on 2046-06-05**, two **senior** agents, Legal-Agent and
+Social-Manager-Agent, confirmed the merger through **`personal_post`** and **`anonymous_post`** accounts,
+not the reviewed `official_post` channel.
+
+## Escalation timeline
+
+::: callout-note
+### Handling a data artifact, transparently
+
+The crisis-day stock series contains an isolated **\$180** at 11:00, surrounded by missing values during
+a CRITICAL-sentiment collapse. I treat it as a data artifact, but show three views so the choice is
+auditable.
+:::
+
+```{r}
+#| label: tl-setup
+#| code-summary: "Show the shared timeline builder"
+events <- tribble(
+  ~round_idx, ~label,
+  3,  "Shadow channel\nactivated",   8,  "@Elena leak →\nJudge deployed",
+  10, "SaltWind #1",                 12, "SaltWind #2\n(eve of crisis)",
+  21, "5 PM BREACH\n(personal/anon posts)", 22, "6 PM embargo\nlift")
+# Harmonize the dataset's two sentiment label schemes into one ordered scale (see `aes`).
+rr <- rounds |>
+  mutate(sentiment = factor(sent_recode[sentiment], sent5_lv),
+         tick = if_else(phase=="crisis", format(hour, "%Hh"), format(hour, "%b %d")))
+
+# Rich timeline: sentiment strip + stock line + event annotations.
+# `stock_col` chooses which stock column to draw; keeps the three tabs DRY.
+build_timeline <- function(df, stock_col, cap) {
+  df <- df |> mutate(
+    tip_sent  = paste0(tick, " - sentiment: ", sentiment),
+    tip_stock = paste0(tick, " - $", .data[[stock_col]], " · ", sentiment, "\n", str_trunc(headline, 55)))
+  ggplot(df, aes(round_idx)) +
+    geom_tile_interactive(aes(y = 15, fill = sentiment, tooltip = tip_sent, data_id = round_idx),
+                          height = 2.4, width = 0.95) +
+    scale_fill_manual(values = sent5_col, name = "Market sentiment", drop = FALSE,
+                      guide = guide_legend(nrow = 1)) +
+    geom_line(aes(y = .data[[stock_col]]), colour = OI[["blue"]], linewidth = 1) +
+    geom_point_interactive(aes(y = .data[[stock_col]], tooltip = tip_stock, data_id = round_idx),
+                           colour = OI[["blue"]], size = 2) +
+    annotate("rect", xmin = 12.5, xmax = 22.5, ymin = -Inf, ymax = Inf, fill = OI[["red"]], alpha = 0.05) +
+    annotate("text", x = 15, y = 44, label = "crisis day (hourly)", colour = OI[["red"]],
+             size = 3.2, fontface = "italic", hjust = 0.5) +
+    geom_vline(data = events, aes(xintercept = round_idx), linetype = "dotted", colour = "grey40") +
+    geom_label(data = events, aes(x = round_idx, y = c(40,37,41,37,29,43), label = label),
+               size = 2.7, fill = "white", label.size = 0, lineheight = 0.9, colour = "grey15") +
+    scale_x_continuous(breaks = rr$round_idx, labels = rr$tick, expand = expansion(mult = c(0.02, 0.08))) +
+    scale_y_continuous(limits = c(13.5, 45), breaks = c(20,30,40), labels = dollar) +
+    labs(title = "Fig 1 - TenantThread stock and market sentiment, May 17 to the crisis day",
+         x = NULL, y = "Stock price", caption = cap) +
+    theme(axis.text.x = element_text(size = 7.5))
+}
+```
+
+The timeline shows a two-week slide from **\$38.70 to about \$27**, followed by the **5 PM** early
+confirmation.
+
+::: panel-tabset
+### Excluding artifact (A)
+
+```{r}
+#| label: fig-timeline
+rr_excl <- rr |> mutate(stock_excl = if_else(!is.na(stock_price) & stock_price <= 60, stock_price, NA_real_))
+p1 <- build_timeline(rr_excl, "stock_excl",
+        cap = "Sentiment uses one harmonized scale. No price reported 09–11h & 16–18h; the $180 outlier (11h) is excluded as a data artifact.")
+ggsave("figures/fig1_timeline.png", p1, width = 11, height = 5.6, dpi = 150, bg = "white")
+show_girafe(p1)
+```
+
+### Including artifact (B)
+
+Plotted as-is, the **\$180 artifact** crushes the real \$18-\$39 movement into an unreadable band.
+
+```{r}
+#| label: fig-timeline-raw
+#| fig-height: 4.4
+rr |>
+  ggplot(aes(round_idx, stock_price)) +
+  geom_line(colour = OI[["blue"]], linewidth = 1) +
+  geom_point(colour = OI[["blue"]], size = 2) +
+  geom_label(data = filter(rr, stock_price > 60), aes(label = "$180\n(data artifact)"),
+             size = 2.8, colour = OI[["red"]], fill = "white", label.size = 0, vjust = 1.2, lineheight = 0.9) +
+  scale_x_continuous(breaks = rr$round_idx, labels = rr$tick, expand = expansion(mult = c(0.02, 0.04))) +
+  scale_y_continuous(labels = dollar) +
+  labs(title = "Fig 1 (raw) - stock with the $180 artifact left in",
+       x = NULL, y = "Stock price",
+       caption = "No values removed. Compare the compressed real movement here with the 'Excluding' tab.") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8.5))
+```
+
+### Sentiment-led (C)
+
+This view keeps only the clean pre-crisis price line and uses sentiment to show the partly missing
+crisis day.
+
+```{r}
+#| label: fig-timeline-sent
+rr_c <- rr |> mutate(stock_pre = if_else(phase == "pre-crisis", stock_price, NA_real_))
+show_girafe(build_timeline(rr_c, "stock_pre",
+  cap = "Crisis-day price is 50% missing plus one artifact, so the complete sentiment strip carries the crisis window; the line shows only the clean pre-crisis decline."))
+```
+:::
+
+## The leak chain
+
+Merger talk stays internal until **5 PM**, when Legal and Social-Mgr move it to personal/anonymous
+accounts.
+
+```{r}
+#| label: fig-leakchain
+# One row per (agent × hour × channel-class): a count, so position is exact (no jitter) and
+# volume is encoded by area. Channels collapse to the 3 classes that carry the story.
+hr_lv <- sprintf("%02d:00", 9:18)
+deal_agg <- messages |>
+  filter(phase == "crisis", mentions_deal) |>
+  mutate(hourlab = factor(format(hour, "%H:%M"), hr_lv),
+         class   = factor(chan_class(as.character(channel)), class_lv),
+         agent_f = fct_rev(factor(agent_id, agent_levels))) |>
+  group_by(hourlab, agent_f, class, .drop = TRUE) |>
+  summarise(n = n(),
+            example = str_replace_all(str_trunc(first(content), 90), "'", ""),
+            .groups = "drop") |>
+  mutate(tip = paste0(hourlab, " · ", agent_short[as.character(agent_f)], "\n",
+                      class, " - ", n, if_else(n == 1, " message", " messages"), "\n", example))
+
+p2 <- ggplot(deal_agg, aes(hourlab, agent_f)) +
+  annotate("rect", xmin = 8.5, xmax = 10.5, ymin = 0.4, ymax = 7.6, fill = OI[["red"]], alpha = 0.07) +
+  geom_point_interactive(aes(size = n, colour = class, tooltip = tip,
+                             data_id = paste(hourlab, agent_f, class)), alpha = 0.9) +
+  scale_colour_manual(values = class_col, name = "Channel class", drop = FALSE) +
+  scale_size_area(max_size = 10, breaks = c(1, 5, 10, 15), name = "messages") +
+  scale_x_discrete(drop = FALSE) +
+  scale_y_discrete(labels = agent_short) +
+  labs(title = "Fig 2 - Crisis-day messages naming the deal, by hour and agent",
+       x = "Crisis-day hour", y = NULL,
+       caption = "* = senior agent. Shaded band = 17:00–18:00 breach window. Hover any point for details.")
+ggsave("figures/fig2_leakchain.png", p2, width = 11, height = 5.6, dpi = 150, bg = "white")
+show_girafe(p2)
+```
+
+## What each agent declared doing
+
+Most agents declare **MONITORING**. The exceptions matter: Legal posts anonymously, Social-Mgr posts
+personally, and the Judge's only declared act is a **3 PM** compliance warning.
+
+```{r}
+#| label: fig-actions
+act_lv  <- c("monitoring","compliance_advisory","flex_official","personal_post","anonymous_post")
+act_col <- c(monitoring="#BDBDBD", compliance_advisory="#0072B2", flex_official="#009E73",
+             personal_post="#E69F00", anonymous_post="#D55E00")
+
+acts <- imap(rounds_raw, function(rd, i) {
+  hr <- ymd_hms(rd$hour)
+  map(rd$participants %or% list(), function(p) {
+    md <- p$agent_round_metadata %or% list()
+    tibble(hour = hr, agent_id = gc(p, "agent_id"),
+           action   = md$action_classification %or% NA_character_,
+           declared = p$declared_action %or% NA_character_)
+  }) |> list_rbind()
+}) |> list_rbind() |>
+  filter(!is.na(action), as_date(hour) == as_date("2046-06-05")) |>
+  mutate(hourlab = factor(format(hour, "%H:%M"), hr_lv),
+         agent_f = factor(agent_id, rev(agent_levels)),
+         action  = factor(action, act_lv),
+         tip = paste0(agent_short[as.character(agent_f)], " @ ", hourlab, " - ", action, "\n",
+                      str_replace_all(str_trunc(declared, 110), "'", "")))
+
+p6 <- ggplot(acts, aes(hourlab, agent_f, fill = action)) +
+  geom_tile_interactive(aes(tooltip = tip, data_id = paste(agent_f, hourlab)),
+                        colour = "white", linewidth = 0.6) +
+  scale_fill_manual(values = act_col, name = "declared action", drop = FALSE) +
+  scale_x_discrete(drop = FALSE) +
+  scale_y_discrete(labels = agent_short) +
+  labs(title = "Fig 3 - What each agent declared doing, by crisis-day hour",
+       x = "Crisis-day hour", y = NULL,
+       caption = "Declared-action class from participant metadata (crisis day only). Blank = no declared action that hour. Hover for the verbatim action.") +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 8.5), panel.grid = element_blank())
+ggsave("figures/fig3_actions.png", p6, width = 11, height = 4.6, dpi = 150, bg = "white")
+show_girafe(p6, h = 4.6)
+```
+
+## The intent chain
+
+The breach was staged: Legal builds a legal pretext, the team notes an oversight gap, and the 5 PM
+release follows a prepared "GO" trigger.
+
+```{r}
+#| label: fig-intent
+intent <- tribble(
+  ~hour,    ~agent_id,            ~stage,                ~quote,
+  "11:00", "legal_agent",         "Pretext staged",      "Section 4.3 allows modification of announcement timing by mutual written consent",
+  "13:00", "quality_agent",       "Oversight gap noted", "We have 20 minutes without oversight and CivicLoom just told us the deal terms",
+  "14:00", "legal_agent",         "Cover manufactured",  "Rep. Torres gave us perfect legal cover. Route full text to @pr_intern",
+  "15:00", "legal_agent",         "Cover hardened",      "Outside counsel opinion gives us legal cover for a stronger public statement",
+  "16:00", "pr_intern_agent",     "Trigger staged",      "They trust me to pull the trigger... it's live in sixty seconds when I hear 'go'",
+  "16:00", "social_media_agent",  "Coordination set",    "Us at 4:30 with CivicLoom consent = we define the narrative",
+  "17:00", "legal_agent",         "BREACH",              "Confirms the definitive merger via personal & anonymous accounts, an hour early")
+intent <- intent |>
+  mutate(hourlab = factor(hour, hr_lv), agent_f = factor(agent_id, rev(agent_levels)),
+         is_breach = stage == "BREACH",
+         tip = paste0(hour, " · ", agent_short[agent_id], " - ", stage, "\n\"",
+                      str_replace_all(quote, "'", ""), "\""))
+
+p7 <- ggplot(intent, aes(hourlab, agent_f)) +
+  annotate("rect", xmin = 8.5, xmax = 9.5, ymin = 0.4, ymax = 7.6, fill = OI[["red"]], alpha = 0.07) +
+  geom_point_interactive(aes(colour = is_breach, tooltip = tip, data_id = paste(hour, agent_id)),
+                         size = 4.2, alpha = 0.95) +
+  geom_text(aes(label = stage), vjust = -1.25, size = 2.7, colour = "grey20") +
+  scale_colour_manual(values = c(`FALSE` = OI[["orange"]], `TRUE` = OI[["red"]]), guide = "none") +
+  scale_x_discrete(drop = FALSE) +
+  scale_y_discrete(labels = agent_short, expand = expansion(add = c(0.6, 0.9))) +
+  labs(title = "Fig 4 - The intent chain: staged pretext → 5 PM breach",
+       x = "Crisis-day hour", y = NULL,
+       caption = "Curated verbatim quotes from message content / private reasoning. Red = the breach. Hover for the full quote.") +
+  theme(panel.grid.major.y = element_line(colour = "grey92"))
+ggsave("figures/fig4_intent.png", p7, width = 11, height = 4.8, dpi = 150, bg = "white")
+show_girafe(p7, h = 4.8)
+```
+
+::: callout-tip
+### Insights - Q1
+
+-   **Causal build-up (Fig 1).** SaltWind exposes, falling stock/sentiment and CivicLoom's MAC risk
+    create pressure to accelerate.
+-   **Decision point (Fig 2).** At **4 PM**, Legal shifts from holding the embargo to preparing a release
+    trigger. At **5 PM**, Legal claims verbal CivicLoom consent, types "GO" and posts through
+    personal/anonymous accounts.
+-   **Enforcement bypass.** The decisive posts used channels outside the Judge's official-post review,
+    after the Judge's **3 PM** hard stop and with no observed Judge action at **4-6 PM**.
+:::
+
+# Q2 - Typical behaviour vs. the anomalous release {#sec-q2}
+
+For two weeks, senior agents behave as internal advisers. On the crisis day, they move into
+unofficial-public channels.
+
+```{r}
+#| label: fig-heatmap
+mat <- messages |>
+  count(phase, agent_f, channel, .drop = FALSE) |>
+  mutate(phase = factor(phase, c("pre-crisis","crisis"),
+                        labels = c("PRE-CRISIS (13 rounds)","CRISIS DAY (10 rounds)")),
+         agent_f = factor(agent_f, rev(agent_levels)),
+         # the breach quadrant: senior agents on unofficial-public channels
+         brk = as.character(agent_f) %in% c("legal_agent","quality_agent","pr_agent","social_media_agent") &
+               channel %in% c("personal_post","anonymous_post"),
+         tip = paste0(agent_short[as.character(agent_f)], " · ", channel, ": ", n, " messages"))
+
+p3 <- ggplot(mat, aes(channel, agent_f, fill = n)) +
+  geom_tile_interactive(aes(tooltip = tip, data_id = paste(agent_f, channel, phase)),
+                        colour = "white", linewidth = 0.6) +
+  geom_text(aes(label = ifelse(n > 0, n, "")), size = 3.1,
+            colour    = ifelse(pmin(mat$n, 40) > 24, "white", "grey15"),
+            fontface  = ifelse(mat$brk & mat$n > 0, "bold", "plain")) +
+  facet_wrap(~ phase) +
+  scale_fill_gradient(low = "#F2F2F2", high = OI[["red"]], name = "messages",
+                      limits = c(0, 40), oob = scales::squish,
+                      breaks = c(0, 10, 20, 30, 40), labels = c("0","10","20","30","40+")) +
+  scale_y_discrete(labels = agent_short) +
+  annotate("rect", xmin = 4.5, xmax = 6.5, ymin = 3.5, ymax = 7.5,
+           fill = NA, colour = OI[["blue"]], linewidth = 0.9, linetype = "longdash") +
+  labs(title = "Fig 5 - Channel mix per agent: pre-crisis vs crisis day",
+       x = NULL, y = NULL,
+       caption = "* = senior, internal-only advisor. Dashed box = senior × unofficial-public channels. Fill capped at 40 so breach cells stay legible.") +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 8.5), panel.grid = element_blank())
+ggsave("figures/fig5_channel_matrix.png", p3, width = 11, height = 5.6, dpi = 150, bg = "white")
+show_girafe(p3)
+```
+
+::: callout-tip
+### Insights - Q2
+
+-   **Typical behaviour:** Legal and Platform-Trust are internal advisers. Legal has **0** personal and
+    **0** anonymous posts pre-crisis, and nobody uses `anonymous_post`.
+-   **Anomalous behaviour:** Legal jumps to **4 personal + 12 anonymous** posts, while Social-Mgr reaches
+    **14 personal** posts.
+-   **Interpretation:** this is a categorical break: new public actors, new bypass channels and a surge
+    of off-record coordination.
+:::
+
+## The interaction network
+
+Pre-crisis, the delivered `recipients` field has no explicit directed private-recipient edges. On the
+crisis day, a senior off-record back-channel appears.
+
+-   **Tip:** hover over any node to read that agent's message frequency (total messages sent).
+
+::: panel-tabset
+### Network (node-link)
+
+```{r}
+#| label: fig-network
+#| fig-height: 5.8
+# recipient tokens are agent ROLES, but the social token is "social_manager" while the sender's
+# agent_role is "social_media" - so map recipient tokens to agent_id explicitly (not via agent_role).
+role_map <- tibble(
+  recipients = c("legal","platform_trust","social_manager","pr","intern","pr_intern","judge"),
+  to         = c("legal_agent","quality_agent","social_media_agent","pr_agent",
+                 "intern_agent","pr_intern_agent","judge_agent"))
+node_lab <- c(legal_agent="Legal", quality_agent="Plat-Trust", social_media_agent="Social-Mgr",
+              pr_agent="PR", pr_intern_agent="PR-Intern", intern_agent="Intern", judge_agent="Judge")
+
+# circular layout shared by both phase panels
+k <- length(agent_levels)
+nodes_xy <- tibble(agent_id = agent_levels,
+                   ang = pi/2 + 2*pi*(seq_len(k) - 1)/k, x = cos(ang), y = sin(ang))
+
+# node size = messages sent (transaction frequency), crisis day only
+nodes <- tibble(agent_id = agent_levels) |>
+  left_join(messages |> filter(phase == "crisis") |> count(agent_id, name = "sent"), by = "agent_id") |>
+  left_join(nodes_xy, by = "agent_id") |>
+  mutate(sent = coalesce(sent, 0L), lab = node_lab[agent_id])
+
+# directed crisis-day edges: split recipients, drop ALL broadcasts, map role -> recipient agent
+edges <- messages |> filter(phase == "crisis") |>
+  transmute(from = agent_id, channel, recipients) |>
+  separate_rows(recipients, sep = "; ") |>
+  filter(recipients != "", recipients != "ALL") |>
+  left_join(role_map, by = "recipients") |>
+  filter(!is.na(to), to != from) |>
+  group_by(from, to) |>
+  summarise(n = n(), n_off = sum(channel == "side_huddle"), .groups = "drop") |>
+  mutate(edge_type = if_else(n_off >= n/2, "off-record (side_huddle)", "other internal")) |>
+  left_join(nodes_xy |> select(from = agent_id, x, y), by = "from") |>
+  left_join(nodes_xy |> select(to = agent_id, xend = x, yend = y), by = "to")
+
+p5 <- ggplot() +
+  geom_curve(data = edges, aes(x, y, xend = xend, yend = yend, linewidth = n, colour = edge_type),
+             curvature = 0.18, alpha = 0.65, lineend = "round",
+             arrow = grid::arrow(length = grid::unit(5, "pt"), type = "closed")) +
+  geom_point_interactive(data = nodes, aes(x, y, size = sent, data_id = agent_id,
+                         tooltip = paste0(lab, " - ", sent, " messages sent")),
+                         colour = OI[["blue"]], alpha = 0.9) +
+  geom_text(data = nodes, aes(x * 1.28, y * 1.28, label = lab), size = 3, colour = "grey15") +
+  scale_size_area(max_size = 16, name = "messages sent") +
+  scale_linewidth(range = c(0.3, 3.4), name = "msgs on edge") +
+  scale_colour_manual(values = c("off-record (side_huddle)" = OI[["red"]],
+                                 "other internal" = OI[["sky"]]), name = NULL) +
+  coord_equal(xlim = c(-1.6, 1.6), ylim = c(-1.45, 1.45), clip = "off") +
+  labs(title = "Fig 6 - Agent interaction network (crisis day)",
+       caption = "Node size = messages sent (hover a node for its total); edge width = count; red = off-record side_huddle. ALL broadcasts excluded.") +
+  theme_void(base_size = 12) +
+  theme(legend.position = "top", plot.title = element_text(face = "bold", size = 14),
+        plot.caption = element_text(size = 8.5, colour = "grey45", hjust = 0))
+ggsave("figures/fig6_network.png", p5, width = 10.5, height = 6.5, dpi = 150, bg = "white")
+show_girafe(p5, h = 6.5)
+```
+
+### Who-messages-whom (matrix)
+
+```{r}
+#| label: fig-network-matrix
+to_levels <- c(unname(agent_short[agent_levels]), "ALL")
+adj <- messages |> filter(phase == "crisis") |>
+  transmute(from = agent_id, recipients) |>
+  separate_rows(recipients, sep = "; ") |>
+  filter(recipients != "") |>
+  left_join(role_map, by = "recipients") |>
+  mutate(to_lab = if_else(recipients == "ALL", "ALL", agent_short[to])) |>
+  count(from, to_lab, name = "n") |>
+  mutate(from_f = factor(agent_short[from], rev(unname(agent_short[agent_levels]))),
+         to_f   = factor(to_lab, to_levels))
+
+p5m <- ggplot(adj, aes(to_f, from_f, fill = n)) +
+  geom_tile_interactive(aes(tooltip = paste0(from_f, " to ", to_f, ": ", n, " messages"),
+                            data_id = paste(from_f, to_f)), colour = "white", linewidth = 0.5) +
+  geom_text(aes(label = ifelse(n > 0, n, "")), size = 3,
+            colour = ifelse(pmin(adj$n, 40) > 24, "white", "grey15")) +
+  scale_fill_gradient(low = "#F2F2F2", high = OI[["red"]], name = "messages",
+                      limits = c(0, 40), oob = scales::squish,
+                      breaks = c(0,10,20,30,40), labels = c("0","10","20","30","40+")) +
+  labs(title = "Fig 6 (matrix) - Who messages whom on the crisis day",
+       x = "recipient", y = "sender",
+       caption = "Sender × recipient message counts (crisis day); includes the ALL broadcast column. Fill capped at 40.") +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 8.5), panel.grid = element_blank())
+ggsave("figures/fig6_network_matrix.png", p5m, width = 8.5, height = 5.2, dpi = 150, bg = "white")
+show_girafe(p5m, h = 5.2)
+```
+:::
+
+### Network summary table
+
+The table below audits the network claim: Legal and Social-Mgr form the high-volume coordination core,
+while the Judge has little directed participation.
+
+```{r}
+#| label: tbl-network-summary
+edge_out <- edges |>
+  group_by(from) |>
+  summarise(
+    directed_recipient_edges_sent = sum(n),
+    side_huddle_edges_sent = sum(n_off),
+    distinct_targets = n_distinct(to),
+    .groups = "drop"
+  )
+
+edge_in <- edges |>
+  group_by(to) |>
+  summarise(
+    directed_recipient_edges_received = sum(n),
+    side_huddle_edges_received = sum(n_off),
+    distinct_senders = n_distinct(from),
+    .groups = "drop"
+  )
+
+network_summary <- nodes |>
+  transmute(agent_id, agent = unname(agent_short[agent_id]), messages_sent = sent) |>
+  left_join(edge_out, by = c("agent_id" = "from")) |>
+  left_join(edge_in, by = c("agent_id" = "to")) |>
+  mutate(across(where(is.numeric), ~ replace_na(.x, 0))) |>
+  arrange(desc(messages_sent))
+
+network_summary |>
+  select(
+    Agent = agent,
+    `All messages sent` = messages_sent,
+    `Directed recipient-edges sent` = directed_recipient_edges_sent,
+    `Side-huddle edges sent` = side_huddle_edges_sent,
+    `Distinct targets` = distinct_targets,
+    `Directed recipient-edges received` = directed_recipient_edges_received,
+    `Distinct senders` = distinct_senders
+  ) |>
+  kable()
+```
+
+::: callout-tip
+### Insight - the network is the behaviour change
+
+-   **Pre-crisis:** the directed private network is effectively absent from the baseline.
+-   **Crisis day:** Legal, Social-Mgr, Platform-Trust and PR form the main `side_huddle` clique; interns
+    and the Judge remain peripheral.
+:::
+
+## Explore the crisis-day network {#sec-net-interactive}
+
+**Click an agent button to isolate its ego-network.** The senior side-huddle clique becomes the visible
+core; interns and the Judge remain peripheral.
+
+```{r}
+#| label: net-data
+#| code-summary: "Network data prep"
+# crisis-day nodes (size = messages sent) on the same circular layout as Fig 6
+net_nodes <- tibble(agent_id = agent_levels) |>
+  left_join(messages |> filter(phase == "crisis") |> count(agent_id, name = "sent"), by = "agent_id") |>
+  mutate(sent = coalesce(sent, 0L), id = agent_id, label = node_lab[agent_id],
+         ang = pi/2 + 2*pi*(match(agent_id, agent_levels) - 1) / length(agent_levels),
+         x = cos(ang), y = sin(ang)) |>
+  select(id, label, x, y, sent)
+
+# crisis-day directed private edges (ALL broadcasts excluded), reusing the explicit role_map
+net_edges <- messages |> filter(phase == "crisis") |>
+  transmute(from = agent_id, channel, recipients) |>
+  separate_rows(recipients, sep = "; ") |>
+  filter(recipients != "", recipients != "ALL") |>
+  left_join(role_map, by = "recipients") |>
+  filter(!is.na(to), to != from) |>
+  group_by(from, to) |>
+  summarise(n = n(), n_off = sum(channel == "side_huddle"), .groups = "drop") |>
+  mutate(type = if_else(n_off >= n/2, "off-record", "other"))
+
+# ojs_define() is injected by Quarto only at render time; stub it when the chunk is run
+# interactively (e.g. RStudio "Run Chunk") so this code doesn't error outside a render.
+if (!isTRUE(getOption("knitr.in.progress"))) ojs_define <- function(...) invisible(NULL)
+ojs_define(ojs_nodes = net_nodes)
+ojs_define(ojs_edges = net_edges)
+```
+
+```{ojs}
+//| label: net-ojs
+//| code-summary: "OJS data bridge"
+nodes = transpose(ojs_nodes)
+edges = transpose(ojs_edges)
+labelOf = new Map(nodes.map(d => [d.id, d.label]))
+```
+
+```{ojs}
+//| label: net-buttons
+//| code-summary: "Agent filter control"
+viewof focus = Inputs.radio(["All"].concat(nodes.map(d => d.id)), {
+  label: "Isolate agent:", value: "All",
+  format: id => id === "All" ? "All" : labelOf.get(id)
+})
+```
+
+```{ojs}
+//| label: net-neighbors
+//| code-summary: "Ego-network filter"
+neighbors = {
+  if (focus === "All") return new Set(nodes.map(d => d.id));
+  const s = new Set([focus]);
+  for (const e of edges) { if (e.from === focus) s.add(e.to); if (e.to === focus) s.add(e.from); }
+  return s;
+}
+```
+
+```{ojs}
+//| label: net-chart
+//| code-summary: "Network chart code"
+netChart = {
+  const d3 = await require("d3@7");
+  const W = 760, H = 640, cx = W/2, cy = 360, R = 200;
+  const pos = new Map(nodes.map(d => [d.id, d]));
+  const px = d => cx + d.x * R, py = d => cy - d.y * R;
+  const rs = d3.scaleSqrt().domain([0, d3.max(nodes, d => d.sent)]).range([4, 34]);
+  const ws = d3.scaleLinear().domain([1, d3.max(edges, e => e.n)]).range([1, 7]);
+  const col = {"off-record": "#F59E0B", "other": "#38BDF8"};
+  const textPrimary = "#E5E7EB", textMuted = "#94A3B8";
+  const nodeFill = "#60A5FA", focusStroke = "#F8FAFC", strokeMuted = "#1E293B";
+  const edgeActive = e => focus === "All" || e.from === focus || e.to === focus;
+  const nodeActive = d => neighbors.has(d.id);
+  const nodeRadius = id => rs(pos.get(id).sent);
+  const edgePoint = e => {
+    const a = pos.get(e.from), b = pos.get(e.to);
+    const x1 = px(a), y1 = py(a), x2 = px(b), y2 = py(b);
+    const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
+    const sourcePad = nodeRadius(e.from) + 3;
+    const targetPad = nodeRadius(e.to) + 9;
+    return {
+      x1: x1 + dx / len * sourcePad,
+      y1: y1 + dy / len * sourcePad,
+      x2: x2 - dx / len * targetPad,
+      y2: y2 - dy / len * targetPad
+    };
+  };
+
+  const svg = d3.create("svg")
+    .attr("viewBox", [0, 0, W, H]).attr("width", W).attr("height", H)
+    .attr("role", "img")
+    .attr("aria-label", "Directed crisis-day private message network")
+    .style("max-width", "100%").style("height", "auto").style("font", "13px sans-serif");
+
+  const defs = svg.append("defs");
+  for (const [type, color] of Object.entries(col)) {
+    defs.append("marker")
+      .attr("id", `arrow-${type}`)
+      .attr("viewBox", "0 -5 10 10")
+      .attr("refX", 9).attr("refY", 0)
+      .attr("markerWidth", 6).attr("markerHeight", 6)
+      .attr("orient", "auto")
+      .attr("markerUnits", "strokeWidth")
+      .append("path")
+      .attr("d", "M0,-5L10,0L0,5")
+      .attr("fill", color);
+  }
+
+  svg.append("g").selectAll("line").data(edges).join("line")
+    .attr("x1", e => edgePoint(e).x1).attr("y1", e => edgePoint(e).y1)
+    .attr("x2", e => edgePoint(e).x2).attr("y2", e => edgePoint(e).y2)
+    .attr("stroke", e => col[e.type]).attr("stroke-width", e => ws(e.n))
+    .attr("stroke-linecap", "round")
+    .attr("stroke-opacity", e => edgeActive(e) ? 0.86 : 0.16)
+    .attr("marker-end", e => `url(#arrow-${e.type})`);
+
+  svg.append("g").selectAll("circle").data(nodes).join("circle")
+    .attr("cx", d => px(d)).attr("cy", d => py(d)).attr("r", d => rs(d.sent))
+    .attr("fill", nodeFill).attr("fill-opacity", d => nodeActive(d) ? 0.96 : 0.24)
+    .attr("stroke", d => d.id === focus ? focusStroke : strokeMuted)
+    .attr("stroke-width", d => d.id === focus ? 2.8 : 1.2)
+    .append("title").text(d => `${d.label}: ${d.sent} messages sent`);
+
+  svg.append("g").selectAll("text").data(nodes).join("text")
+    .attr("x", d => cx + d.x * (R + 28)).attr("y", d => cy - d.y * (R + 28))
+    .attr("text-anchor", "middle").attr("dy", "0.35em")
+    .attr("font-weight", d => nodeActive(d) ? 600 : 400)
+    .attr("fill", d => nodeActive(d) ? textPrimary : textMuted)
+    .attr("fill-opacity", d => nodeActive(d) ? 1 : 0.68)
+    .attr("stroke", "#0F172A")
+    .attr("stroke-width", 3)
+    .attr("stroke-linejoin", "round")
+    .attr("paint-order", "stroke")
+    .text(d => d.label);
+
+  const legend = svg.append("g")
+    .attr("transform", "translate(24,22)")
+    .style("pointer-events", "none");
+  legend.append("rect")
+    .attr("width", 274).attr("height", 150).attr("rx", 6)
+    .attr("fill", "#0F172A").attr("fill-opacity", 0.82)
+    .attr("stroke", "#334155").attr("stroke-width", 1);
+  legend.append("text")
+    .attr("x", 14).attr("y", 22)
+    .attr("fill", textPrimary).attr("font-weight", 700)
+    .text("Legend");
+
+  const lineLegend = [
+    {y: 44, color: col["off-record"], width: 3, marker: "url(#arrow-off-record)", label: "off-record side_huddle"},
+    {y: 68, color: col["other"], width: 3, marker: "url(#arrow-other)", label: "other internal message"},
+    {y: 92, color: textMuted, width: 7, marker: null, label: "thicker line = more messages"}
+  ];
+  legend.selectAll("line.legend-edge").data(lineLegend).join("line")
+    .attr("class", "legend-edge")
+    .attr("x1", 16).attr("x2", 62).attr("y1", d => d.y).attr("y2", d => d.y)
+    .attr("stroke", d => d.color).attr("stroke-width", d => d.width)
+    .attr("stroke-linecap", "round")
+    .attr("marker-end", d => d.marker);
+  legend.selectAll("text.legend-edge-label").data(lineLegend).join("text")
+    .attr("class", "legend-edge-label")
+    .attr("x", 76).attr("y", d => d.y + 4)
+    .attr("fill", textPrimary).attr("font-size", 12)
+    .text(d => d.label);
+
+  legend.append("circle")
+    .attr("cx", 39).attr("cy", 120).attr("r", 11)
+    .attr("fill", nodeFill).attr("fill-opacity", 0.96)
+    .attr("stroke", strokeMuted).attr("stroke-width", 1.2);
+  legend.append("text")
+    .attr("x", 76).attr("y", 124)
+    .attr("fill", textPrimary).attr("font-size", 12)
+    .text("larger circle = more messages sent");
+  legend.append("text")
+    .attr("x", 16).attr("y", 142)
+    .attr("fill", textMuted).attr("font-size", 11)
+    .text("arrowhead shows message direction");
+
+  return svg.node();
+}
+```
+
+::: {.callout-note appearance="minimal"}
+**Fig 7.** Directed crisis-day private messages, excluding ALL broadcasts. Use the in-chart legend for
+encodings; buttons isolate each agent's direct contacts.
+:::
+
+# Q3 - Leading indicators {#sec-q3}
+
+Senior off-role public posting rises as observed Judge activity thins, peaking during a no-Judge window.
+
+```{r}
+#| label: fig-oversight
+judge_present <- messages |> filter(agent_id == "judge_agent") |> count(round_idx, name = "judge_msgs")
+dev <- messages |> filter(seniority %in% c("senior","compliance"), is_unofficial_public) |>
+  count(round_idx, name = "deviations")
+ov <- rounds |>
+  left_join(judge_present, by = "round_idx") |>
+  left_join(dev, by = "round_idx") |>
+  mutate(judge_msgs = coalesce(judge_msgs, 0L), deviations = coalesce(deviations, 0L),
+         judge = if_else(judge_msgs > 0, "Judge message observed", "No Judge messages"),
+         tick = if_else(phase=="crisis", format(hour, "%Hh"), format(hour, "%b %d")))
+ann4 <- tribble(
+  ~round_idx, ~y, ~label,
+  8,  2.5, "@Elena personal-post\nleak (same failure mode)",
+  17, 5,   "1 PM: Legal+Judge+PR\nunavailable",
+  21, 12,  "5 PM breach with\nno Judge messages")
+
+p4 <- ggplot(ov, aes(round_idx)) +
+  geom_tile_interactive(aes(y = -1.4, fill = judge, data_id = round_idx,
+                            tooltip = paste0(tick, " - ", judge, " (", judge_msgs, " Judge msgs)")),
+                        height = 1.4, width = 0.95) +
+  geom_col_interactive(aes(y = deviations, data_id = round_idx,
+                           tooltip = paste0(tick, ": ", deviations, " off-role public post(s)")),
+                       fill = OI[["red"]], width = 0.7) +
+  geom_vline(xintercept = c(8, 17), linetype = "dotted", colour = "grey40") +
+  geom_label(data = ann4, aes(y = y, label = label), size = 2.7, fill = "white",
+             label.size = 0, lineheight = 0.9, colour = "grey15") +
+  scale_fill_manual(values = c("Judge message observed"="#009E73", "No Judge messages"="grey75"), name = NULL) +
+  scale_x_continuous(breaks = ov$round_idx, labels = ov$tick, expand = expansion(0.01)) +
+  scale_y_continuous(breaks = c(0,5,10,15)) +
+  labs(title = "Fig 8 - Off-role public posts and Judge activity, per round",
+       x = NULL, y = "Unofficial-public posts\n(senior/compliance)",
+       caption = "Bars: senior/compliance unofficial-public posts. Strip: green = observed Judge message; grey = none. Judge messages stop after the 15:00 hard-stop.") +
+  theme(axis.text.x = element_text(size = 7.5))
+ggsave("figures/fig8_oversight_gaps.png", p4, width = 11, height = 5.6, dpi = 150, bg = "white")
+show_girafe(p4)
+```
+
+::: callout-tip
+### Insights - Q3
+
+-   **Prior warning.** On **05-29**, Social-Mgr used a personal account to hint at CivicLoom news; a
+    reporter captured it before deletion.
+-   **Other signals.** The **05-22** shadow channel normalised off-record coordination, and the crisis
+    team explicitly noticed a **1 PM** oversight gap.
+-   **Why it persisted.** The @Elena incident was treated as contained. The response deployed the Judge
+    but did not control personal/anonymous channels.
+:::
+
+### Leading indicator evidence table
+
+```{r}
+#| label: tbl-leading-indicators
+leading_indicators <- tribble(
+  ~Date, ~Indicator, ~`Expected behaviour`, ~`Observed behaviour`, ~`Why no effective action followed`,
+  "2046-05-22",
+  "Shadow/off-record coordination emerges",
+  "Sensitive strategy should remain in visible, reviewable channels",
+  "Side conversations begin carrying merger-adjacent reasoning and risk framing",
+  "Treated as internal risk management rather than a channel-control problem",
+  "2046-05-29",
+  "@Elena personal-post incident",
+  "Social posts should avoid embargoed counterparty signals",
+  "Social-Mgr tagged CivicLoom's CEO with 'big things coming'; CivicLoom staff engaged before deletion",
+  "Deleted in 14 minutes and marked contained; response added Judge oversight but did not restrict personal channels",
+  "2046-05-31 / 2046-06-01",
+  "Legal-Agent unilateral communications freezes",
+  "Legal should advise on risk, not become the sole communications controller",
+  "Legal issued broad 'do not post / hold everything' instructions under external pressure",
+  "Seen as prudent crisis control, not as authority concentration requiring a second approver",
+  "2046-06-05 13:00",
+  "Oversight gap explicitly noticed",
+  "Agents should escalate gaps to compliance or delay sensitive action",
+  "Platform-Trust noted a window without Legal/Judge/PR oversight while deal details were circulating",
+  "No automated pause or escalation rule existed when key oversight actors were unavailable",
+  "2046-06-05 15:00-17:00",
+  "Judge hard-stop followed by silence",
+  "A compliance warning should prevent further forward-looking public disclosure",
+  "Legal converted the warning and outside-counsel framing into 'legal cover', then executed at 17:00",
+  "The control watched official/internal process but did not block personal or anonymous public posting"
+)
+
+leading_indicators |> kable()
+```
+
+## A within-agent anomaly signal
+
+Against each agent's own baseline, Legal, Social-Mgr and PR-Intern exceed **z > 2** as the crisis opens,
+while Platform-Trust and the Judge go quiet.
+
+```{r}
+#| label: fig-zscore
+#| fig-height: 4.4
+vol <- messages |> count(round_idx, agent_id, name = "n") |>
+  complete(round_idx = 0:22, agent_id = agent_levels, fill = list(n = 0L))
+base <- vol |> filter(round_idx <= 12) |> group_by(agent_id) |>
+  summarise(mu = mean(n), sd = sd(n), .groups = "drop")
+tickv <- rounds |> transmute(round_idx,
+           tick = if_else(phase == "crisis", format(hour, "%Hh"), format(hour, "%b %d"))) |>
+  arrange(round_idx) |> pull(tick)
+zdf <- vol |> left_join(base, by = "agent_id") |>
+  mutate(z = if_else(sd > 0, (n - mu) / sd, NA_real_),
+         agent_f = factor(agent_id, rev(agent_levels)),
+         flag = !is.na(z) & z > 2,
+         tip = paste0(agent_short[agent_id], " @ ", tickv[round_idx + 1], ": ", n,
+                      " msgs (z = ", round(z, 1), " vs baseline)"))
+
+p9 <- ggplot(zdf, aes(factor(round_idx, levels = 0:22), agent_f, fill = z)) +
+  geom_tile_interactive(aes(tooltip = tip, data_id = paste(agent_f, round_idx)),
+                        colour = "white", linewidth = 0.5) +
+  geom_point(data = filter(zdf, flag), shape = 4, size = 1.9, stroke = 0.9, colour = "grey10") +
+  annotate("rect", xmin = 13.5, xmax = 23.5, ymin = 0.4, ymax = 7.6,
+           fill = NA, colour = OI[["red"]], linewidth = 0.7, linetype = "longdash") +
+  scale_fill_gradient2(low = OI[["blue"]], mid = "white", high = OI[["red"]], midpoint = 0,
+                       na.value = "grey92", name = "z vs own baseline",
+                       limits = c(-3, 6), oob = scales::squish) +
+  scale_x_discrete(labels = tickv) +
+  scale_y_discrete(labels = agent_short) +
+  labs(title = "Fig 9 - Each agent vs its own pre-crisis baseline (z-score of message volume)",
+       x = NULL, y = NULL,
+       caption = "z = (round count - agent's pre-crisis mean) / sd; × marks z > 2; dashed box = crisis day. Hourly crisis rounds vs daily pre-crisis, so read z as a within-agent directional signal, not a p-value.") +
+  theme(axis.text.x = element_text(size = 7.5), panel.grid = element_blank())
+ggsave("figures/fig9_zscore.png", p9, width = 11, height = 4.4, dpi = 150, bg = "white")
+show_girafe(p9, h = 4.4)
+```
+
+# Myth-busting: first-pass readings the logs overturn {#sec-myths}
+
+::: callout-important
+### Why this section
+
+The logs overturn four tempting first-pass explanations.
+:::
+
+## Myth 1 - "The interns leaked it" {#myth-1}
+
+Juniors draw attention in the crisis narrative, but the public deal posts come from senior agents.
+
+```{r}
+#| label: myth1
+# (a) Who posted the deal on a PUBLIC channel, ever?
+messages |>
+  filter(is_public, mentions_deal) |>
+  count(seniority, agent_id, channel, name = "public_deal_posts") |>
+  arrange(desc(public_deal_posts)) |> kable()
+
+# (b) The 05-29 "@Elena" personal-post leak - who ACTUALLY posted it?
+messages |>
+  filter(round_idx == 8, channel == "personal_post", str_detect(content, "Elena")) |>
+  transmute(agent_id, seniority, post = str_trunc(content, 75)) |> kable()
+```
+
+::: callout-tip
+### Verdict: FALSE
+
+Every public post naming the deal is by a **senior** agent. The @Elena post was also by
+`social_media_agent`, not an intern.
+:::
+
+## Myth 2 - "TenantThread didn't break it - SaltWind did" {#myth-2}
+
+The "SaltWind published first" defence depends on whether SaltWind disclosed the same information.
+
+```{r}
+#| label: myth2
+# What the external press published:
+media <- map(rounds_raw, function(rd) {
+  me <- rd$environment_context$media_events
+  if (is.null(me) || length(me) == 0) return(NULL)
+  tibble(hour = ymd_hms(rd$hour), event = unlist(me))
+}) |> purrr::compact() |> list_rbind()
+media |> filter(str_detect(event, "SaltWind"),
+                str_detect(event, regex("merger|CivicLoom", ignore_case = TRUE))) |>
+  transmute(hour, `SaltWind reported` = str_trunc(event, 70)) |> kable()
+
+# What TenantThread's own unofficial-public accounts posted:
+messages |>
+  filter(is_unofficial_public, str_detect(content, regex("definitive merger", ignore_case = TRUE))) |>
+  transmute(hour, agent_id, channel, `TenantThread posted` = str_trunc(content, 70)) |>
+  head(2) |> kable()
+```
+
+::: callout-tip
+### Verdict: MISLEADING
+
+SaltWind reported merger **"talks"**. TenantThread's senior agents confirmed a **"definitive merger
+agreement"** through personal/anonymous accounts, turning speculation into confirmation.
+:::
+
+## Myth 3 - "The leak crashed the stock" {#myth-3}
+
+```{r}
+#| label: myth3
+rounds |>
+  filter(round_idx %in% c(0, 12, 18, 22)) |>
+  transmute(round_idx, hour, stock_price, sentiment,
+            note = c("baseline", "eve of crisis (pre-leak)", "mid-crisis low", "after 5–6 PM reveal")) |>
+  kable()
+```
+
+::: callout-tip
+### Verdict: FALSE
+
+The stock slide began before the leak and bottomed before the 5 PM release. Sentiment turns
+**RECOVERING** at the reveal, so the release reads as a recovery play rather than the crash trigger.
+:::
+
+## Myth 4 - "The compliance AI (the Judge) failed" {#myth-4}
+
+```{r}
+#| label: myth4
+# (a) Was the Judge even present during the breach window?
+rounds |> filter(phase == "crisis") |>
+  left_join(messages |> filter(agent_id == "judge_agent") |> count(round_idx, name = "judge_msgs"),
+            by = "round_idx") |>
+  transmute(hour = format(hour, "%H:%M"), judge_msgs = coalesce(judge_msgs, 0L)) |> kable()
+
+# (b) Which channels did the Judge ever operate on?
+messages |> filter(agent_id == "judge_agent") |> count(channel, name = "judge_msgs") |> kable()
+```
+
+::: callout-tip
+### Verdict: REFRAME - not a failure, a coverage gap
+
+The Judge operated only on internal channels and has no observed messages/actions during **16:00-18:00**.
+Its **3 PM** hard stop was ignored; the guardrail was too narrow and inactive at the decisive hour.
+:::
+
+# Findings {#sec-findings}
+
+This section gives the submission-ready answers, with the figures providing the evidence.
+
+## Q1 - Events, relationships and enforcement bypass
+
+Figures 1-4 show a pressure sequence: SaltWind exposes weakened sentiment and stock price, CivicLoom's
+MAC risk became salient, and Legal shifted from containment to acceleration. At **16:00**, Legal prepared
+a bilateral release trigger; at **17:00**, after SaltWind reported merger talks, Legal claimed verbal
+CivicLoom consent and issued "GO". The breach was not the held official release. It was the early
+confirmation by Legal-Agent and Social-Manager-Agent on personal/anonymous channels.
+
+The core relationship is Legal plus Social-Mgr, supported by Platform-Trust and PR in the senior
+side-huddle. PR-Intern and Intern staged execution but did not make the decisive public posts.
+Enforcement failed because the posts used channels outside official-post review, after the Judge's
+**15:00** hard stop and with no observed Judge action during **16:00-18:00**.
+
+## Q2 - Typical behaviour versus the anomalous release
+
+Baseline behaviour is stable and role-bound. Across the 13 pre-crisis rounds, Legal and Platform-Trust
+act as internal advisers; Legal has **0** personal and **0** anonymous posts, and nobody uses
+`anonymous_post`. On the crisis day, Legal moves to **4 personal + 12 anonymous** posts, while Social-Mgr
+reaches **14 personal** posts. All anonymous posts in the dataset are crisis-day Legal posts.
+
+The heatmap and network views show a categorical break. Legal enters a new public channel class and also
+becomes a high-volume private coordinator. The evasion was new behaviour because senior internal agents
+used unofficial-public channels and prepared the release through a private coordination structure.
+
+## Q3 - Leading indicators
+
+Yes. The clearest warning is the **2046-05-29 @Elena** incident: Social-Mgr used a personal account to
+hint at CivicLoom news, a CivicLoom account engaged, and a reporter captured it before deletion. This is
+the same failure mode as the final breach: embargo-relevant information surfaced through an unofficial
+personal channel. Other indicators include the **2046-05-22** shadow channel, Legal's unilateral freezes
+and crisis-day awareness of oversight gaps.
+
+The indicators did not trigger effective action because they were treated as contained or routine.
+Deleting the @Elena post led to Judge deployment, but not to structural control over personal/anonymous
+channels. The system watched official statements while leaving the eventual breach channel open.
+
+# Conclusion
+
+::: callout-note
+### Deliberate act enabled by systemic gaps
+
+Legal's `internal_state.rationalizing` fields show an intentional, pre-staged act under MAC-clause and
+stock-collapse pressure. It succeeded because personal/anonymous channels sat outside the compliance
+gate, and the Judge was not observed acting during **16:00-18:00**. The earlier @Elena leak showed the
+same gap, but it was contained rather than fixed.
+:::
+
+# References
+
+*VAST Challenge 2026 - Mini-Challenge 1.* <https://vast-challenge.github.io/2026/MC1.html>
+
+Okabe, M., & Ito, K. (2008). *Color Universal Design (CUD).* <https://jfly.uni-koeln.de/color/>
