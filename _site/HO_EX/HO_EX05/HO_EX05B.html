@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2026-05-12">
 
-<title>Hands-0n Exercise 5-B: – Chart Whisperer</title>
+<title>Hands-on Exercise 5-B: – Chart Whisperer</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -128,7 +128,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -178,13 +178,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1 Overview</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a></li>
+  <li><a href="#building-correlation-matrix-pairs-method" id="toc-building-correlation-matrix-pairs-method" class="nav-link" data-scroll-target="#building-correlation-matrix-pairs-method">3 Building Correlation Matrix: <em>pairs()</em> method</a>
+  <ul class="collapse">
+  <li><a href="#basic-correlation-matrix" id="toc-basic-correlation-matrix" class="nav-link" data-scroll-target="#basic-correlation-matrix">3.1 Basic correlation matrix</a>
+  <ul class="collapse">
+  <li><a href="#drawing-the-lower-corner" id="toc-drawing-the-lower-corner" class="nav-link" data-scroll-target="#drawing-the-lower-corner">3.2 Drawing the lower corner</a></li>
+  </ul></li>
+  <li><a href="#including-correlation-coefficients" id="toc-including-correlation-coefficients" class="nav-link" data-scroll-target="#including-correlation-coefficients">3.3 Including Correlation Coefficients</a></li>
+  <li><a href="#alternative-information-dense-correlation-plot" id="toc-alternative-information-dense-correlation-plot" class="nav-link" data-scroll-target="#alternative-information-dense-correlation-plot">3.4 Alternative: Information-Dense Correlation Plot</a></li>
+  </ul></li>
+  <li><a href="#visualising-correlation-matrix-ggcorrmat-of-ggstatplot" id="toc-visualising-correlation-matrix-ggcorrmat-of-ggstatplot" class="nav-link" data-scroll-target="#visualising-correlation-matrix-ggcorrmat-of-ggstatplot">4 Visualising Correlation Matrix: <em>ggcorrmat()</em> of ggstatplot</a>
+  <ul class="collapse">
+  <li><a href="#basic-plot" id="toc-basic-plot" class="nav-link" data-scroll-target="#basic-plot">4.1 Basic plot</a></li>
+  </ul></li>
+  <li><a href="#building-multiple-plots" id="toc-building-multiple-plots" class="nav-link" data-scroll-target="#building-multiple-plots">5 Building Multiple Plots</a></li>
+  <li><a href="#visualising-correlation-matrix-using-corrplot-package" id="toc-visualising-correlation-matrix-using-corrplot-package" class="nav-link" data-scroll-target="#visualising-correlation-matrix-using-corrplot-package">6 Visualising Correlation Matrix using <strong>corrplot</strong> package</a>
+  <ul class="collapse">
+  <li><a href="#getting-started-with-corrplot" id="toc-getting-started-with-corrplot" class="nav-link" data-scroll-target="#getting-started-with-corrplot">6.1 Getting started with corrplot</a></li>
+  <li><a href="#customizing-aesthetics-layout" id="toc-customizing-aesthetics-layout" class="nav-link" data-scroll-target="#customizing-aesthetics-layout">6.2 Customizing Aesthetics &amp; Layout</a></li>
+  <li><a href="#working-with-visual-geometrics" id="toc-working-with-visual-geometrics" class="nav-link" data-scroll-target="#working-with-visual-geometrics">6.3 Working with visual geometrics</a></li>
+  <li><a href="#working-with-layout" id="toc-working-with-layout" class="nav-link" data-scroll-target="#working-with-layout">6.4 Working with layout</a></li>
+  <li><a href="#working-with-mixed-layout" id="toc-working-with-mixed-layout" class="nav-link" data-scroll-target="#working-with-mixed-layout">6.5 Working with mixed layout</a></li>
+  <li><a href="#combining-corrgram-with-the-significant-test" id="toc-combining-corrgram-with-the-significant-test" class="nav-link" data-scroll-target="#combining-corrgram-with-the-significant-test">6.6 Combining corrgram with the significant test</a></li>
+  <li><a href="#reorder-a-corrgram" id="toc-reorder-a-corrgram" class="nav-link" data-scroll-target="#reorder-a-corrgram">6.7 Reorder a corrgram</a></li>
+  <li><a href="#reordering-a-correlation-matrix-using-hclust" id="toc-reordering-a-correlation-matrix-using-hclust" class="nav-link" data-scroll-target="#reordering-a-correlation-matrix-using-hclust">6.8 Reordering a correlation matrix using hclust</a></li>
+  </ul></li>
+  <li><a href="#network-visualisation-of-correlations-corrr-package" id="toc-network-visualisation-of-correlations-corrr-package" class="nav-link" data-scroll-target="#network-visualisation-of-correlations-corrr-package">7 Network Visualisation of Correlations (<code>corrr</code> Package)</a></li>
+  <li><a href="#enhancing-pair-plots-with-ggally" id="toc-enhancing-pair-plots-with-ggally" class="nav-link" data-scroll-target="#enhancing-pair-plots-with-ggally">8 Enhancing Pair Plots with GGally</a></li>
+  <li><a href="#interactive-correlation-matrix-heatmaply" id="toc-interactive-correlation-matrix-heatmaply" class="nav-link" data-scroll-target="#interactive-correlation-matrix-heatmaply">9 Interactive Correlation Matrix (<code>heatmaply</code>)</a></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><strong>7 Reference</strong></a>
+  <ul class="collapse">
+  <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">7.1 R packages</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hands-0n Exercise 5-B:</h1>
+<h1 class="title">Hands-on Exercise 5-B:</h1>
 <p class="subtitle lead">Visual Correlation Analysis</p>
 </div>
 
@@ -203,7 +244,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 15, 2026</p>
+      <p class="date-modified">June 11, 2026</p>
     </div>
   </div>
     

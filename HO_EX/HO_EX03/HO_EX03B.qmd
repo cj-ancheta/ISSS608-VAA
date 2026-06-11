@@ -1,11 +1,11 @@
 ---
-title: "Hands-0n Exercise 3-B:"
+title: "Hands-on Exercise 3-B:"
 subtitle:  "Programming Animated Statistical Graphics with R"
 date: "26 Apr 2026"
 date-modified: "last-modified"
 editor: visual
 execute:
-  freeze: auto
+  freeze: true
   echo: true
   eval: true
   warning: false

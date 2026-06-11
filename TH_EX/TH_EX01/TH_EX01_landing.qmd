@@ -12,11 +12,11 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Technical+Report');"}
+::: {.poster style="background-image: url('/images/posters/th_ex01_capped_loss.png');"}
 :::
 
 ::: poster-info
-[Exercise 1]{.poster-label}
+[Technical Report]{.poster-label}
 :::
 
 <a href="/TH_EX/TH_EX01/TH_EX01_deliverable.html" class="stretched-link"></a>
@@ -29,7 +29,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Executive+Summary');"}
+::: {.poster style="background-image: url('/images/posters/th_ex01_presentation.png');"}
 :::
 
 ::: poster-info

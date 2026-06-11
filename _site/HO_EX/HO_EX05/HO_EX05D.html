@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2026-05-12">
 
-<title>Hands-0n Exercise 5-D: – Chart Whisperer</title>
+<title>Hands-on Exercise 5-D: – Chart Whisperer</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -118,7 +118,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -168,13 +168,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1 Overview</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a></li>
+  <li><a href="#static-parallel-coordinates-plot" id="toc-static-parallel-coordinates-plot" class="nav-link" data-scroll-target="#static-parallel-coordinates-plot">3 Static Parallel Coordinates Plot</a>
+  <ul class="collapse">
+  <li><a href="#plotting-a-simple-parallel-coordinates" id="toc-plotting-a-simple-parallel-coordinates" class="nav-link" data-scroll-target="#plotting-a-simple-parallel-coordinates">3.1 Plotting a simple parallel coordinates</a></li>
+  <li><a href="#plotting-a-parallel-coordinates-with-points" id="toc-plotting-a-parallel-coordinates-with-points" class="nav-link" data-scroll-target="#plotting-a-parallel-coordinates-with-points">3.2 Plotting a parallel coordinates with points</a></li>
+  <li><a href="#plotting-a-parallel-coordinates-with-boxplot" id="toc-plotting-a-parallel-coordinates-with-boxplot" class="nav-link" data-scroll-target="#plotting-a-parallel-coordinates-with-boxplot">3.3 Plotting a parallel coordinates with boxplot</a></li>
+  <li><a href="#parallel-coordinates-with-facet" id="toc-parallel-coordinates-with-facet" class="nav-link" data-scroll-target="#parallel-coordinates-with-facet">3.4 Parallel coordinates with facet</a></li>
+  <li><a href="#parallel-coordinates-with-palette" id="toc-parallel-coordinates-with-palette" class="nav-link" data-scroll-target="#parallel-coordinates-with-palette">3.5 Parallel coordinates with palette</a></li>
+  <li><a href="#parallel-coordinates-with-boxplot-2" id="toc-parallel-coordinates-with-boxplot-2" class="nav-link" data-scroll-target="#parallel-coordinates-with-boxplot-2">3.6 Parallel Coordinates with Boxplot (2)</a></li>
+  <li><a href="#parallel-coordinates-with-facet-2" id="toc-parallel-coordinates-with-facet-2" class="nav-link" data-scroll-target="#parallel-coordinates-with-facet-2">3.7 Parallel coordinates with facet (2)</a></li>
+  <li><a href="#rotating-x-axis-text-label" id="toc-rotating-x-axis-text-label" class="nav-link" data-scroll-target="#rotating-x-axis-text-label">3.8 Rotating x-axis text label</a></li>
+  <li><a href="#adjusting-the-rotated-x-axis-text-label" id="toc-adjusting-the-rotated-x-axis-text-label" class="nav-link" data-scroll-target="#adjusting-the-rotated-x-axis-text-label">3.9 Adjusting the rotated x-axis text label</a></li>
+  </ul></li>
+  <li><a href="#plotting-interactive-parallel-coordinates-plot-parallelplot-methods" id="toc-plotting-interactive-parallel-coordinates-plot-parallelplot-methods" class="nav-link" data-scroll-target="#plotting-interactive-parallel-coordinates-plot-parallelplot-methods">4 Plotting Interactive Parallel Coordinates Plot: parallelPlot methods</a>
+  <ul class="collapse">
+  <li><a href="#rotate-axis-label" id="toc-rotate-axis-label" class="nav-link" data-scroll-target="#rotate-axis-label">4.2 Rotate axis label</a></li>
+  <li><a href="#changing-the-colour-scheme" id="toc-changing-the-colour-scheme" class="nav-link" data-scroll-target="#changing-the-colour-scheme">4.3 Changing the colour scheme</a></li>
+  <li><a href="#parallel-coordinates-plot-with-histogram" id="toc-parallel-coordinates-plot-with-histogram" class="nav-link" data-scroll-target="#parallel-coordinates-plot-with-histogram">4.4 Parallel coordinates plot with histogram</a></li>
+  <li><a href="#parallel-coordinates-plot-with-histogram-2" id="toc-parallel-coordinates-plot-with-histogram-2" class="nav-link" data-scroll-target="#parallel-coordinates-plot-with-histogram-2">4.5 Parallel coordinates plot with histogram (2)</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hands-0n Exercise 5-D:</h1>
+<h1 class="title">Hands-on Exercise 5-D:</h1>
 <p class="subtitle lead">Visual Multivariate Analysis with Parallel Coordinates Plot</p>
 </div>
 
@@ -193,7 +221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 15, 2026</p>
+      <p class="date-modified">June 11, 2026</p>
     </div>
   </div>
     

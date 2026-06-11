@@ -21,18 +21,24 @@ listing:
 ### Expeditions
 
 **`Hands-on Exercises`**
+
+<a href="outputs.html#expeditions" class="stretched-link" aria-label="Hands-on Exercises"></a>
 :::
 
 ::: {.g-col-12 .g-col-md-3 .category-card}
 ### Live Sprints
 
 **`In-class Exercises`**
+
+<a href="outputs.html#live-sprints" class="stretched-link" aria-label="In-class Exercises"></a>
 :::
 
 ::: {.g-col-12 .g-col-md-3 .category-card}
 ### Deep Dives
 
 **`Take-home Exercises`**
+
+<a href="outputs.html#deep-dives" class="stretched-link" aria-label="Take-home Exercises"></a>
 :::
 
 ::: {.g-col-12 .g-col-md-3 .category-card .masterpiece-card}
@@ -40,6 +46,8 @@ listing:
 ### The Masterpiece
 
 **`Final Project`**
+
+<a href="outputs.html#masterpiece" class="stretched-link" aria-label="Final Project"></a>
 :::
 :::::::
 

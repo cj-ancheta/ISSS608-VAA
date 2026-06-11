@@ -1,11 +1,11 @@
 ---
-title: "Hands-On Exercise 4-B:"
+title: "Hands-on Exercise 4-B:"
 subtitle:  "Visualising Statistical Analysis"
 date: "4 May 2026"
 date-modified: "last-modified"
 editor: visual
 execute:
-  freeze: auto
+  freeze: true
   echo: true
   eval: true
   warning: false

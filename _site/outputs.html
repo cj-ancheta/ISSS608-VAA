@@ -74,7 +74,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -129,8 +129,26 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<script>
+  // Allows linking straight to a tab, e.g. outputs.html#deep-dives
+  function activateTabFromHash() {
+    const map = {
+      "expeditions": "Expeditions",
+      "live-sprints": "Live Sprints",
+      "deep-dives": "Deep Dives",
+      "masterpiece": "Masterpiece"
+    };
+    const label = map[window.location.hash.replace("#", "").toLowerCase()];
+    if (!label) return;
+    document.querySelectorAll(".nav-tabs .nav-link").forEach(function (link) {
+      if (link.textContent.trim() === label) link.click();
+    });
+  }
+  window.addEventListener("DOMContentLoaded", activateTabFromHash);
+  window.addEventListener("hashchange", activateTabFromHash);
+</script>
 <div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Expeditions</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Live Sprints</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Deep Dives</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">The Masterpiece</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Expeditions</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Live Sprints</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Deep Dives</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">Masterpiece</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="center-row">
@@ -167,7 +185,7 @@ ul.task-list li input[type="checkbox"] {
 <p>3</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');">
+<div class="poster" style="background-image: url('images/posters/ho_ex03_animation.png');">
 
 </div>
 <div class="poster-info">
@@ -181,7 +199,7 @@ ul.task-list li input[type="checkbox"] {
 <p>4</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');">
+<div class="poster" style="background-image: url('HO_EX/HO_EX04/images/hops_animation.gif');">
 
 </div>
 <div class="poster-info">
@@ -195,7 +213,7 @@ ul.task-list li input[type="checkbox"] {
 <p>5</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');">
+<div class="poster" style="background-image: url('images/posters/ho_ex05a_ternary.png');">
 
 </div>
 <div class="poster-info">
@@ -204,18 +222,17 @@ ul.task-list li input[type="checkbox"] {
 <p><a href="landing_pages/HO_EX05_landing/HO_EX05_landing.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>6</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">Hands-on Exercise 6</span></p>
 </div>
-<p><a href="HO_EX/HO_EX06/HO_EX06.html" class="stretched-link"></a></p>
 </div>
 </div>
 <div class="gallery-item">
@@ -223,7 +240,7 @@ ul.task-list li input[type="checkbox"] {
 <p>7</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');">
+<div class="poster" style="background-image: url('HO_EX/HO_EX07/images/HO_EX07A_network.png');">
 
 </div>
 <div class="poster-info">
@@ -237,7 +254,7 @@ ul.task-list li input[type="checkbox"] {
 <p>8</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
+<div class="poster" style="background-image: url('HO_EX/HO_EX08/images/calendar_heatmap.png');">
 
 </div>
 <div class="poster-info">
@@ -246,32 +263,30 @@ ul.task-list li input[type="checkbox"] {
 <p><a href="HO_EX/HO_EX08/HO_EX08.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>9</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">Hands-on Exercise 9</span></p>
 </div>
-<p><a href="HO_EX/HO_EX09/HO_EX09.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>10</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">Hands-on Exercise 10</span></p>
 </div>
-<p><a href="HO_EX/HO_EX10/HO_EX10.html" class="stretched-link"></a></p>
 </div>
 </div>
 </div>
@@ -289,133 +304,124 @@ ul.task-list li input[type="checkbox"] {
 <div class="poster-info">
 <p><span class="poster-label">In-class Exercise 1</span></p>
 </div>
-<p><a href="https://public.tableau.com/app/profile/charles.ancheta6872/viz/In-classExercise1_17771005719550/Dashboard" class="stretched-link"></a></p>
+<p><a href="https://public.tableau.com/app/profile/charles.ancheta6872/viz/In-classExercise1_17771005719550/Dashboard" class="stretched-link" target="_blank" rel="noopener"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>2</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">In-class Exercise 2</span></p>
 </div>
-<p><a href="IC_EX/IC_EX02/IC_EX02.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>3</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">In-class Exercise 3</span></p>
 </div>
-<p><a href="IC_EX/IC_EX03/IC_EX03.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>4</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">In-class Exercise 4</span></p>
 </div>
-<p><a href="IC_EX/IC_EX04/IC_EX04.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>5</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">In-class Exercise 5</span></p>
 </div>
-<p><a href="IC_EX/IC_EX05/IC_EX05.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>6</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">In-class Exercise 6</span></p>
 </div>
-<p><a href="IC_EX/IC_EX06/IC_EX06.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>7</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">In-class Exercise 7</span></p>
 </div>
-<p><a href="IC_EX/IC_EX07/IC_EX07.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>8</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">In-class Exercise 8</span></p>
 </div>
-<p><a href="IC_EX/IC_EX08/IC_EX08.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>9</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">In-class Exercise 9</span></p>
 </div>
-<p><a href="IC_EX/IC_EX09/IC_EX09.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>10</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">In-class Exercise 10</span></p>
 </div>
-<p><a href="IC_EX/IC_EX10/IC_EX10.html" class="stretched-link"></a></p>
 </div>
 </div>
 </div>
@@ -427,7 +433,7 @@ ul.task-list li input[type="checkbox"] {
 <p>1</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=CLICK+HERE');">
+<div class="poster" style="background-image: url('images/posters/th_ex01_portfolio.png');">
 
 </div>
 <div class="poster-info">
@@ -441,7 +447,7 @@ ul.task-list li input[type="checkbox"] {
 <p>2</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=CLICK+HERE');">
+<div class="poster" style="background-image: url('images/posters/th_ex02_network.png');">
 
 </div>
 <div class="poster-info">
@@ -450,36 +456,34 @@ ul.task-list li input[type="checkbox"] {
 <p><a href="TH_EX/TH_EX02/TH_EX02.html" class="stretched-link"></a></p>
 </div>
 </div>
-<div class="gallery-item">
+<div class="gallery-item coming-soon">
 <div class="huge-number">
 <p>3</p>
 </div>
 <div class="poster-card">
-<div class="poster" style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">Take-home Exercise 3</span></p>
 </div>
-<p><a href="TH_EX/TH_EX03/TH_EX03.html" class="stretched-link"></a></p>
 </div>
 </div>
 </div>
 </div>
 <div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
 <div class="center-row">
-<div class="gallery-item masterpiece-card">
+<div class="gallery-item masterpiece-card coming-soon">
 <div class="huge-number">
 <p>1</p>
 </div>
 <div class="poster-card">
-<div class="poster masterpiece-poster" style="background-image: url('https://placehold.co/600x400/2b2b2b/FFC107?text=Coming+soon');">
-
+<div class="poster masterpiece-poster poster-text">
+<p>COMING SOON</p>
 </div>
 <div class="poster-info">
 <p><span class="poster-label">Final Project</span></p>
 </div>
-<p><a href="PROJECT/Project01.html" class="stretched-link"></a></p>
 </div>
 </div>
 </div>

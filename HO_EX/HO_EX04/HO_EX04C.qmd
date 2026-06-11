@@ -1,11 +1,11 @@
 ---
-title: "Hands-0n Exercise 4-C:"
+title: "Hands-on Exercise 4-C:"
 subtitle:  "Visualising Uncertainty"
 date: "4 May 2026"
 date-modified: "last-modified"
 editor: visual
 execute:
-  freeze: false
+  freeze: true
   echo: true
   eval: true
   warning: false

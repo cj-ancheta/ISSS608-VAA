@@ -1,11 +1,11 @@
 ---
-title: "Hands-0n Exercise 5-A:"
+title: "Hands-on Exercise 5-A:"
 subtitle:  "Building Ternary Plot with R"
 date: "12 May 2026"
 date-modified: "last-modified"
 editor: visual
 execute:
-  freeze: auto
+  freeze: true
   echo: true
   eval: true
   warning: false

@@ -2,6 +2,7 @@ project:
   type: website
   resources:
   - "IC_EX/**/*.png"
+  - "images/**"
 
 website:
   title: "Chart Whisperer"
@@ -34,4 +35,6 @@ format:
     code-overflow: scroll
     code-line-numbers: true
     fig-align: center
-    toc: false
+    toc: true
+    toc-depth: 3
+    toc-location: right

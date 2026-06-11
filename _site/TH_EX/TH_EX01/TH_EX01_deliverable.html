@@ -110,7 +110,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -160,7 +160,69 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">1 Introduction</a>
+  <ul class="collapse">
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">1.1 Background</a></li>
+  <li><a href="#analytical-objective" id="toc-analytical-objective" class="nav-link" data-scroll-target="#analytical-objective">1.2 Analytical Objective</a></li>
+  <li><a href="#data-sources" id="toc-data-sources" class="nav-link" data-scroll-target="#data-sources">1.3 Data Sources</a></li>
+  </ul></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#r-packages" id="toc-r-packages" class="nav-link" data-scroll-target="#r-packages">2.1 R Packages</a></li>
+  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">2.2 Importing the Data</a></li>
+  </ul></li>
+  <li><a href="#research-questions-and-feature-map" id="toc-research-questions-and-feature-map" class="nav-link" data-scroll-target="#research-questions-and-feature-map">3 Research Questions and Feature Map</a>
+  <ul class="collapse">
+  <li><a href="#visual-analytics-technique-selection-rationale" id="toc-visual-analytics-technique-selection-rationale" class="nav-link" data-scroll-target="#visual-analytics-technique-selection-rationale">3.1 Visual Analytics Technique Selection Rationale</a></li>
+  </ul></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">4 Data Wrangling</a>
+  <ul class="collapse">
+  <li><a href="#data-quality-checks" id="toc-data-quality-checks" class="nav-link" data-scroll-target="#data-quality-checks">4.1 Data Quality Checks</a></li>
+  <li><a href="#feature-selection-and-recoding" id="toc-feature-selection-and-recoding" class="nav-link" data-scroll-target="#feature-selection-and-recoding">4.2 Feature Selection and Recoding</a></li>
+  <li><a href="#derived-analytical-variables" id="toc-derived-analytical-variables" class="nav-link" data-scroll-target="#derived-analytical-variables">4.3 Derived Analytical Variables</a></li>
+  <li><a href="#helper-summary-tables" id="toc-helper-summary-tables" class="nav-link" data-scroll-target="#helper-summary-tables">4.4 Helper Summary Tables</a></li>
+  </ul></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">5 Exploratory Data Analysis</a>
+  <ul class="collapse">
+  <li><a href="#portfolio-at-a-glance" id="toc-portfolio-at-a-glance" class="nav-link" data-scroll-target="#portfolio-at-a-glance">5.1 Portfolio at a Glance</a></li>
+  <li><a href="#executive-triage-map" id="toc-executive-triage-map" class="nav-link" data-scroll-target="#executive-triage-map">5.2 Executive Triage Map</a></li>
+  </ul></li>
+  <li><a href="#univariate-analysis" id="toc-univariate-analysis" class="nav-link" data-scroll-target="#univariate-analysis">6 Univariate Analysis</a>
+  <ul class="collapse">
+  <li><a href="#portfolio-composition" id="toc-portfolio-composition" class="nav-link" data-scroll-target="#portfolio-composition">6.1 Portfolio Composition</a></li>
+  <li><a href="#numerical-feature-distributions" id="toc-numerical-feature-distributions" class="nav-link" data-scroll-target="#numerical-feature-distributions">6.2 Numerical Feature Distributions</a></li>
+  <li><a href="#claim-and-profitability-status" id="toc-claim-and-profitability-status" class="nav-link" data-scroll-target="#claim-and-profitability-status">6.3 Claim and Profitability Status</a></li>
+  </ul></li>
+  <li><a href="#bivariate-mythbusting-analysis" id="toc-bivariate-mythbusting-analysis" class="nav-link" data-scroll-target="#bivariate-mythbusting-analysis">7 Bivariate Mythbusting Analysis</a>
+  <ul class="collapse">
+  <li><a href="#rq1-are-younger-drivers-genuinely-less-profitable-than-older-drivers" id="toc-rq1-are-younger-drivers-genuinely-less-profitable-than-older-drivers" class="nav-link" data-scroll-target="#rq1-are-younger-drivers-genuinely-less-profitable-than-older-drivers">7.1 RQ1: Are Younger Drivers Genuinely Less Profitable Than Older Drivers?</a></li>
+  <li><a href="#rq2-does-vehicle-age-increase-loss-ratio-and-claim-frequency" id="toc-rq2-does-vehicle-age-increase-loss-ratio-and-claim-frequency" class="nav-link" data-scroll-target="#rq2-does-vehicle-age-increase-loss-ratio-and-claim-frequency">7.2 RQ2: Does Vehicle Age Increase Loss Ratio and Claim Frequency?</a></li>
+  <li><a href="#rq3-which-policy-types-create-the-most-profitability-pressure" id="toc-rq3-which-policy-types-create-the-most-profitability-pressure" class="nav-link" data-scroll-target="#rq3-which-policy-types-create-the-most-profitability-pressure">7.3 RQ3: Which Policy Types Create the Most Profitability Pressure?</a></li>
+  <li><a href="#rq4-are-premium-vehicle-brands-less-profitable-than-mainstream-brands" id="toc-rq4-are-premium-vehicle-brands-less-profitable-than-mainstream-brands" class="nav-link" data-scroll-target="#rq4-are-premium-vehicle-brands-less-profitable-than-mainstream-brands">7.4 RQ4: Are Premium Vehicle Brands Less Profitable Than Mainstream Brands?</a></li>
+  <li><a href="#rq5-does-vehicle-value-show-a-monotonic-relationship-with-loss-ratio" id="toc-rq5-does-vehicle-value-show-a-monotonic-relationship-with-loss-ratio" class="nav-link" data-scroll-target="#rq5-does-vehicle-value-show-a-monotonic-relationship-with-loss-ratio">7.5 RQ5: Does Vehicle Value Show a Monotonic Relationship With Loss Ratio?</a></li>
+  <li><a href="#rq6-does-bonus-score-separate-profitable-and-unprofitable-customers" id="toc-rq6-does-bonus-score-separate-profitable-and-unprofitable-customers" class="nav-link" data-scroll-target="#rq6-does-bonus-score-separate-profitable-and-unprofitable-customers">7.6 RQ6: Does Bonus Score Separate Profitable and Unprofitable Customers?</a></li>
+  <li><a href="#rq7-are-short-exposure-policies-a-hidden-profitability-problem" id="toc-rq7-are-short-exposure-policies-a-hidden-profitability-problem" class="nav-link" data-scroll-target="#rq7-are-short-exposure-policies-a-hidden-profitability-problem">7.7 RQ7: Are Short-Exposure Policies a Hidden Profitability Problem?</a></li>
+  <li><a href="#rq8-are-longer-observed-customers-more-profitable-and-worth-retaining" id="toc-rq8-are-longer-observed-customers-more-profitable-and-worth-retaining" class="nav-link" data-scroll-target="#rq8-are-longer-observed-customers-more-profitable-and-worth-retaining">7.8 RQ8: Are Longer-Observed Customers More Profitable and Worth Retaining?</a></li>
+  <li><a href="#rq9-are-cancelled-policies-actually-worse-risks-than-active-policies" id="toc-rq9-are-cancelled-policies-actually-worse-risks-than-active-policies" class="nav-link" data-scroll-target="#rq9-are-cancelled-policies-actually-worse-risks-than-active-policies">7.9 RQ9: Are Cancelled Policies Actually Worse Risks Than Active Policies?</a></li>
+  <li><a href="#rq10-does-geography-materially-affect-frequency-severity-and-loss-ratio" id="toc-rq10-does-geography-materially-affect-frequency-severity-and-loss-ratio" class="nav-link" data-scroll-target="#rq10-does-geography-materially-affect-frequency-severity-and-loss-ratio">7.10 RQ10: Does Geography Materially Affect Frequency, Severity, and Loss Ratio?</a></li>
+  </ul></li>
+  <li><a href="#multivariate-analysis" id="toc-multivariate-analysis" class="nav-link" data-scroll-target="#multivariate-analysis">8 Multivariate Analysis</a>
+  <ul class="collapse">
+  <li><a href="#which-driver-age-and-vehicle-age-combinations-elevate-claim-risk" id="toc-which-driver-age-and-vehicle-age-combinations-elevate-claim-risk" class="nav-link" data-scroll-target="#which-driver-age-and-vehicle-age-combinations-elevate-claim-risk">8.1 Which Driver-Age and Vehicle-Age Combinations Elevate Claim Risk?</a></li>
+  <li><a href="#do-brand-value-and-power-to-weight-signals-identify-severity-risk" id="toc-do-brand-value-and-power-to-weight-signals-identify-severity-risk" class="nav-link" data-scroll-target="#do-brand-value-and-power-to-weight-signals-identify-severity-risk">8.2 Do Brand, Value, and Power-to-Weight Signals Identify Severity Risk?</a></li>
+  <li><a href="#which-segments-should-be-reviewed-first" id="toc-which-segments-should-be-reviewed-first" class="nav-link" data-scroll-target="#which-segments-should-be-reviewed-first">8.3 Which Segments Should Be Reviewed First?</a></li>
+  <li><a href="#statistical-validation" id="toc-statistical-validation" class="nav-link" data-scroll-target="#statistical-validation">8.4 Statistical Validation</a></li>
+  </ul></li>
+  <li><a href="#summary-of-key-findings-and-answers-to-the-10-research-questions" id="toc-summary-of-key-findings-and-answers-to-the-10-research-questions" class="nav-link" data-scroll-target="#summary-of-key-findings-and-answers-to-the-10-research-questions">9 Summary of Key Findings and Answers to the 10 Research Questions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">10 References</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 

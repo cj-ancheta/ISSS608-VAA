@@ -167,7 +167,7 @@ window.Quarto = {
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -217,7 +217,64 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1 Overview</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#loading-the-required-packages" id="toc-loading-the-required-packages" class="nav-link" data-scroll-target="#loading-the-required-packages">2.1 Loading the required packages</a></li>
+  <li><a href="#importing-multiple-text-files-from-multiple-folders" id="toc-importing-multiple-text-files-from-multiple-folders" class="nav-link" data-scroll-target="#importing-multiple-text-files-from-multiple-folders">2.2 Importing Multiple Text Files from Multiple Folders</a>
+  <ul class="collapse">
+  <li><a href="#creating-a-folder-list" id="toc-creating-a-folder-list" class="nav-link" data-scroll-target="#creating-a-folder-list">2.2.1 Creating a folder list</a></li>
+  <li><a href="#define-a-function-to-read-all-files-from-a-folder-into-a-data-frame" id="toc-define-a-function-to-read-all-files-from-a-folder-into-a-data-frame" class="nav-link" data-scroll-target="#define-a-function-to-read-all-files-from-a-folder-into-a-data-frame">2.2.2 Define a function to read all files from a folder into a data frame</a></li>
+  </ul></li>
+  <li><a href="#importing-multiple-text-files-from-multiple-folders-1" id="toc-importing-multiple-text-files-from-multiple-folders-1" class="nav-link" data-scroll-target="#importing-multiple-text-files-from-multiple-folders-1">2.3 Importing Multiple Text Files from Multiple Folders</a>
+  <ul class="collapse">
+  <li><a href="#reading-in-all-the-messages-from-the-20news-folder" id="toc-reading-in-all-the-messages-from-the-20news-folder" class="nav-link" data-scroll-target="#reading-in-all-the-messages-from-the-20news-folder">2.3.1 Reading in all the messages from the 20news folder</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#initial-eda" id="toc-initial-eda" class="nav-link" data-scroll-target="#initial-eda">3 Initial EDA</a></li>
+  <li><a href="#introducing-tidytext" id="toc-introducing-tidytext" class="nav-link" data-scroll-target="#introducing-tidytext">4 Introducing tidytext</a>
+  <ul class="collapse">
+  <li><a href="#removing-header-and-automated-email-signatures" id="toc-removing-header-and-automated-email-signatures" class="nav-link" data-scroll-target="#removing-header-and-automated-email-signatures">4.1 Removing header and automated email signatures</a></li>
+  <li><a href="#removing-lines-with-nested-text-representing-quotes-from-other-users" id="toc-removing-lines-with-nested-text-representing-quotes-from-other-users" class="nav-link" data-scroll-target="#removing-lines-with-nested-text-representing-quotes-from-other-users">4.2 Removing lines with nested text representing quotes from other users</a></li>
+  <li><a href="#text-data-processing" id="toc-text-data-processing" class="nav-link" data-scroll-target="#text-data-processing">4.3 Text Data Processing</a></li>
+  <li><a href="#visualising-words-in-newsgroups-using-the-wordcloud-package" id="toc-visualising-words-in-newsgroups-using-the-wordcloud-package" class="nav-link" data-scroll-target="#visualising-words-in-newsgroups-using-the-wordcloud-package">4.4 Visualising Words in newsgroups using the wordcloud package</a></li>
+  <li><a href="#visualising-words-in-newsgroups-using-the-ggwordcloud-package" id="toc-visualising-words-in-newsgroups-using-the-ggwordcloud-package" class="nav-link" data-scroll-target="#visualising-words-in-newsgroups-using-the-ggwordcloud-package">4.5 Visualising Words in newsgroups using the ggwordcloud package</a></li>
+  </ul></li>
+  <li><a href="#basic-concept-of-tf-idf" id="toc-basic-concept-of-tf-idf" class="nav-link" data-scroll-target="#basic-concept-of-tf-idf">5 Basic Concept of TF-IDF</a>
+  <ul class="collapse">
+  <li><a href="#computing-tf-idf-within-newsgroups" id="toc-computing-tf-idf-within-newsgroups" class="nav-link" data-scroll-target="#computing-tf-idf-within-newsgroups">5.1 Computing tf-idf within newsgroups</a></li>
+  <li><a href="#visualising-tf-idf-as-an-interactive-table" id="toc-visualising-tf-idf-as-an-interactive-table" class="nav-link" data-scroll-target="#visualising-tf-idf-as-an-interactive-table">5.2 Visualising tf-idf as an interactive table</a></li>
+  <li><a href="#visualising-tf-idf-within-newsgroups" id="toc-visualising-tf-idf-within-newsgroups" class="nav-link" data-scroll-target="#visualising-tf-idf-within-newsgroups">5.3 Visualising tf-idf within newsgroups</a></li>
+  </ul></li>
+  <li><a href="#word-correlations" id="toc-word-correlations" class="nav-link" data-scroll-target="#word-correlations">6 Word Correlations</a>
+  <ul class="collapse">
+  <li><a href="#counting-and-correlating-pairs-of-words-with-the-widyr-package" id="toc-counting-and-correlating-pairs-of-words-with-the-widyr-package" class="nav-link" data-scroll-target="#counting-and-correlating-pairs-of-words-with-the-widyr-package">6.1 Counting and correlating pairs of words with the widyr package</a></li>
+  <li><a href="#visualising-correlation-as-a-network" id="toc-visualising-correlation-as-a-network" class="nav-link" data-scroll-target="#visualising-correlation-as-a-network">6.2 Visualising correlation as a network</a></li>
+  <li><a href="#bigram" id="toc-bigram" class="nav-link" data-scroll-target="#bigram">6.3 Bigram</a></li>
+  <li><a href="#counting-bigrams" id="toc-counting-bigrams" class="nav-link" data-scroll-target="#counting-bigrams">6.4 Counting bigrams</a></li>
+  <li><a href="#cleaning-bigram" id="toc-cleaning-bigram" class="nav-link" data-scroll-target="#cleaning-bigram">6.5 Cleaning bigram</a></li>
+  <li><a href="#counting-the-bigram-again" id="toc-counting-the-bigram-again" class="nav-link" data-scroll-target="#counting-the-bigram-again">6.6 Counting the bigram again</a></li>
+  <li><a href="#create-a-network-graph-from-the-bigram-data-frame" id="toc-create-a-network-graph-from-the-bigram-data-frame" class="nav-link" data-scroll-target="#create-a-network-graph-from-the-bigram-data-frame">6.7 Create a network graph from the bigram data frame</a></li>
+  <li><a href="#visualising-a-network-of-bigrams-with-ggraph" id="toc-visualising-a-network-of-bigrams-with-ggraph" class="nav-link" data-scroll-target="#visualising-a-network-of-bigrams-with-ggraph">6.8 Visualising a network of bigrams with ggraph</a></li>
+  <li><a href="#revised-version" id="toc-revised-version" class="nav-link" data-scroll-target="#revised-version">6.9 Revised version</a></li>
+  </ul></li>
+  <li><a href="#extras" id="toc-extras" class="nav-link" data-scroll-target="#extras">7 Extras</a>
+  <ul class="collapse">
+  <li><a href="#sentiment-analysis-with-the-bing-lexicon" id="toc-sentiment-analysis-with-the-bing-lexicon" class="nav-link" data-scroll-target="#sentiment-analysis-with-the-bing-lexicon">7.1 Sentiment analysis with the Bing lexicon</a></li>
+  <li><a href="#which-newsgroups-are-most-positive-or-negative" id="toc-which-newsgroups-are-most-positive-or-negative" class="nav-link" data-scroll-target="#which-newsgroups-are-most-positive-or-negative">7.2 Which newsgroups are most positive or negative?</a></li>
+  <li><a href="#word-correlation-network-within-a-single-newsgroup" id="toc-word-correlation-network-within-a-single-newsgroup" class="nav-link" data-scroll-target="#word-correlation-network-within-a-single-newsgroup">7.3 Word-correlation network <em>within</em> a single newsgroup</a></li>
+  <li><a href="#most-distinctive-bigrams-with-tf-idf" id="toc-most-distinctive-bigrams-with-tf-idf" class="nav-link" data-scroll-target="#most-distinctive-bigrams-with-tf-idf">7.4 Most distinctive <em>bigrams</em> with TF-IDF</a></li>
+  <li><a href="#a-reusable-per-newsgroup-word-cloud-function" id="toc-a-reusable-per-newsgroup-word-cloud-function" class="nav-link" data-scroll-target="#a-reusable-per-newsgroup-word-cloud-function">7.5 A reusable per-newsgroup word-cloud function</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">8 References</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 

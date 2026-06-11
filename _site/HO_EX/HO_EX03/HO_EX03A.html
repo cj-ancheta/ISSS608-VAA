@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2026-04-26">
 
-<title>Hands-0n Exercise 3-A: – Chart Whisperer</title>
+<title>Hands-on Exercise 3-A: – Chart Whisperer</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -154,7 +154,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -204,13 +204,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link active" data-scroll-target="#learning-outcome">1 Learning Outcome</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a></li>
+  <li><a href="#interactive-data-visualisation---ggiraph-methods" id="toc-interactive-data-visualisation---ggiraph-methods" class="nav-link" data-scroll-target="#interactive-data-visualisation---ggiraph-methods">3 Interactive Data Visualisation - ggiraph methods</a>
+  <ul class="collapse">
+  <li><a href="#tooltip-effect-with-tooltip-aesthetic" id="toc-tooltip-effect-with-tooltip-aesthetic" class="nav-link" data-scroll-target="#tooltip-effect-with-tooltip-aesthetic">3.1 Tooltip effect with <em>tooltip</em> aesthetic</a>
+  <ul class="collapse">
+  <li><a href="#displaying-multiple-information-on-tooltip" id="toc-displaying-multiple-information-on-tooltip" class="nav-link" data-scroll-target="#displaying-multiple-information-on-tooltip">3.1.1 Displaying multiple information on tooltip</a></li>
+  <li><a href="#customising-tooltip-style" id="toc-customising-tooltip-style" class="nav-link" data-scroll-target="#customising-tooltip-style">3.1.2 Customising Tooltip style</a></li>
+  <li><a href="#displaying-statistics-on-tooltip" id="toc-displaying-statistics-on-tooltip" class="nav-link" data-scroll-target="#displaying-statistics-on-tooltip">3.1.3 Displaying statistics on tooltip</a></li>
+  <li><a href="#hover-effect-with-data_id-aesthetic" id="toc-hover-effect-with-data_id-aesthetic" class="nav-link" data-scroll-target="#hover-effect-with-data_id-aesthetic">3.1.4 Hover effect with <em>data_id</em> aesthetic</a></li>
+  <li><a href="#styling-hover-effect" id="toc-styling-hover-effect" class="nav-link" data-scroll-target="#styling-hover-effect">3.1.5 Styling hover effect</a></li>
+  <li><a href="#combining-tooltip-and-hover-effect" id="toc-combining-tooltip-and-hover-effect" class="nav-link" data-scroll-target="#combining-tooltip-and-hover-effect">3.1.6 Combining tooltip and hover effect</a></li>
+  <li><a href="#click-effect-with-onclick" id="toc-click-effect-with-onclick" class="nav-link" data-scroll-target="#click-effect-with-onclick">3.1.7 Click effect with <strong>onclick</strong></a></li>
+  <li><a href="#coordinated-linked-plots-with-ggiraph" id="toc-coordinated-linked-plots-with-ggiraph" class="nav-link" data-scroll-target="#coordinated-linked-plots-with-ggiraph">3.1.8 Coordinated Linked Plots with <strong>ggiraph</strong></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#interactive-data-visualisation---plot_ly-methods" id="toc-interactive-data-visualisation---plot_ly-methods" class="nav-link" data-scroll-target="#interactive-data-visualisation---plot_ly-methods">4 Interactive Data Visualisation - plot_ly methods</a>
+  <ul class="collapse">
+  <li><a href="#creating-an-interactive-scatter-plot-plot_ly-method" id="toc-creating-an-interactive-scatter-plot-plot_ly-method" class="nav-link" data-scroll-target="#creating-an-interactive-scatter-plot-plot_ly-method">4.1 Creating an interactive scatter plot: plot_ly() method</a></li>
+  <li><a href="#working-with-visual-variable-plot_ly-method" id="toc-working-with-visual-variable-plot_ly-method" class="nav-link" data-scroll-target="#working-with-visual-variable-plot_ly-method">4.2 Working with visual variable: plot_ly() method</a></li>
+  <li><a href="#creating-an-interactive-scatter-plot-ggplotly-method" id="toc-creating-an-interactive-scatter-plot-ggplotly-method" class="nav-link" data-scroll-target="#creating-an-interactive-scatter-plot-ggplotly-method">4.3 Creating an interactive scatter plot: ggplotly() method</a></li>
+  <li><a href="#coordinated-linked-plots-with-plotly" id="toc-coordinated-linked-plots-with-plotly" class="nav-link" data-scroll-target="#coordinated-linked-plots-with-plotly">4.4 Coordinated Linked Plots with <strong>plotly</strong></a></li>
+  <li><a href="#sliders-with-animated-gapminder-data" id="toc-sliders-with-animated-gapminder-data" class="nav-link" data-scroll-target="#sliders-with-animated-gapminder-data">4.5 Sliders with animated Gapminder data</a></li>
+  </ul></li>
+  <li><a href="#interactive-data-visualisation---crosstalk-methods" id="toc-interactive-data-visualisation---crosstalk-methods" class="nav-link" data-scroll-target="#interactive-data-visualisation---crosstalk-methods">5 Interactive Data Visualisation - crosstalk methods</a>
+  <ul class="collapse">
+  <li><a href="#interactive-data-table-dt-package" id="toc-interactive-data-table-dt-package" class="nav-link" data-scroll-target="#interactive-data-table-dt-package">5.1 Interactive Data Table: DT package</a></li>
+  <li><a href="#linked-brushing-crosstalk-method" id="toc-linked-brushing-crosstalk-method" class="nav-link" data-scroll-target="#linked-brushing-crosstalk-method">5.2 Linked brushing: crosstalk method</a></li>
+  </ul></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference">6 Reference</a>
+  <ul class="collapse">
+  <li><a href="#ggiraph" id="toc-ggiraph" class="nav-link" data-scroll-target="#ggiraph">6.1 ggiraph</a></li>
+  <li><a href="#plotly-for-r" id="toc-plotly-for-r" class="nav-link" data-scroll-target="#plotly-for-r">6.2 plotly for R</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hands-0n Exercise 3-A:</h1>
+<h1 class="title">Hands-on Exercise 3-A:</h1>
 <p class="subtitle lead">Programming Interactive Data Visualisation with R</p>
 </div>
 
@@ -229,7 +270,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 2, 2026</p>
+      <p class="date-modified">June 11, 2026</p>
     </div>
   </div>
     

@@ -212,6 +212,45 @@ h2 {
   z-index: 5;
 }
 
+/* Local text-tile posters (replaces external placehold.co images) */
+.poster.poster-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #1f1f1f 0%, #2b2b2b 55%, #1c1c1c 100%);
+}
+
+.poster.poster-text p {
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #FFC107;
+  opacity: 0.8;
+}
+
+/* Unfinished exercises: visible but clearly inactive (no link inside) */
+.gallery-item.coming-soon,
+.center-row .gallery-item.coming-soon:hover,
+.tech-stack-row .gallery-item.coming-soon:hover {
+  opacity: 0.45;
+  filter: grayscale(70%);
+  cursor: default;
+}
+
+.gallery-item.coming-soon .poster-card:hover {
+  transform: none;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.gallery-item.coming-soon .poster-card:hover .poster-label {
+  color: #A68B44;
+  opacity: 0.7;
+}
+
 /* ==========================================================================
    4. VERTICAL TECH & HUMAN CARDS
    ========================================================================== */
@@ -406,11 +445,12 @@ body { -ms-overflow-style: none; }
 }
 
 .category-card {
+  position: relative; /* anchors .stretched-link to the card */
   background-color: #1a1a1a;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0 !important;
   padding: 1.2rem 1rem;
-  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); 
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .category-card h3 {

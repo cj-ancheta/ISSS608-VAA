@@ -144,7 +144,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -194,7 +194,83 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1 Overview</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#loading-the-required-packages" id="toc-loading-the-required-packages" class="nav-link" data-scroll-target="#loading-the-required-packages">2.1 Loading the required packages</a></li>
+  <li><a href="#importing-data" id="toc-importing-data" class="nav-link" data-scroll-target="#importing-data">2.2 Importing Data</a>
+  <ul class="collapse">
+  <li><a href="#about-the-data-set" id="toc-about-the-data-set" class="nav-link" data-scroll-target="#about-the-data-set">2.2.1 About the data set</a></li>
+  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">2.2.2 Importing the data</a></li>
+  <li><a href="#initial-look-at-the-data" id="toc-initial-look-at-the-data" class="nav-link" data-scroll-target="#initial-look-at-the-data">2.2.3 Initial look at the data</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">3 Data Wrangling</a>
+  <ul class="collapse">
+  <li><a href="#reviewing-the-edges-data" id="toc-reviewing-the-edges-data" class="nav-link" data-scroll-target="#reviewing-the-edges-data">3.1 Reviewing the edges data</a></li>
+  <li><a href="#converting-dates-to-date-datatype" id="toc-converting-dates-to-date-datatype" class="nav-link" data-scroll-target="#converting-dates-to-date-datatype">3.2 Converting dates to Date datatype</a></li>
+  <li><a href="#aggregating-data" id="toc-aggregating-data" class="nav-link" data-scroll-target="#aggregating-data">3.3 Aggregating data</a></li>
+  </ul></li>
+  <li><a href="#creating-network-objects-using-tidygraph" id="toc-creating-network-objects-using-tidygraph" class="nav-link" data-scroll-target="#creating-network-objects-using-tidygraph">4 Creating network objects using tidygraph</a>
+  <ul class="collapse">
+  <li><a href="#the-tbl_graph-object" id="toc-the-tbl_graph-object" class="nav-link" data-scroll-target="#the-tbl_graph-object">4.1 The tbl_graph object</a></li>
+  <li><a href="#the-dplyr-verbs-in-tidygraph" id="toc-the-dplyr-verbs-in-tidygraph" class="nav-link" data-scroll-target="#the-dplyr-verbs-in-tidygraph">4.2 The dplyr verbs in tidygraph</a></li>
+  <li><a href="#using-tbl_graph-to-build-tidygraph-data-model" id="toc-using-tbl_graph-to-build-tidygraph-data-model" class="nav-link" data-scroll-target="#using-tbl_graph-to-build-tidygraph-data-model">4.3 Using <code>tbl_graph()</code> to build tidygraph data model</a></li>
+  <li><a href="#getting-to-know-the-output" id="toc-getting-to-know-the-output" class="nav-link" data-scroll-target="#getting-to-know-the-output">4.4 Getting to know the output</a></li>
+  <li><a href="#changing-the-active-object" id="toc-changing-the-active-object" class="nav-link" data-scroll-target="#changing-the-active-object">4.5 Changing the active object</a></li>
+  </ul></li>
+  <li><a href="#plotting-static-network-graphs-with-ggraph-package" id="toc-plotting-static-network-graphs-with-ggraph-package" class="nav-link" data-scroll-target="#plotting-static-network-graphs-with-ggraph-package">5 Plotting Static Network Graphs with ggraph package</a>
+  <ul class="collapse">
+  <li><a href="#plotting-a-basic-network-graph" id="toc-plotting-a-basic-network-graph" class="nav-link" data-scroll-target="#plotting-a-basic-network-graph">5.1 Plotting a basic network graph</a></li>
+  <li><a href="#changing-the-default-network-graph-theme" id="toc-changing-the-default-network-graph-theme" class="nav-link" data-scroll-target="#changing-the-default-network-graph-theme">5.2 Changing the default network graph theme</a></li>
+  <li><a href="#changing-the-coloring-of-the-plot" id="toc-changing-the-coloring-of-the-plot" class="nav-link" data-scroll-target="#changing-the-coloring-of-the-plot">5.3 Changing the coloring of the plot</a></li>
+  <li><a href="#working-with-ggraphs-layouts" id="toc-working-with-ggraphs-layouts" class="nav-link" data-scroll-target="#working-with-ggraphs-layouts">5.4 Working with ggraph’s layouts</a></li>
+  <li><a href="#different-graph-layouts" id="toc-different-graph-layouts" class="nav-link" data-scroll-target="#different-graph-layouts">5.5 Different graph layouts</a></li>
+  <li><a href="#modifying-network-nodes" id="toc-modifying-network-nodes" class="nav-link" data-scroll-target="#modifying-network-nodes">5.6 Modifying network nodes</a></li>
+  <li><a href="#modifying-edges" id="toc-modifying-edges" class="nav-link" data-scroll-target="#modifying-edges">5.7 Modifying edges</a></li>
+  </ul></li>
+  <li><a href="#creating-facet-graphs" id="toc-creating-facet-graphs" class="nav-link" data-scroll-target="#creating-facet-graphs">6 Creating facet graphs</a>
+  <ul class="collapse">
+  <li><a href="#working-with-facet_edges" id="toc-working-with-facet_edges" class="nav-link" data-scroll-target="#working-with-facet_edges">6.1 Working with <em>facet_edges()</em></a></li>
+  <li><a href="#changing-the-legend-position" id="toc-changing-the-legend-position" class="nav-link" data-scroll-target="#changing-the-legend-position">6.2 Changing the legend position</a></li>
+  <li><a href="#adding-a-frame-to-each-facet" id="toc-adding-a-frame-to-each-facet" class="nav-link" data-scroll-target="#adding-a-frame-to-each-facet">6.3 Adding a frame to each facet</a></li>
+  <li><a href="#working-with-facet_nodes" id="toc-working-with-facet_nodes" class="nav-link" data-scroll-target="#working-with-facet_nodes">6.4 Working with <em>facet_nodes()</em></a></li>
+  </ul></li>
+  <li><a href="#network-metrics-analysis" id="toc-network-metrics-analysis" class="nav-link" data-scroll-target="#network-metrics-analysis">7 Network Metrics Analysis</a>
+  <ul class="collapse">
+  <li><a href="#computing-centrality-indices" id="toc-computing-centrality-indices" class="nav-link" data-scroll-target="#computing-centrality-indices">7.1 Computing centrality indices</a></li>
+  <li><a href="#visualising-network-metrics" id="toc-visualising-network-metrics" class="nav-link" data-scroll-target="#visualising-network-metrics">7.2 Visualising network metrics</a></li>
+  <li><a href="#visualising-community" id="toc-visualising-community" class="nav-link" data-scroll-target="#visualising-community">7.3 Visualising Community</a>
+  <ul class="collapse">
+  <li><a href="#marking-communities-with-hulls" id="toc-marking-communities-with-hulls" class="nav-link" data-scroll-target="#marking-communities-with-hulls">7.3.1 Marking communities with hulls</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#building-interactive-network-graph-with-visnetwork" id="toc-building-interactive-network-graph-with-visnetwork" class="nav-link" data-scroll-target="#building-interactive-network-graph-with-visnetwork">8 Building interactive network graph with visNetwork</a>
+  <ul class="collapse">
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">8.1 Data preparation</a></li>
+  <li><a href="#plotting-the-first-interactive-network-graph" id="toc-plotting-the-first-interactive-network-graph" class="nav-link" data-scroll-target="#plotting-the-first-interactive-network-graph">8.2 Plotting the first interactive network graph</a></li>
+  <li><a href="#working-with-layout" id="toc-working-with-layout" class="nav-link" data-scroll-target="#working-with-layout">8.3 Working with layout</a></li>
+  <li><a href="#working-with-visual-attributes---nodes" id="toc-working-with-visual-attributes---nodes" class="nav-link" data-scroll-target="#working-with-visual-attributes---nodes">8.4 Working with visual attributes - Nodes</a></li>
+  <li><a href="#working-with-visual-attributes---edges" id="toc-working-with-visual-attributes---edges" class="nav-link" data-scroll-target="#working-with-visual-attributes---edges">8.5 Working with visual attributes - Edges</a></li>
+  <li><a href="#adding-interactivity" id="toc-adding-interactivity" class="nav-link" data-scroll-target="#adding-interactivity">8.6 Adding Interactivity</a></li>
+  </ul></li>
+  <li><a href="#extras" id="toc-extras" class="nav-link" data-scroll-target="#extras">9 Extras</a>
+  <ul class="collapse">
+  <li><a href="#a-full-centrality-scorecard" id="toc-a-full-centrality-scorecard" class="nav-link" data-scroll-target="#a-full-centrality-scorecard">9.1 A full centrality scorecard</a></li>
+  <li><a href="#who-are-the-top-brokers" id="toc-who-are-the-top-brokers" class="nav-link" data-scroll-target="#who-are-the-top-brokers">9.2 Who are the top brokers?</a></li>
+  <li><a href="#department-to-department-communication-heatmap" id="toc-department-to-department-communication-heatmap" class="nav-link" data-scroll-target="#department-to-department-communication-heatmap">9.3 Department-to-department communication heatmap</a></li>
+  <li><a href="#comparing-community-detection-algorithms" id="toc-comparing-community-detection-algorithms" class="nav-link" data-scroll-target="#comparing-community-detection-algorithms">9.4 Comparing community-detection algorithms</a></li>
+  <li><a href="#an-interactive-dashboard-autosaved-figure" id="toc-an-interactive-dashboard-autosaved-figure" class="nav-link" data-scroll-target="#an-interactive-dashboard-autosaved-figure">9.5 An interactive dashboard + autosaved figure</a></li>
+  </ul></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference">10 Reference</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 

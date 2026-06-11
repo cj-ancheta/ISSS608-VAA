@@ -1,11 +1,11 @@
 ---
-title: "Hands-0n Exercise 2:"
+title: "Hands-on Exercise 2:"
 subtitle:  "Beyond ggplot2 Fundamentals"
 date: "20 Apr 2026"
 date-modified: "last-modified"
 editor: visual
 execute:
-  freeze: auto
+  freeze: true
   echo: true
   eval: true
   warning: false

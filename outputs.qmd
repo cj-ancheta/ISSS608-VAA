@@ -3,6 +3,27 @@ title: ""
 page-layout: custom
 ---
 
+```{=html}
+<script>
+  // Allows linking straight to a tab, e.g. outputs.html#deep-dives
+  function activateTabFromHash() {
+    const map = {
+      "expeditions": "Expeditions",
+      "live-sprints": "Live Sprints",
+      "deep-dives": "Deep Dives",
+      "masterpiece": "Masterpiece"
+    };
+    const label = map[window.location.hash.replace("#", "").toLowerCase()];
+    if (!label) return;
+    document.querySelectorAll(".nav-tabs .nav-link").forEach(function (link) {
+      if (link.textContent.trim() === label) link.click();
+    });
+  }
+  window.addEventListener("DOMContentLoaded", activateTabFromHash);
+  window.addEventListener("hashchange", activateTabFromHash);
+</script>
+```
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: panel-tabset
 ## Expeditions
 
@@ -47,7 +68,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');"}
+::: {.poster style="background-image: url('images/posters/ho_ex03_animation.png');"}
 :::
 
 ::: poster-info
@@ -64,7 +85,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');"}
+::: {.poster style="background-image: url('HO_EX/HO_EX04/images/hops_animation.gif');"}
 :::
 
 ::: poster-info
@@ -81,7 +102,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');"}
+::: {.poster style="background-image: url('images/posters/ho_ex05a_ternary.png');"}
 :::
 
 ::: poster-info
@@ -92,20 +113,19 @@ page-layout: custom
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 6
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [Hands-on Exercise 6]{.poster-label}
 :::
-
-<a href="HO_EX/HO_EX06/HO_EX06.html" class="stretched-link"></a>
 :::::
 :::::::
 
@@ -115,7 +135,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=ACCESS+HERE');"}
+::: {.poster style="background-image: url('HO_EX/HO_EX07/images/HO_EX07A_network.png');"}
 :::
 
 ::: poster-info
@@ -132,7 +152,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster style="background-image: url('HO_EX/HO_EX08/images/calendar_heatmap.png');"}
 :::
 
 ::: poster-info
@@ -143,37 +163,35 @@ page-layout: custom
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 9
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [Hands-on Exercise 9]{.poster-label}
 :::
-
-<a href="HO_EX/HO_EX09/HO_EX09.html" class="stretched-link"></a>
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 10
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [Hands-on Exercise 10]{.poster-label}
 :::
-
-<a href="HO_EX/HO_EX10/HO_EX10.html" class="stretched-link"></a>
 :::::
 :::::::
 :::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -194,160 +212,151 @@ page-layout: custom
 [In-class Exercise 1]{.poster-label}
 :::
 
-<a href="https://public.tableau.com/app/profile/charles.ancheta6872/viz/In-classExercise1_17771005719550/Dashboard" class="stretched-link"></a>
+<a href="https://public.tableau.com/app/profile/charles.ancheta6872/viz/In-classExercise1_17771005719550/Dashboard" class="stretched-link" target="_blank" rel="noopener"></a>
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 2
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [In-class Exercise 2]{.poster-label}
 :::
-
-<a href="IC_EX/IC_EX02/IC_EX02.html" class="stretched-link"></a>
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 3
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [In-class Exercise 3]{.poster-label}
 :::
-
-<a href="IC_EX/IC_EX03/IC_EX03.html" class="stretched-link"></a>
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 4
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [In-class Exercise 4]{.poster-label}
 :::
-
-<a href="IC_EX/IC_EX04/IC_EX04.html" class="stretched-link"></a>
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 5
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [In-class Exercise 5]{.poster-label}
 :::
-
-<a href="IC_EX/IC_EX05/IC_EX05.html" class="stretched-link"></a>
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 6
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [In-class Exercise 6]{.poster-label}
 :::
-
-<a href="IC_EX/IC_EX06/IC_EX06.html" class="stretched-link"></a>
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 7
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [In-class Exercise 7]{.poster-label}
 :::
-
-<a href="IC_EX/IC_EX07/IC_EX07.html" class="stretched-link"></a>
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 8
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [In-class Exercise 8]{.poster-label}
 :::
-
-<a href="IC_EX/IC_EX08/IC_EX08.html" class="stretched-link"></a>
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 9
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [In-class Exercise 9]{.poster-label}
 :::
-
-<a href="IC_EX/IC_EX09/IC_EX09.html" class="stretched-link"></a>
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 10
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [In-class Exercise 10]{.poster-label}
 :::
-
-<a href="IC_EX/IC_EX10/IC_EX10.html" class="stretched-link"></a>
 :::::
 :::::::
 :::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -361,7 +370,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=CLICK+HERE');"}
+::: {.poster style="background-image: url('images/posters/th_ex01_portfolio.png');"}
 :::
 
 ::: poster-info
@@ -378,7 +387,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=CLICK+HERE');"}
+::: {.poster style="background-image: url('images/posters/th_ex02_network.png');"}
 :::
 
 ::: poster-info
@@ -389,41 +398,39 @@ page-layout: custom
 :::::
 :::::::
 
-::::::: gallery-item
+::::::: {.gallery-item .coming-soon}
 ::: huge-number
 3
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [Take-home Exercise 3]{.poster-label}
 :::
-
-<a href="TH_EX/TH_EX03/TH_EX03.html" class="stretched-link"></a>
 :::::
 :::::::
 ::::::::::::::::::
 
-## The Masterpiece
+## Masterpiece
 
 :::::::: center-row
-::::::: {.gallery-item .masterpiece-card}
+::::::: {.gallery-item .masterpiece-card .coming-soon}
 ::: huge-number
 1
 :::
 
 ::::: poster-card
-::: {.poster .masterpiece-poster style="background-image: url('https://placehold.co/600x400/2b2b2b/FFC107?text=Coming+soon');"}
+::: {.poster .masterpiece-poster .poster-text}
+COMING SOON
 :::
 
 ::: poster-info
 [Final Project]{.poster-label}
 :::
-
-<a href="PROJECT/Project01.html" class="stretched-link"></a>
 :::::
 :::::::
 ::::::::

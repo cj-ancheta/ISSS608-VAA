@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2026-05-12">
 
-<title>Hands-0n Exercise 5-C: – Chart Whisperer</title>
+<title>Hands-on Exercise 5-C: – Chart Whisperer</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -128,7 +128,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -178,13 +178,64 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1 Overview</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#understanding-the-variables" id="toc-understanding-the-variables" class="nav-link" data-scroll-target="#understanding-the-variables">Understanding the Variables</a>
+  <ul class="collapse">
+  <li><a href="#target-variable-happiness-score" id="toc-target-variable-happiness-score" class="nav-link" data-scroll-target="#target-variable-happiness-score">Target Variable (Happiness Score)</a></li>
+  <li><a href="#dependent-variables" id="toc-dependent-variables" class="nav-link" data-scroll-target="#dependent-variables">Dependent Variables</a></li>
+  </ul></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">Data Preparation</a></li>
+  </ul></li>
+  <li><a href="#static-heatmap" id="toc-static-heatmap" class="nav-link" data-scroll-target="#static-heatmap">3 Static Heatmap</a>
+  <ul class="collapse">
+  <li><a href="#heatmap-of-r-stats" id="toc-heatmap-of-r-stats" class="nav-link" data-scroll-target="#heatmap-of-r-stats">3.1 heatmap() of R Stats</a>
+  <ul class="collapse">
+  <li><a href="#basic-heatmap" id="toc-basic-heatmap" class="nav-link" data-scroll-target="#basic-heatmap">Basic Heatmap</a></li>
+  <li><a href="#cluster-heatmap" id="toc-cluster-heatmap" class="nav-link" data-scroll-target="#cluster-heatmap">Cluster Heatmap</a></li>
+  <li><a href="#normalised-heatmap" id="toc-normalised-heatmap" class="nav-link" data-scroll-target="#normalised-heatmap">Normalised Heatmap</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#interactive-heatmap" id="toc-interactive-heatmap" class="nav-link" data-scroll-target="#interactive-heatmap">4 Interactive Heatmap</a>
+  <ul class="collapse">
+  <li><a href="#working-with-heatmaply" id="toc-working-with-heatmaply" class="nav-link" data-scroll-target="#working-with-heatmaply">4.1 Working with <strong>heatmaply</strong></a></li>
+  <li><a href="#data-transformation" id="toc-data-transformation" class="nav-link" data-scroll-target="#data-transformation">4.2 Data transformation</a>
+  <ul class="collapse">
+  <li><a href="#scaling-method" id="toc-scaling-method" class="nav-link" data-scroll-target="#scaling-method">4.2.1 Scaling method</a></li>
+  <li><a href="#normalising-method" id="toc-normalising-method" class="nav-link" data-scroll-target="#normalising-method">4.2.2 Normalising method</a></li>
+  <li><a href="#percentising-method" id="toc-percentising-method" class="nav-link" data-scroll-target="#percentising-method">4.2.3 Percentising method</a></li>
+  </ul></li>
+  <li><a href="#clustering-algorithm" id="toc-clustering-algorithm" class="nav-link" data-scroll-target="#clustering-algorithm">4.3 Clustering algorithm</a>
+  <ul class="collapse">
+  <li><a href="#manual-approach" id="toc-manual-approach" class="nav-link" data-scroll-target="#manual-approach">4.3.1 Manual approach</a></li>
+  <li><a href="#statistical-approach" id="toc-statistical-approach" class="nav-link" data-scroll-target="#statistical-approach">4.3.2 Statistical approach</a></li>
+  </ul></li>
+  <li><a href="#seriation" id="toc-seriation" class="nav-link" data-scroll-target="#seriation">4.4 Seriation</a>
+  <ul class="collapse">
+  <li><a href="#olo" id="toc-olo" class="nav-link" data-scroll-target="#olo">OLO</a></li>
+  <li><a href="#gw" id="toc-gw" class="nav-link" data-scroll-target="#gw">GW</a></li>
+  <li><a href="#mean" id="toc-mean" class="nav-link" data-scroll-target="#mean">Mean</a></li>
+  <li><a href="#none" id="toc-none" class="nav-link" data-scroll-target="#none">None</a></li>
+  </ul></li>
+  <li><a href="#working-with-colour-palettes" id="toc-working-with-colour-palettes" class="nav-link" data-scroll-target="#working-with-colour-palettes">4.5 <strong>Working with colour palettes</strong></a></li>
+  <li><a href="#the-finishing-touch" id="toc-the-finishing-touch" class="nav-link" data-scroll-target="#the-finishing-touch">4.6 <strong>The finishing touch</strong></a></li>
+  </ul></li>
+  <li><a href="#interactive-correlation-heatmap" id="toc-interactive-correlation-heatmap" class="nav-link" data-scroll-target="#interactive-correlation-heatmap">5 Interactive Correlation Heatmap</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hands-0n Exercise 5-C:</h1>
+<h1 class="title">Hands-on Exercise 5-C:</h1>
 <p class="subtitle lead">Heatmap for Visualising and Analysing Multivariate Data</p>
 </div>
 
@@ -203,7 +254,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 15, 2026</p>
+      <p class="date-modified">June 11, 2026</p>
     </div>
   </div>
     

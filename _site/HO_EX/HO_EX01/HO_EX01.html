@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2026-04-17">
 
-<title>Hands-0n Exercise 1: – Chart Whisperer</title>
+<title>Hands-on Exercise 1: – Chart Whisperer</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -110,7 +110,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -160,13 +160,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link active" data-scroll-target="#learning-outcome">1. Learning Outcome</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">2. Data Preparation</a></li>
+  <li><a href="#discovery" id="toc-discovery" class="nav-link" data-scroll-target="#discovery">3. Discovery</a>
+  <ul class="collapse">
+  <li><a href="#a-layered-grammar-of-graphics" id="toc-a-layered-grammar-of-graphics" class="nav-link" data-scroll-target="#a-layered-grammar-of-graphics">A layered grammar of graphics</a></li>
+  <li><a href="#ggplot2-introduction" id="toc-ggplot2-introduction" class="nav-link" data-scroll-target="#ggplot2-introduction">GGPLOT2 introduction</a></li>
+  <li><a href="#r-graphics-vs-ggplot2" id="toc-r-graphics-vs-ggplot2" class="nav-link" data-scroll-target="#r-graphics-vs-ggplot2">R Graphics VS <strong><code>GGPLOT2</code></strong></a>
+  <ul class="collapse">
+  <li><a href="#why-is-ggplot2-recommended" id="toc-why-is-ggplot2-recommended" class="nav-link" data-scroll-target="#why-is-ggplot2-recommended">Why is <strong><code>GGPLOT2</code></strong> recommended?</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#grammatical-element-data" id="toc-grammatical-element-data" class="nav-link" data-scroll-target="#grammatical-element-data">4. Grammatical Element: DATA</a></li>
+  <li><a href="#grammatical-element-aesthetic" id="toc-grammatical-element-aesthetic" class="nav-link" data-scroll-target="#grammatical-element-aesthetic">5. Grammatical Element: AESTHETIC</a></li>
+  <li><a href="#grammatical-element-geometries" id="toc-grammatical-element-geometries" class="nav-link" data-scroll-target="#grammatical-element-geometries">6. Grammatical Element: GEOMETRIES</a>
+  <ul class="collapse">
+  <li><a href="#basic-geometries" id="toc-basic-geometries" class="nav-link" data-scroll-target="#basic-geometries">6.1 BASIC GEOMETRIES</a></li>
+  <li><a href="#advance-geometries" id="toc-advance-geometries" class="nav-link" data-scroll-target="#advance-geometries">6.2 ADVANCE GEOMETRIES</a></li>
+  <li><a href="#geometric-modifications" id="toc-geometric-modifications" class="nav-link" data-scroll-target="#geometric-modifications">GEOMETRIC MODIFICATIONS</a></li>
+  </ul></li>
+  <li><a href="#grammatical-element-facets" id="toc-grammatical-element-facets" class="nav-link" data-scroll-target="#grammatical-element-facets">7. Grammatical Element: FACETS</a>
+  <ul class="collapse">
+  <li><a href="#function-facet_wrap" id="toc-function-facet_wrap" class="nav-link" data-scroll-target="#function-facet_wrap">7.1 FUNCTION: FACET_WRAP()</a></li>
+  <li><a href="#function-facet_grid" id="toc-function-facet_grid" class="nav-link" data-scroll-target="#function-facet_grid">7.2 FUNCTION: FACET_GRID()</a></li>
+  </ul></li>
+  <li><a href="#grammatical-element-statistics" id="toc-grammatical-element-statistics" class="nav-link" data-scroll-target="#grammatical-element-statistics">8. Grammatical Element: STATISTICS</a>
+  <ul class="collapse">
+  <li><a href="#using-stat-function" id="toc-using-stat-function" class="nav-link" data-scroll-target="#using-stat-function">8.1 Using STAT Function</a></li>
+  <li><a href="#using-geom-function" id="toc-using-geom-function" class="nav-link" data-scroll-target="#using-geom-function">8.2 Using GEOM Function</a></li>
+  <li><a href="#adding-a-best-fit-curve" id="toc-adding-a-best-fit-curve" class="nav-link" data-scroll-target="#adding-a-best-fit-curve">8.3 Adding a best fit curve</a></li>
+  </ul></li>
+  <li><a href="#grammatical-element-coordinates" id="toc-grammatical-element-coordinates" class="nav-link" data-scroll-target="#grammatical-element-coordinates">9. Grammatical Element: COORDINATES</a>
+  <ul class="collapse">
+  <li><a href="#coord_flip" id="toc-coord_flip" class="nav-link" data-scroll-target="#coord_flip">9.1 coord_flip()</a></li>
+  <li><a href="#coord_cartesian" id="toc-coord_cartesian" class="nav-link" data-scroll-target="#coord_cartesian">9.2 coord_cartesian</a></li>
+  </ul></li>
+  <li><a href="#grammatical-element-themes" id="toc-grammatical-element-themes" class="nav-link" data-scroll-target="#grammatical-element-themes">10. Grammatical Element: THEMES</a>
+  <ul class="collapse">
+  <li><a href="#built-in-themes" id="toc-built-in-themes" class="nav-link" data-scroll-target="#built-in-themes">10.1 Built-in themes</a></li>
+  <li><a href="#special-built-in-themes" id="toc-special-built-in-themes" class="nav-link" data-scroll-target="#special-built-in-themes">10.2 Special built-in Themes</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">11. References</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hands-0n Exercise 1:</h1>
+<h1 class="title">Hands-on Exercise 1:</h1>
 <p class="subtitle lead">ggplot2 methods</p>
 </div>
 
@@ -185,7 +233,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 24, 2026</p>
+      <p class="date-modified">June 11, 2026</p>
     </div>
   </div>
     

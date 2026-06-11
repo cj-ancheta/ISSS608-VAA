@@ -12,7 +12,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=5-A');"}
+::: {.poster style="background-image: url('/images/posters/ho_ex05a_ternary.png');"}
 :::
 
 ::: poster-info
@@ -29,7 +29,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=5-B');"}
+::: {.poster style="background-image: url('/images/posters/ho_ex05b_corrmatrix.png');"}
 :::
 
 ::: poster-info
@@ -46,7 +46,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=5-C');"}
+::: {.poster style="background-image: url('/images/posters/ho_ex05c_heatmap.png');"}
 :::
 
 ::: poster-info
@@ -63,7 +63,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=5-D');"}
+::: {.poster style="background-image: url('/images/posters/ho_ex05d_parcoords.png');"}
 :::
 
 ::: poster-info
@@ -80,7 +80,7 @@ page-layout: custom
 :::
 
 ::::: poster-card
-::: {.poster style="background-image: url('https://placehold.co/400x600/2b2b2b/FFC107?text=5-E');"}
+::: {.poster style="background-image: url('/images/posters/ho_ex05e_treemap.png');"}
 :::
 
 ::: poster-info
