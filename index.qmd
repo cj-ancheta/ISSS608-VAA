@@ -43,7 +43,7 @@ listing:
 
 ::: {.g-col-12 .g-col-md-3 .category-card .masterpiece-card}
 
-### The Masterpiece
+### Masterpiece
 
 **`Final Project`**
 
@@ -52,8 +52,6 @@ listing:
 :::::::
 
 ::: {style="max-width: 950px; margin: 0 auto;"}
-
-### Latest Deployments:
 
 ::: {#latest-posts}
 :::
