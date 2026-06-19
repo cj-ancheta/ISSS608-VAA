@@ -1,0 +1,236 @@
+---
+title: "Hands-on Exercise 9B:" 
+subtitle: "Visualising Geospatial Point Data"
+date: "19 Jun 2026"
+date-modified: "last-modified"
+format: html
+execute:
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+---
+
+# 1 Overview
+
+This hands-on exercise covers [Chapter 22: Visualising Geospatial Point Data](https://r4va.netlify.app/chap22).
+
+A **proportional symbol map** plots point locations and encodes a quantity in the
+size (and/or colour) of the symbol. In this exercise I:
+
+-   Import an **aspatial** csv and convert it into an `sf` point layer with the
+    correct projection.
+-   Draw interactive **proportional symbol maps** with `tmap`.
+-   Encode a second variable with colour and use **synchronised facets**.
+
+# 2 Getting Started
+
+## Loading the required packages
+
+-   **sf**: geospatial data handling
+-   **tmap**: thematic mapping
+-   **tidyverse**: data wrangling
+
+```{r}
+pacman::p_load(sf, tmap, tidyverse)
+```
+
+## Importing data
+
+The dataset is `SGPools_svy21.csv`: a list of Singapore Pools outlets with their
+coordinates (`XCOORD`, `YCOORD`) in SVY21.
+
+```{r}
+sgpools <- read_csv("data/SGPools_svy21.csv")
+list(rows = nrow(sgpools), cols = names(sgpools))
+head(sgpools)
+```
+
+# 3 Data Wrangling
+
+Convert the data frame into an `sf` object. `crs = 3414` is [EPSG:3414](https://epsg.io/3414),
+Singapore's SVY21 projected coordinate system.
+
+```{r}
+sgpools_sf <- st_as_sf(sgpools,
+                       coords = c("XCOORD", "YCOORD"),
+                       crs = 3414)
+head(sgpools_sf)
+```
+
+::: callout-note
+## Insight
+The two coordinate columns are now collapsed into one `geometry` list-column of
+type `POINT`. Getting the CRS right matters: if I had used a geographic CRS
+(e.g. 4326) on SVY21 metre coordinates, every point would land in the wrong
+place.
+:::
+
+# 4 Drawing a Proportional Symbol Map
+
+Turn on interactive mode:
+
+```{r}
+tmap_mode("view")
+```
+
+## Plain interactive point map
+
+```{r}
+tm_shape(sgpools_sf) +
+  tm_bubbles(col = "red",
+             size = 1,
+             border.col = "black",
+             border.lwd = 1)
+```
+
+## Proportional sizes
+
+Map the bubble **size** to winnings:
+
+```{r}
+tm_shape(sgpools_sf) +
+  tm_bubbles(col = "red",
+             size = "Gp1Gp2 Winnings",
+             border.col = "black",
+             border.lwd = 1)
+```
+
+## Adding colour
+
+Encode `OUTLET TYPE` with colour:
+
+```{r}
+tm_shape(sgpools_sf) +
+  tm_bubbles(col = "OUTLET TYPE",
+             size = "Gp1Gp2 Winnings",
+             border.col = "black",
+             border.lwd = 1)
+```
+
+## Synchronised facets
+
+`tm_facets(sync = TRUE)` links zoom/pan across the small multiples:
+
+```{r}
+tm_shape(sgpools_sf) +
+  tm_bubbles(col = "OUTLET TYPE",
+             size = "Gp1Gp2 Winnings",
+             border.col = "black",
+             border.lwd = 1) +
+  tm_facets(by = "OUTLET TYPE", nrow = 1, sync = TRUE)
+```
+
+# 5 Extras 
+
+## Adding spatial context (boundary basemap)
+
+A floating cloud of bubbles is hard to read without a reference. I overlay the
+outlets on the Singapore subzone boundary so location becomes meaningful.
+
+```{r}
+mpsz <- st_read(dsn = "data/MP14_SUBZONE_WEB_PL", layer = "MP14_SUBZONE_WEB_PL") %>%
+  st_make_valid() %>%
+  st_transform(3414)
+
+tmap_mode("plot")
+tm_shape(mpsz) +
+  tm_polygons(col = "grey95", border.col = "white") +
+  tm_shape(sgpools_sf) +
+  tm_bubbles(col = "OUTLET TYPE",
+             size = "Gp1Gp2 Winnings",
+             border.col = "black",
+             border.lwd = 0.5,
+             alpha = 0.8) +
+  tm_title("SG Pools outlets over planning subzones", size = 1) +
+  tm_layout(legend.outside = TRUE)
+```
+
+## Choosing basemaps and richer popups
+
+In `view` mode I can pick a basemap provider and control the hover tooltip,
+turning the map into a small exploratory tool.
+
+```{r}
+tmap_mode("view")
+tm_basemap(c("CartoDB.Positron", "OpenStreetMap", "Esri.WorldImagery")) +
+  tm_shape(sgpools_sf) +
+  tm_bubbles(col = "OUTLET TYPE",
+             size = "Gp1Gp2 Winnings",
+             id = "NAME",
+             popup.vars = c("Type" = "OUTLET TYPE",
+                            "Gp1/Gp2 Winnings" = "Gp1Gp2 Winnings",
+                            "Address" = "ADDRESS"))
+tmap_mode("plot")
+```
+
+## Aggregating points to areas (spatial join)
+
+Individual points answer "where", but decision-makers often want "how many per
+area". I spatially join outlets to planning areas and map the **count** as a
+choropleth.
+
+```{r}
+outlets_by_area <- mpsz %>%
+  st_join(sgpools_sf, join = st_intersects) %>%
+  group_by(PLN_AREA_N) %>%
+  summarise(n_outlets = sum(!is.na(`OUTLET TYPE`))) %>%
+  ungroup()
+
+tm_shape(outlets_by_area) +
+  tm_fill("n_outlets",
+          style = "jenks",
+          palette = "Greens",
+          title = "Outlets per planning area") +
+  tm_borders(alpha = 0.4) +
+  tm_title("Outlet density by planning area", size = 1) +
+  tm_layout(legend.outside = TRUE)
+```
+
+## Total winnings per region
+
+I aggregate the numeric winnings (not just counts) to compare regions.
+
+```{r}
+winnings_by_region <- mpsz %>%
+  st_join(sgpools_sf, join = st_intersects) %>%
+  st_drop_geometry() %>%
+  group_by(REGION_N) %>%
+  summarise(total_winnings = sum(`Gp1Gp2 Winnings`, na.rm = TRUE),
+            outlets = sum(!is.na(`OUTLET TYPE`))) %>%
+  arrange(desc(total_winnings))
+
+winnings_by_region
+```
+
+## Reproducible static proportional symbol map
+
+Interactive maps need a browser; a static version is needed for PDFs and print.
+This `plot`-mode version reproduces the proportional symbol map and is fully
+reproducible in a rendered document.
+
+```{r}
+tmap_mode("plot")
+tm_shape(mpsz) +
+  tm_polygons(col = "grey97", border.col = "grey85") +
+  tm_shape(sgpools_sf) +
+  tm_symbols(size = "Gp1Gp2 Winnings",
+             col = "OUTLET TYPE",
+             palette = c("#1b9e77", "#d95f02"),
+             border.col = "black",
+             border.lwd = 0.4,
+             scale = 1.5,
+             alpha = 0.75) +
+  tm_title("SG Pools winnings (static proportional symbols)", size = 1) +
+  tm_layout(legend.outside = TRUE, frame = FALSE)
+```
+
+# 6 Reflections
+
+-   Points alone undersell the story; **context (Extra 1) and aggregation
+    (Extras 3 to 4)** are what turn a scatter of bubbles into an insight.
+-   Interactive maps are great for exploration, but keeping a **static fallback
+    (Extra 5)** makes the analysis portable to any output format.
+-   The recurring `st_make_valid()` step from Ex09A reappears here when joining
+    against the subzone polygons, because invalid geometry is a constant tax on
+    Singapore shapefiles.

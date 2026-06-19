@@ -163,19 +163,20 @@ COMING SOON
 :::::
 :::::::
 
-::::::: {.gallery-item .coming-soon}
+::::::: gallery-item
 ::: huge-number
 9
 :::
 
 ::::: poster-card
-::: {.poster .poster-text}
-COMING SOON
+::: {.poster style="background-image: url('HO_EX/HO_EX09/images/ho_ex09a_choropleth.png');"}
 :::
 
 ::: poster-info
 [Hands-on Exercise 9]{.poster-label}
 :::
+
+<a href="landing_pages/HO_EX09_landing/HO_EX09_landing.html" class="stretched-link"></a>
 :::::
 :::::::
 

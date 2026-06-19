@@ -252,6 +252,90 @@
     "text": "8.4 Statistical Validation\nTechnique justification: Statistical tests are used as directional validation, not as a replacement for visual interpretation. With a large dataset, very small differences can become statistically significant, so practical significance still depends on visual effect size and premium exposure.\n\n\nShow the code\nkw_test &lt;- function(variable) {\n  formula &lt;- as.formula(str_c(\"loss_ratio_capped_99 ~ \", variable))\n  kruskal.test(formula, data = portfolio) |&gt;\n    tidy() |&gt;\n    mutate(test = \"Kruskal-Wallis\", variable = variable)\n}\n\nchisq_test &lt;- function(variable) {\n  tbl &lt;- table(portfolio[[variable]], portfolio$claim_flag)\n  chisq.test(tbl) |&gt;\n    tidy() |&gt;\n    mutate(test = \"Chi-square\", variable = variable)\n}\n\nspearman_test &lt;- function(variable) {\n  cor.test(\n    portfolio[[variable]],\n    portfolio$loss_ratio_capped_99,\n    method = \"spearman\",\n    exact = FALSE\n  ) |&gt;\n    tidy() |&gt;\n    mutate(test = \"Spearman\", variable = variable)\n}\n\nvalidation_tbl &lt;- bind_rows(\n  map_dfr(\n    c(\"policy_type\", \"business_type\", \"policy_status\", \"bonus_score\",\n      \"exposure_band\", \"driver_age_band\", \"vehicle_age_band\", \"vehicle_value_band\",\n      \"brand_tier\", \"loyalty_band\", \"geo_segment\"),\n    kw_test\n  ),\n  map_dfr(\n    c(\"policy_type\", \"business_type\", \"policy_status\", \"bonus_score\",\n      \"exposure_band\", \"driver_age_band\", \"vehicle_age_band\", \"vehicle_value_band\",\n      \"brand_tier\", \"loyalty_band\", \"geo_segment\"),\n    chisq_test\n  ),\n  map_dfr(\n    c(\"driver_age\", \"vehicle_age\", \"vehicle_value\", \"power_to_weight_ratio\"),\n    spearman_test\n  )\n) |&gt;\n  transmute(\n    test,\n    variable,\n    statistic = round(statistic, 3),\n    estimate = round(estimate, 3),\n    p_value = p.value\n  ) |&gt;\n  arrange(p_value)\n\nvalidation_tbl |&gt;\n  mutate(p_value = pvalue(p_value, accuracy = 0.001)) |&gt;\n  kable()\n\n\n\n\n\n\n\n\n\n\n\n\ntest\nvariable\nstatistic\nestimate\np_value\n\n\n\n\nKruskal-Wallis\npolicy_type\n7.303954e+03\nNA\n&lt;0.001\n\n\nKruskal-Wallis\nbusiness_type\n2.002126e+03\nNA\n&lt;0.001\n\n\nKruskal-Wallis\nexposure_band\n7.429852e+03\nNA\n&lt;0.001\n\n\nKruskal-Wallis\nvehicle_value_band\n1.602394e+03\nNA\n&lt;0.001\n\n\nChi-square\npolicy_type\n6.638421e+03\nNA\n&lt;0.001\n\n\nChi-square\nbusiness_type\n2.317924e+03\nNA\n&lt;0.001\n\n\nChi-square\nexposure_band\n9.687787e+03\nNA\n&lt;0.001\n\n\nChi-square\nvehicle_value_band\n1.626012e+03\nNA\n&lt;0.001\n\n\nChi-square\nloyalty_band\n1.563811e+03\nNA\n&lt;0.001\n\n\nSpearman\nvehicle_value\n6.848907e+15\n0.070\n&lt;0.001\n\n\nKruskal-Wallis\nloyalty_band\n1.182240e+03\nNA\n&lt;0.001\n\n\nChi-square\nbrand_tier\n5.399690e+02\nNA\n&lt;0.001\n\n\nKruskal-Wallis\nbrand_tier\n5.231160e+02\nNA\n&lt;0.001\n\n\nKruskal-Wallis\ngeo_segment\n4.644370e+02\nNA\n&lt;0.001\n\n\nChi-square\ndriver_age_band\n4.632710e+02\nNA\n&lt;0.001\n\n\nSpearman\npower_to_weight_ratio\n7.655275e+15\n-0.035\n&lt;0.001\n\n\nChi-square\nvehicle_age_band\n4.370260e+02\nNA\n&lt;0.001\n\n\nChi-square\ngeo_segment\n4.271950e+02\nNA\n&lt;0.001\n\n\nSpearman\nvehicle_age\n7.612285e+15\n-0.029\n&lt;0.001\n\n\nChi-square\nbonus_score\n2.971860e+02\nNA\n&lt;0.001\n\n\nKruskal-Wallis\nvehicle_age_band\n3.035070e+02\nNA\n&lt;0.001\n\n\nKruskal-Wallis\nbonus_score\n2.874290e+02\nNA\n&lt;0.001\n\n\nKruskal-Wallis\ndriver_age_band\n2.670180e+02\nNA\n&lt;0.001\n\n\nSpearman\ndriver_age\n7.586603e+15\n-0.025\n&lt;0.001\n\n\nKruskal-Wallis\npolicy_status\n1.901320e+02\nNA\n&lt;0.001\n\n\nChi-square\npolicy_status\n7.247800e+01\nNA\n&lt;0.001\n\n\n\n\n\nWhat this tells us: Statistical validation supports the segmentation exercise, but the business decision should be based on the combination of statistical evidence, visible effect size, and premium exposure."
   },
   {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html",
+    "title": "Hands-on Exercise 9B:",
+    "section": "",
+    "text": "This hands-on exercise covers Chapter 22: Visualising Geospatial Point Data.\nA proportional symbol map plots point locations and encodes a quantity in the size (and/or colour) of the symbol. In this exercise I:\n\nImport an aspatial csv and convert it into an sf point layer with the correct projection.\nDraw interactive proportional symbol maps with tmap.\nEncode a second variable with colour and use synchronised facets."
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#loading-the-required-packages",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#loading-the-required-packages",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Loading the required packages",
+    "text": "Loading the required packages\n\nsf: geospatial data handling\ntmap: thematic mapping\ntidyverse: data wrangling\n\n\npacman::p_load(sf, tmap, tidyverse)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#importing-data",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#importing-data",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Importing data",
+    "text": "Importing data\nThe dataset is SGPools_svy21.csv: a list of Singapore Pools outlets with their coordinates (XCOORD, YCOORD) in SVY21.\n\nsgpools &lt;- read_csv(\"data/SGPools_svy21.csv\")\nlist(rows = nrow(sgpools), cols = names(sgpools))\n\n$rows\n[1] 306\n\n$cols\n[1] \"NAME\"            \"ADDRESS\"         \"POSTCODE\"        \"XCOORD\"         \n[5] \"YCOORD\"          \"OUTLET TYPE\"     \"Gp1Gp2 Winnings\"\n\nhead(sgpools)\n\n# A tibble: 6 × 7\n  NAME            ADDRESS POSTCODE XCOORD YCOORD `OUTLET TYPE` `Gp1Gp2 Winnings`\n  &lt;chr&gt;           &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;                     &lt;dbl&gt;\n1 Livewire (Mari… 2 Bayf…    18972 30842. 29599. Branch                        5\n2 Livewire (Reso… 26 Sen…    98138 26704. 26526. Branch                       11\n3 SportsBuzz (Kr… Lotus …   738078 20118. 44888. Branch                        0\n4 SportsBuzz (Po… 1 Sele…   188306 29777. 31382. Branch                       44\n5 Prime Serangoo… Blk 54…   552542 32239. 39519. Branch                        0\n6 Singapore Pool… 1A Woo…   731001 21012. 46987. Branch                        3"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#plain-interactive-point-map",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#plain-interactive-point-map",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Plain interactive point map",
+    "text": "Plain interactive point map\n\ntm_shape(sgpools_sf) +\n  tm_bubbles(col = \"red\",\n             size = 1,\n             border.col = \"black\",\n             border.lwd = 1)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#proportional-sizes",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#proportional-sizes",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Proportional sizes",
+    "text": "Proportional sizes\nMap the bubble size to winnings:\n\ntm_shape(sgpools_sf) +\n  tm_bubbles(col = \"red\",\n             size = \"Gp1Gp2 Winnings\",\n             border.col = \"black\",\n             border.lwd = 1)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#adding-colour",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#adding-colour",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Adding colour",
+    "text": "Adding colour\nEncode OUTLET TYPE with colour:\n\ntm_shape(sgpools_sf) +\n  tm_bubbles(col = \"OUTLET TYPE\",\n             size = \"Gp1Gp2 Winnings\",\n             border.col = \"black\",\n             border.lwd = 1)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#synchronised-facets",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#synchronised-facets",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Synchronised facets",
+    "text": "Synchronised facets\ntm_facets(sync = TRUE) links zoom/pan across the small multiples:\n\ntm_shape(sgpools_sf) +\n  tm_bubbles(col = \"OUTLET TYPE\",\n             size = \"Gp1Gp2 Winnings\",\n             border.col = \"black\",\n             border.lwd = 1) +\n  tm_facets(by = \"OUTLET TYPE\", nrow = 1, sync = TRUE)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#adding-spatial-context-boundary-basemap",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#adding-spatial-context-boundary-basemap",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Adding spatial context (boundary basemap)",
+    "text": "Adding spatial context (boundary basemap)\nA floating cloud of bubbles is hard to read without a reference. I overlay the outlets on the Singapore subzone boundary so location becomes meaningful.\n\nmpsz &lt;- st_read(dsn = \"data/MP14_SUBZONE_WEB_PL\", layer = \"MP14_SUBZONE_WEB_PL\") %&gt;%\n  st_make_valid() %&gt;%\n  st_transform(3414)\n\nReading layer `MP14_SUBZONE_WEB_PL' from data source \n  `C:\\Users\\Legion\\OneDrive - Singapore Management University\\Attachments\\3. April Term\\3. Visual Analytics\\Website\\ISSS608-VAA\\HO_EX\\HO_EX09\\data\\MP14_SUBZONE_WEB_PL' \n  using driver `ESRI Shapefile'\nSimple feature collection with 323 features and 15 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33\nProjected CRS: SVY21\n\ntmap_mode(\"plot\")\ntm_shape(mpsz) +\n  tm_polygons(col = \"grey95\", border.col = \"white\") +\n  tm_shape(sgpools_sf) +\n  tm_bubbles(col = \"OUTLET TYPE\",\n             size = \"Gp1Gp2 Winnings\",\n             border.col = \"black\",\n             border.lwd = 0.5,\n             alpha = 0.8) +\n  tm_title(\"SG Pools outlets over planning subzones\", size = 1) +\n  tm_layout(legend.outside = TRUE)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#choosing-basemaps-and-richer-popups",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#choosing-basemaps-and-richer-popups",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Choosing basemaps and richer popups",
+    "text": "Choosing basemaps and richer popups\nIn view mode I can pick a basemap provider and control the hover tooltip, turning the map into a small exploratory tool.\n\ntmap_mode(\"view\")\ntm_basemap(c(\"CartoDB.Positron\", \"OpenStreetMap\", \"Esri.WorldImagery\")) +\n  tm_shape(sgpools_sf) +\n  tm_bubbles(col = \"OUTLET TYPE\",\n             size = \"Gp1Gp2 Winnings\",\n             id = \"NAME\",\n             popup.vars = c(\"Type\" = \"OUTLET TYPE\",\n                            \"Gp1/Gp2 Winnings\" = \"Gp1Gp2 Winnings\",\n                            \"Address\" = \"ADDRESS\"))\n\n\n\n\n\n\ntmap_mode(\"plot\")"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#aggregating-points-to-areas-spatial-join",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#aggregating-points-to-areas-spatial-join",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Aggregating points to areas (spatial join)",
+    "text": "Aggregating points to areas (spatial join)\nIndividual points answer “where”, but decision-makers often want “how many per area”. I spatially join outlets to planning areas and map the count as a choropleth.\n\noutlets_by_area &lt;- mpsz %&gt;%\n  st_join(sgpools_sf, join = st_intersects) %&gt;%\n  group_by(PLN_AREA_N) %&gt;%\n  summarise(n_outlets = sum(!is.na(`OUTLET TYPE`))) %&gt;%\n  ungroup()\n\ntm_shape(outlets_by_area) +\n  tm_fill(\"n_outlets\",\n          style = \"jenks\",\n          palette = \"Greens\",\n          title = \"Outlets per planning area\") +\n  tm_borders(alpha = 0.4) +\n  tm_title(\"Outlet density by planning area\", size = 1) +\n  tm_layout(legend.outside = TRUE)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#total-winnings-per-region",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#total-winnings-per-region",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Total winnings per region",
+    "text": "Total winnings per region\nI aggregate the numeric winnings (not just counts) to compare regions.\n\nwinnings_by_region &lt;- mpsz %&gt;%\n  st_join(sgpools_sf, join = st_intersects) %&gt;%\n  st_drop_geometry() %&gt;%\n  group_by(REGION_N) %&gt;%\n  summarise(total_winnings = sum(`Gp1Gp2 Winnings`, na.rm = TRUE),\n            outlets = sum(!is.na(`OUTLET TYPE`))) %&gt;%\n  arrange(desc(total_winnings))\n\nwinnings_by_region\n\n# A tibble: 5 × 3\n  REGION_N          total_winnings outlets\n  &lt;chr&gt;                      &lt;dbl&gt;   &lt;int&gt;\n1 CENTRAL REGION              2885     135\n2 WEST REGION                 1338      50\n3 NORTH-EAST REGION           1078      45\n4 EAST REGION                  966      43\n5 NORTH REGION                 722      33"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09B.html#reproducible-static-proportional-symbol-map",
+    "href": "HO_EX/HO_EX09/HO_EX09B.html#reproducible-static-proportional-symbol-map",
+    "title": "Hands-on Exercise 9B:",
+    "section": "Reproducible static proportional symbol map",
+    "text": "Reproducible static proportional symbol map\nInteractive maps need a browser; a static version is needed for PDFs and print. This plot-mode version reproduces the proportional symbol map and is fully reproducible in a rendered document.\n\ntmap_mode(\"plot\")\ntm_shape(mpsz) +\n  tm_polygons(col = \"grey97\", border.col = \"grey85\") +\n  tm_shape(sgpools_sf) +\n  tm_symbols(size = \"Gp1Gp2 Winnings\",\n             col = \"OUTLET TYPE\",\n             palette = c(\"#1b9e77\", \"#d95f02\"),\n             border.col = \"black\",\n             border.lwd = 0.4,\n             scale = 1.5,\n             alpha = 0.75) +\n  tm_title(\"SG Pools winnings (static proportional symbols)\", size = 1) +\n  tm_layout(legend.outside = TRUE, frame = FALSE)"
+  },
+  {
     "objectID": "HO_EX/HO_EX08/HO_EX08.html",
     "href": "HO_EX/HO_EX08/HO_EX08.html",
     "title": "Hands-on Exercise 8:",
@@ -1692,6 +1776,181 @@
     "title": "Hands-on Exercise 7B:",
     "section": "7.5 A reusable per-newsgroup word-cloud function",
     "text": "7.5 A reusable per-newsgroup word-cloud function\nFinally I wrap the word-cloud logic in a small reusable function, so any newsgroup can be visualised on demand. I demonstrate it on two contrasting groups in a tabset.\n\nplot_newsgroup_cloud &lt;- function(ng, max_words = 80) {\n  dat &lt;- words_by_newsgroup %&gt;% filter(newsgroup == ng)\n  wordcloud(dat$word, dat$n,\n            max.words = max_words,\n            scale = c(3, 0.4),\n            colors = brewer.pal(8, \"Dark2\"))\n}\n\n\nsci.spacerec.sport.hockey\n\n\n\nplot_newsgroup_cloud(\"sci.space\")\n\n\n\n\n\n\n\n\n\n\n\nplot_newsgroup_cloud(\"rec.sport.hockey\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBecause the function returns to the standard wordcloud() call, the same helper can be dropped into any report and pointed at any of the 20 newsgroups."
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html",
+    "title": "Hands-on Exercise 9A:",
+    "section": "",
+    "text": "This hands-on exercise covers Chapter 21: Choropleth Mapping with R.\nA choropleth map is a thematic map where geographic areas (subzones, provinces, countries…) are shaded in proportion to a statistical variable. In this exercise I:\n\nImport geospatial (shapefile) and aspatial (csv) data and join them.\nBuild choropleth maps with tmap, using qtm() and the layered tm_* element approach.\nCompare data classification methods and colour schemes.\nCustomise map layouts (legends, compass, scale bar, grid, credits).\nProduce small multiples and criterion-based maps."
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#the-data",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#the-data",
+    "title": "Hands-on Exercise 9A:",
+    "section": "The data",
+    "text": "The data\nTwo datasets are used:\n\n\n\nType\nDataset\nSource\n\n\n\n\nGeospatial\nMaster Plan 2014 Subzone Boundary (Web), MP14_SUBZONE_WEB_PL\ndata.gov.sg\n\n\nAspatial\nSingapore Residents by Planning Area/Subzone, Age Group, Sex and Type of Dwelling, 2011 to 2020 (respopagesextod2011to2020.csv)\nSingStat\n\n\n\nExpected folder structure:\nHO_EX09\n└── data\n    ├── respopagesextod2011to2020.csv\n    ├── MP14_SUBZONE_WEB_PL\n    │   └── MP14_SUBZONE_WEB_PL.{shp,shx,dbf,prj,...}\n    └── rds          # created on first write"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#installing-and-loading-r-packages",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#installing-and-loading-r-packages",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Installing and loading R packages",
+    "text": "Installing and loading R packages\n\npacman::p_load(sf, tidyverse, tmap)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#importing-geospatial-data",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#importing-geospatial-data",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Importing geospatial data",
+    "text": "Importing geospatial data\n\nmpsz &lt;- st_read(dsn = \"data/MP14_SUBZONE_WEB_PL\", layer = \"MP14_SUBZONE_WEB_PL\")\n\nReading layer `MP14_SUBZONE_WEB_PL' from data source \n  `C:\\Users\\Legion\\OneDrive - Singapore Management University\\Attachments\\3. April Term\\3. Visual Analytics\\Website\\ISSS608-VAA\\HO_EX\\HO_EX09\\data\\MP14_SUBZONE_WEB_PL' \n  using driver `ESRI Shapefile'\nSimple feature collection with 323 features and 15 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33\nProjected CRS: SVY21"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#importing-aspatial-data",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#importing-aspatial-data",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Importing aspatial data",
+    "text": "Importing aspatial data\nThe csv is aspatial, so read_csv() is used instead of st_read():\n\npopdata &lt;- read_csv(\"data/respopagesextod2011to2020.csv\")"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#data-preparation",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#data-preparation",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Data preparation",
+    "text": "Data preparation\nI aggregate the 2020 population by planning area / subzone and derive the demographic groups and the dependency ratio:\n\\[\\text{Dependency} = \\frac{\\text{YOUNG} + \\text{AGED}}{\\text{ECONOMY ACTIVE}}\\]\n\npopdata2020 &lt;- popdata %&gt;%\n  filter(Time == 2020) %&gt;%\n  group_by(PA, SZ, AG) %&gt;%\n  summarise(`POP` = sum(`Pop`)) %&gt;%\n  ungroup() %&gt;%\n  pivot_wider(names_from = AG, values_from = POP) %&gt;%\n  mutate(YOUNG = rowSums(.[3:6]) + rowSums(.[12])) %&gt;%\n  mutate(`ECONOMY ACTIVE` = rowSums(.[7:11]) + rowSums(.[13:15])) %&gt;%\n  mutate(`AGED` = rowSums(.[16:21])) %&gt;%\n  mutate(`TOTAL` = rowSums(.[3:21])) %&gt;%\n  mutate(`DEPENDENCY` = (`YOUNG` + `AGED`) / `ECONOMY ACTIVE`) %&gt;%\n  select(`PA`, `SZ`, `YOUNG`, `ECONOMY ACTIVE`, `AGED`, `TOTAL`, `DEPENDENCY`)\n\n\n\n\n\n\n\nNoteMy read of the wrangling\n\n\n\nThe age-group columns are selected by position (.[3:6] and so on), which is fragile. If the import order changes, the sums break. In the extras I keep the same logic for fidelity, but in production I would select the age columns by name.\n\n\nThe SZ/PA keys must be upper-cased to match mpsz$SUBZONE_N before joining:\n\npopdata2020 &lt;- popdata2020 %&gt;%\n  mutate_at(.vars = vars(PA, SZ), .funs = list(toupper)) %&gt;%\n  filter(`ECONOMY ACTIVE` &gt; 0)\n\n\nmpsz_pop2020 &lt;- left_join(mpsz, popdata2020,\n                          by = c(\"SUBZONE_N\" = \"SZ\"))\n\n\ndir.create(\"data/rds\", showWarnings = FALSE)\nwrite_rds(mpsz_pop2020, \"data/rds/mpszpop2020.rds\")"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#using-qtm",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#using-qtm",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Using qtm()",
+    "text": "Using qtm()\n\ntmap_mode(\"plot\")\nqtm(mpsz_pop2020, fill = \"DEPENDENCY\")"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#using-tmap-elements",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#using-tmap-elements",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Using tmap elements",
+    "text": "Using tmap elements\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"Blues\",\n          title = \"Dependency ratio\") +\n  tm_borders(alpha = 0.5) +\n  tm_compass(type = \"8star\", size = 2) +\n  tm_scalebar() +\n  tm_grid(alpha = 0.2) +\n  tm_credits(\"Source: Planning Sub-zone boundary from URA\\n and Population data from DOS\",\n             position = c(\"left\", \"bottom\")) +\n  tm_title(\"Distribution of Dependency Ratio by planning subzone\", size = 1.1) +\n  tm_layout(legend.outside = TRUE, frame = TRUE)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#classification-methods",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#classification-methods",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Classification methods",
+    "text": "Classification methods\n\nQuantile vs Equal\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\", n = 5, style = \"quantile\") +\n  tm_borders(alpha = 0.5)\n\n\n\n\n\n\n\n\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\", n = 5, style = \"equal\") +\n  tm_borders(alpha = 0.5)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTipInsight\n\n\n\nThere is a strong outlier subzone in the dependency ratio. With equal interval classes, almost every subzone falls in the first bucket and the map looks flat. Quantile classification guarantees roughly equal-sized groups, so spatial variation is visible despite the outlier."
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#colour-scheme",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#colour-scheme",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Colour scheme",
+    "text": "Colour scheme\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\", n = 6, style = \"quantile\", palette = \"Blues\") +\n  tm_borders(alpha = 0.5)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#map-layout",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#map-layout",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Map layout",
+    "text": "Map layout\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\",\n          style = \"jenks\",\n          palette = \"Blues\",\n          legend.hist = TRUE) +\n  tm_borders(alpha = 0.5) +\n  tm_title(\"Distribution of Dependency Ratio (Jenks)\", size = 1) +\n  tm_layout(legend.outside = TRUE, frame = FALSE)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#small-multiples-and-criterion-mapping",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#small-multiples-and-criterion-mapping",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Small multiples and criterion mapping",
+    "text": "Small multiples and criterion mapping\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(c(\"YOUNG\", \"AGED\"),\n          style = \"equal\",\n          palette = \"Blues\") +\n  tm_borders(alpha = 0.5) +\n  tm_layout(legend.outside = TRUE)\n\n\n\n\n\n\n\n\n\ntm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N == \"CENTRAL REGION\", ]) +\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"Greens\",\n          legend.hist = TRUE) +\n  tm_layout(legend.outside = TRUE,\n            legend.position = c(\"right\", \"bottom\"),\n            frame = FALSE) +\n  tm_borders(alpha = 0.5)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#fixing-the-interactive-view-map",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#fixing-the-interactive-view-map",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Fixing the interactive (view) map",
+    "text": "Fixing the interactive (view) map\nEarlier, tmap_mode(\"view\") failed with an invalid polygon error. The cause is self-intersecting geometries in the shapefile, and st_make_valid() repairs them so the map can render in Leaflet.\n\nmpsz_valid &lt;- st_make_valid(mpsz_pop2020)\n\ntmap_mode(\"view\")\ntm_shape(mpsz_valid) +\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = \"Blues\",\n          alpha = 0.7,\n          id = \"SUBZONE_N\",\n          popup.vars = c(\"Dependency\" = \"DEPENDENCY\",\n                         \"Aged\" = \"AGED\",\n                         \"Young\" = \"YOUNG\")) +\n  tm_borders(alpha = 0.5)\n\n\n\n\n\ntmap_mode(\"plot\")\n\n\n\n\n\n\n\nNote\n\n\n\nThe interactive map lets a reader hover over any subzone to read its underlying numbers, which a static choropleth cannot do. popup.vars controls what the tooltip shows."
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#comparing-six-classification-methods-at-a-glance",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#comparing-six-classification-methods-at-a-glance",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Comparing six classification methods at a glance",
+    "text": "Comparing six classification methods at a glance\nInstead of viewing methods one at a time, I render six in a single grid so the visual differences are obvious.\n\nstyles &lt;- c(\"equal\", \"quantile\", \"jenks\", \"kmeans\", \"sd\", \"pretty\")\nmaps &lt;- lapply(styles, function(s) {\n  tm_shape(mpsz_pop2020) +\n    tm_fill(\"DEPENDENCY\", style = s, n = 5, palette = \"Blues\",\n            title = s) +\n    tm_borders(alpha = 0.4) +\n    tm_layout(main.title = s, main.title.size = 0.9, legend.show = FALSE)\n})\ntmap_arrange(maps[[1]], maps[[2]], maps[[3]],\n             maps[[4]], maps[[5]], maps[[6]], ncol = 3)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nquantile, jenks and kmeans reveal the most spatial structure; equal and sd are dominated by the outlier and look nearly uniform."
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#effect-of-the-number-of-classes",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#effect-of-the-number-of-classes",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Effect of the number of classes",
+    "text": "Effect of the number of classes\nSame variable and method, varying n. Too few classes hide variation; too many overload the reader.\n\nn_list &lt;- c(2, 5, 10, 20)\nn_maps &lt;- lapply(n_list, function(k) {\n  tm_shape(mpsz_pop2020) +\n    tm_fill(\"DEPENDENCY\", style = \"quantile\", n = k, palette = \"Blues\") +\n    tm_borders(alpha = 0.3) +\n    tm_layout(main.title = paste0(\"n = \", k), main.title.size = 0.9,\n              legend.show = FALSE)\n})\ntmap_arrange(n_maps[[1]], n_maps[[2]], n_maps[[3]], n_maps[[4]], ncol = 2)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#custom-manual-class-breaks",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#custom-manual-class-breaks",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Custom (manual) class breaks",
+    "text": "Custom (manual) class breaks\nClassification can be driven by domain knowledge instead of an algorithm. Here I set breaks from the distribution’s own descriptive statistics.\n\nsummary(mpsz_pop2020$DEPENDENCY)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's \n 0.1111  0.7147  0.7867  0.8585  0.8763 19.0000      92 \n\nbreaks &lt;- c(0, 0.6, 0.7, 0.8, 0.9, Inf)\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\",\n          breaks = breaks,\n          palette = \"Blues\",\n          title = \"Dependency ratio (custom breaks)\") +\n  tm_borders(alpha = 0.5) +\n  tm_layout(legend.outside = TRUE)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09A.html#colour-blind-safe-palette-and-ranked-table",
+    "href": "HO_EX/HO_EX09/HO_EX09A.html#colour-blind-safe-palette-and-ranked-table",
+    "title": "Hands-on Exercise 9A:",
+    "section": "Colour-blind-safe palette and ranked table",
+    "text": "Colour-blind-safe palette and ranked table\nChoropleths must communicate to all readers. I switch to the colour-blind-safe viridis palette and add a table of the 10 most dependent subzones so the map’s extremes are also legible as numbers.\n\ntm_shape(mpsz_pop2020) +\n  tm_fill(\"DEPENDENCY\",\n          style = \"quantile\",\n          palette = viridisLite::viridis(6),\n          title = \"Dependency (viridis)\") +\n  tm_borders(alpha = 0.4)\n\n\n\n\n\n\n\n\n\nmpsz_pop2020 %&gt;%\n  st_drop_geometry() %&gt;%\n  filter(!is.na(DEPENDENCY)) %&gt;%\n  arrange(desc(DEPENDENCY)) %&gt;%\n  select(SUBZONE_N, PLN_AREA_N, YOUNG, AGED, `ECONOMY ACTIVE`, DEPENDENCY) %&gt;%\n  slice_head(n = 10)\n\n                       SUBZONE_N   PLN_AREA_N YOUNG AGED ECONOMY ACTIVE\n1                    LOYANG WEST    PASIR RIS     0  190             10\n2                   LIM CHU KANG LIM CHU KANG    40   20             40\n3                   KAMPONG GLAM       ROCHOR     0   40             30\n4  NATIONAL UNIVERSITY OF S'PORE   QUEENSTOWN   130    0            100\n5                 MOUNT PLEASANT       NOVENA   220  160            320\n6                   PEARL'S HILL       OUTRAM  1200 2120           2860\n7                        SELETAR      SELETAR   120   30            130\n8                    BUKIT MERAH  BUKIT MERAH   300  270            530\n9                        DUNEARN       NOVENA  1270  760           1910\n10                      CRAWFORD      KALLANG  1670 2630           4120\n   DEPENDENCY\n1   19.000000\n2    1.500000\n3    1.333333\n4    1.300000\n5    1.187500\n6    1.160839\n7    1.153846\n8    1.075472\n9    1.062827\n10   1.043689"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09C.html",
+    "href": "HO_EX/HO_EX09/HO_EX09C.html",
+    "title": "Hands-on Exercise 9C:",
+    "section": "",
+    "text": "This hands-on exercise covers Chapter 23: Analytical Mapping.\nAnalytical mapping goes beyond pretty choropleths toward spatial exploratory data analysis (ESDA). In this exercise I:\n\nImport an rds polygon layer of Nigeria water points by LGA.\nMap rates (proportions) rather than raw counts.\nBuild percentile maps and box maps to surface spatial outliers.\nWrite reusable functions (get.var, percentmap, boxbreaks, boxmap)."
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09C.html#percentile-map",
+    "href": "HO_EX/HO_EX09/HO_EX09C.html#percentile-map",
+    "title": "Hands-on Exercise 9C:",
+    "section": "Percentile map",
+    "text": "Percentile map\nSpecial quantile map with six categories: 0–1%, 1–10%, 10–50%, 50–90%, 90–99%, 99–100%.\n\nNGA_wp &lt;- NGA_wp %&gt;% drop_na()\n\nget.var &lt;- function(vname, df) {\n  v &lt;- df[vname] %&gt;% st_set_geometry(NULL)\n  v &lt;- unname(v[, 1])\n  return(v)\n}\n\npercentmap &lt;- function(vnam, df, legtitle = NA, mtitle = \"Percentile Map\") {\n  percent &lt;- c(0, .01, .1, .5, .9, .99, 1)\n  var &lt;- get.var(vnam, df)\n  bperc &lt;- quantile(var, percent)\n  tm_shape(df) +\n    tm_polygons() +\n    tm_shape(df) +\n    tm_fill(vnam, title = legtitle, breaks = bperc, palette = \"Blues\",\n            labels = c(\"&lt; 1%\", \"1% - 10%\", \"10% - 50%\",\n                       \"50% - 90%\", \"90% - 99%\", \"&gt; 99%\")) +\n    tm_borders() +\n    tm_title(mtitle) +\n    tm_layout(legend.outside = TRUE)\n}\n\npercentmap(\"total_wp\", NGA_wp)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09C.html#box-map",
+    "href": "HO_EX/HO_EX09/HO_EX09C.html#box-map",
+    "title": "Hands-on Exercise 9C:",
+    "section": "Box map",
+    "text": "Box map\nA box map is an augmented quartile map with extra lower/upper outlier classes.\n\nggplot(data = NGA_wp, aes(x = \"\", y = wp_nonfunctional)) +\n  geom_boxplot()\n\n\n\n\n\n\n\n\n\nboxbreaks &lt;- function(v, mult = 1.5) {\n  qv &lt;- unname(quantile(v))\n  iqr &lt;- qv[4] - qv[2]\n  upfence &lt;- qv[4] + mult * iqr\n  lofence &lt;- qv[2] - mult * iqr\n  bb &lt;- vector(mode = \"numeric\", length = 7)\n  if (lofence &lt; qv[1]) {\n    bb[1] &lt;- lofence\n    bb[2] &lt;- floor(qv[1])\n  } else {\n    bb[2] &lt;- lofence\n    bb[1] &lt;- qv[1]\n  }\n  if (upfence &gt; qv[5]) {\n    bb[7] &lt;- upfence\n    bb[6] &lt;- ceiling(qv[5])\n  } else {\n    bb[6] &lt;- upfence\n    bb[7] &lt;- qv[5]\n  }\n  bb[3:5] &lt;- qv[2:4]\n  return(bb)\n}\n\nboxmap &lt;- function(vnam, df, legtitle = NA, mtitle = \"Box Map\", mult = 1.5) {\n  var &lt;- get.var(vnam, df)\n  bb &lt;- boxbreaks(var)\n  tm_shape(df) +\n    tm_polygons() +\n    tm_shape(df) +\n    tm_fill(vnam, title = legtitle, breaks = bb, palette = \"Blues\",\n            labels = c(\"lower outlier\", \"&lt; 25%\", \"25% - 50%\",\n                       \"50% - 75%\", \"&gt; 75%\", \"upper outlier\")) +\n    tm_borders() +\n    tm_title(mtitle) +\n    tm_layout(legend.outside = TRUE)\n}\n\ntmap_mode(\"plot\")\nboxmap(\"wp_nonfunctional\", NGA_wp)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09C.html#counts-vs-rates-side-by-side-proving-the-point",
+    "href": "HO_EX/HO_EX09/HO_EX09C.html#counts-vs-rates-side-by-side-proving-the-point",
+    "title": "Hands-on Exercise 9C:",
+    "section": "Counts vs rates, side by side (proving the point)",
+    "text": "Counts vs rates, side by side (proving the point)\nThe chapter asserts that counts mislead. Here I show it: the same LGAs that look “worst” by raw non-functional count are different from those worst by non-functional rate.\n\ncount_map &lt;- boxmap(\"wp_nonfunctional\", NGA_wp,\n                    mtitle = \"Box map: non-functional COUNT\")\nrate_map  &lt;- boxmap(\"pct_nonfunctional\", NGA_wp,\n                    mtitle = \"Box map: non-functional RATE\")\ntmap_arrange(count_map, rate_map, ncol = 2)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTipInsight\n\n\n\nLarge, populous LGAs dominate the count map simply because they have more of everything. The rate map re-ranks small LGAs where most water points are broken, which are the genuine service-failure hotspots."
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09C.html#generalising-percentilebox-maps-over-many-variables",
+    "href": "HO_EX/HO_EX09/HO_EX09C.html#generalising-percentilebox-maps-over-many-variables",
+    "title": "Hands-on Exercise 9C:",
+    "section": "Generalising percentile/box maps over many variables",
+    "text": "Generalising percentile/box maps over many variables\nThe functions take the variable name as a string, so I can loop them across a vector of variables instead of copy-pasting.\n\nvars &lt;- c(\"pct_functional\", \"pct_nonfunctional\")\nbox_maps &lt;- lapply(vars, function(v) boxmap(v, NGA_wp, mtitle = v))\ntmap_arrange(box_maps[[1]], box_maps[[2]], ncol = 2)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09C.html#standard-deviation-map-another-extreme-value-lens",
+    "href": "HO_EX/HO_EX09/HO_EX09C.html#standard-deviation-map-another-extreme-value-lens",
+    "title": "Hands-on Exercise 9C:",
+    "section": "Standard deviation map (another extreme-value lens)",
+    "text": "Standard deviation map (another extreme-value lens)\nA z-score or standard-deviation classification flags how far each LGA sits from the mean, which is a different way of defining “extreme”.\n\ntm_shape(NGA_wp) +\n  tm_fill(\"pct_nonfunctional\",\n          style = \"sd\",\n          palette = \"-RdBu\",\n          midpoint = mean(NGA_wp$pct_nonfunctional, na.rm = TRUE),\n          title = \"Non-functional rate (std. dev.)\") +\n  tm_borders(lwd = 0.1, alpha = 0.6) +\n  tm_title(\"Standard deviation map\", size = 0.9) +\n  tm_layout(legend.outside = TRUE)"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09C.html#a-raw-breaks-helper-to-complete-the-function-family",
+    "href": "HO_EX/HO_EX09/HO_EX09C.html#a-raw-breaks-helper-to-complete-the-function-family",
+    "title": "Hands-on Exercise 9C:",
+    "section": "A raw-breaks helper to complete the function family",
+    "text": "A raw-breaks helper to complete the function family\nThe boxbreaks function handles quartiles, so I add a small rawbreaks companion that builds equal-count (quantile) breaks for any n, making the function family self-contained.\n\nrawbreaks &lt;- function(v, n = 6) {\n  unname(quantile(v, probs = seq(0, 1, length.out = n + 1)))\n}\n\nratemap &lt;- function(vnam, df, n = 6, mtitle = \"Rate Map\") {\n  var &lt;- get.var(vnam, df)\n  bb &lt;- rawbreaks(var, n)\n  tm_shape(df) +\n    tm_fill(vnam, breaks = bb, palette = \"Blues\") +\n    tm_borders(lwd = 0.1, alpha = 0.6) +\n    tm_title(mtitle, size = 0.9) +\n    tm_layout(legend.outside = TRUE)\n}\n\nratemap(\"pct_functional\", NGA_wp, n = 6, mtitle = \"Functional rate (quantile breaks)\")"
+  },
+  {
+    "objectID": "HO_EX/HO_EX09/HO_EX09C.html#interactive-box-map-for-exploration",
+    "href": "HO_EX/HO_EX09/HO_EX09C.html#interactive-box-map-for-exploration",
+    "title": "Hands-on Exercise 9C:",
+    "section": "Interactive box map for exploration",
+    "text": "Interactive box map for exploration\nWrapping the box-map logic in view mode lets a reader click any LGA to read its actual figures, pairing the classification with the raw evidence.\n\ntmap_mode(\"view\")\nNGA_valid &lt;- st_make_valid(NGA_wp)\nbb &lt;- boxbreaks(get.var(\"wp_nonfunctional\", NGA_valid))\n\ntm_shape(NGA_valid) +\n  tm_fill(\"wp_nonfunctional\",\n          breaks = bb,\n          palette = \"Blues\",\n          alpha = 0.75,\n          id = \"ADM2_EN\",\n          popup.vars = c(\"Total\" = \"total_wp\",\n                         \"Functional\" = \"wp_functional\",\n                         \"Non-functional\" = \"wp_nonfunctional\",\n                         \"% non-functional\" = \"pct_nonfunctional\"),\n          labels = c(\"lower outlier\", \"&lt; 25%\", \"25% - 50%\",\n                     \"50% - 75%\", \"&gt; 75%\", \"upper outlier\")) +\n  tm_borders(lwd = 0.5, alpha = 0.5)\n\n\n\n\n\ntmap_mode(\"plot\")\n\n\n\n\n\n\n\nNote\n\n\n\nThe id/popup.vars field names (here ADM2_EN, the LGA name) depend on the columns in NGA_wp; check names(NGA_wp) and adjust if your rds differs."
   },
   {
     "objectID": "TH_EX/TH_EX01/TH_EX01_ES.html#take-home-exercise-1-visual-analytics-for-data-discovery",

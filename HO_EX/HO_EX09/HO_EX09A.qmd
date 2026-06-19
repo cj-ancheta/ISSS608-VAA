@@ -1,0 +1,336 @@
+---
+title: "Hands-on Exercise 9A:"
+subtitle: "Choropleth Mapping with R"
+date: "19 Jun 2026"
+date-modified: "last-modified"
+format: html
+execute:
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+---
+
+# 1 Overview
+
+This hands-on exercise covers [Chapter 21: Choropleth Mapping with R](https://r4va.netlify.app/chap21).
+
+A **choropleth map** is a thematic map where geographic areas (subzones, provinces, countries...) are shaded in proportion to a statistical variable. In this exercise I:
+
+-   Import geospatial (shapefile) and aspatial (csv) data and join them.
+-   Build choropleth maps with `tmap`, using `qtm()` and the layered `tm_*` element approach.
+-   Compare data **classification methods** and **colour schemes**.
+-   Customise **map layouts** (legends, compass, scale bar, grid, credits).
+-   Produce **small multiples** and **criterion-based** maps.
+
+# 2 Getting Started
+
+## The data
+
+Two datasets are used:
+
+| Type | Dataset | Source |
+|------|---------|--------|
+| Geospatial | Master Plan 2014 Subzone Boundary (Web), `MP14_SUBZONE_WEB_PL` | [data.gov.sg](https://data.gov.sg/) |
+| Aspatial | Singapore Residents by Planning Area/Subzone, Age Group, Sex and Type of Dwelling, 2011 to 2020 (`respopagesextod2011to2020.csv`) | [SingStat](https://www.singstat.gov.sg/) |
+
+Expected folder structure:
+
+``` bash
+HO_EX09
+└── data
+    ├── respopagesextod2011to2020.csv
+    ├── MP14_SUBZONE_WEB_PL
+    │   └── MP14_SUBZONE_WEB_PL.{shp,shx,dbf,prj,...}
+    └── rds          # created on first write
+```
+
+## Installing and loading R packages
+
+```{r}
+pacman::p_load(sf, tidyverse, tmap)
+```
+
+# 3 Data Wrangling
+
+## Importing geospatial data
+
+```{r}
+mpsz <- st_read(dsn = "data/MP14_SUBZONE_WEB_PL", layer = "MP14_SUBZONE_WEB_PL")
+```
+
+## Importing aspatial data
+
+The csv is aspatial, so `read_csv()` is used instead of `st_read()`:
+
+```{r}
+popdata <- read_csv("data/respopagesextod2011to2020.csv")
+```
+
+## Data preparation
+
+I aggregate the 2020 population by planning area / subzone and derive the
+demographic groups and the **dependency ratio**:
+
+$$\text{Dependency} = \frac{\text{YOUNG} + \text{AGED}}{\text{ECONOMY ACTIVE}}$$
+
+```{r}
+popdata2020 <- popdata %>%
+  filter(Time == 2020) %>%
+  group_by(PA, SZ, AG) %>%
+  summarise(`POP` = sum(`Pop`)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = AG, values_from = POP) %>%
+  mutate(YOUNG = rowSums(.[3:6]) + rowSums(.[12])) %>%
+  mutate(`ECONOMY ACTIVE` = rowSums(.[7:11]) + rowSums(.[13:15])) %>%
+  mutate(`AGED` = rowSums(.[16:21])) %>%
+  mutate(`TOTAL` = rowSums(.[3:21])) %>%
+  mutate(`DEPENDENCY` = (`YOUNG` + `AGED`) / `ECONOMY ACTIVE`) %>%
+  select(`PA`, `SZ`, `YOUNG`, `ECONOMY ACTIVE`, `AGED`, `TOTAL`, `DEPENDENCY`)
+```
+
+::: callout-note
+## My read of the wrangling
+The age-group columns are selected by position (`.[3:6]` and so on), which is
+fragile. If the import order changes, the sums break. In the extras I keep the
+same logic for fidelity, but in production I would select the age columns by name.
+:::
+
+The `SZ`/`PA` keys must be upper-cased to match `mpsz$SUBZONE_N` before joining:
+
+```{r}
+popdata2020 <- popdata2020 %>%
+  mutate_at(.vars = vars(PA, SZ), .funs = list(toupper)) %>%
+  filter(`ECONOMY ACTIVE` > 0)
+```
+
+```{r}
+mpsz_pop2020 <- left_join(mpsz, popdata2020,
+                          by = c("SUBZONE_N" = "SZ"))
+```
+
+```{r}
+#| eval: false
+dir.create("data/rds", showWarnings = FALSE)
+write_rds(mpsz_pop2020, "data/rds/mpszpop2020.rds")
+```
+
+# 4 Choropleth Mapping with tmap
+
+## Using `qtm()`
+
+```{r}
+tmap_mode("plot")
+qtm(mpsz_pop2020, fill = "DEPENDENCY")
+```
+
+## Using tmap elements
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = "Blues",
+          title = "Dependency ratio") +
+  tm_borders(alpha = 0.5) +
+  tm_compass(type = "8star", size = 2) +
+  tm_scalebar() +
+  tm_grid(alpha = 0.2) +
+  tm_credits("Source: Planning Sub-zone boundary from URA\n and Population data from DOS",
+             position = c("left", "bottom")) +
+  tm_title("Distribution of Dependency Ratio by planning subzone", size = 1.1) +
+  tm_layout(legend.outside = TRUE, frame = TRUE)
+```
+
+## Classification methods
+
+### Quantile vs Equal
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_fill("DEPENDENCY", n = 5, style = "quantile") +
+  tm_borders(alpha = 0.5)
+```
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_fill("DEPENDENCY", n = 5, style = "equal") +
+  tm_borders(alpha = 0.5)
+```
+
+::: callout-tip
+## Insight
+There is a strong outlier subzone in the dependency ratio. With **equal
+interval** classes, almost every subzone falls in the first bucket and the map
+looks flat. **Quantile** classification guarantees roughly equal-sized groups,
+so spatial variation is visible despite the outlier.
+:::
+
+## Colour scheme
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_fill("DEPENDENCY", n = 6, style = "quantile", palette = "Blues") +
+  tm_borders(alpha = 0.5)
+```
+
+## Map layout
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_fill("DEPENDENCY",
+          style = "jenks",
+          palette = "Blues",
+          legend.hist = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_title("Distribution of Dependency Ratio (Jenks)", size = 1) +
+  tm_layout(legend.outside = TRUE, frame = FALSE)
+```
+
+## Small multiples and criterion mapping
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_fill(c("YOUNG", "AGED"),
+          style = "equal",
+          palette = "Blues") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(legend.outside = TRUE)
+```
+
+```{r}
+tm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N == "CENTRAL REGION", ]) +
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = "Greens",
+          legend.hist = TRUE) +
+  tm_layout(legend.outside = TRUE,
+            legend.position = c("right", "bottom"),
+            frame = FALSE) +
+  tm_borders(alpha = 0.5)
+```
+
+# 5 Extras
+
+## Fixing the interactive (`view`) map
+
+Earlier, `tmap_mode("view")` failed with an *invalid polygon* error. The cause
+is self-intersecting geometries in the shapefile, and `st_make_valid()` repairs
+them so the map can render in Leaflet.
+
+```{r}
+mpsz_valid <- st_make_valid(mpsz_pop2020)
+
+tmap_mode("view")
+tm_shape(mpsz_valid) +
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = "Blues",
+          alpha = 0.7,
+          id = "SUBZONE_N",
+          popup.vars = c("Dependency" = "DEPENDENCY",
+                         "Aged" = "AGED",
+                         "Young" = "YOUNG")) +
+  tm_borders(alpha = 0.5)
+tmap_mode("plot")
+```
+
+::: callout-note
+The interactive map lets a reader hover over any subzone to read its underlying
+numbers, which a static choropleth cannot do. `popup.vars` controls what the
+tooltip shows.
+:::
+
+## Comparing six classification methods at a glance
+
+Instead of viewing methods one at a time, I render six in a single grid so the
+visual differences are obvious.
+
+```{r}
+#| fig-height: 8
+styles <- c("equal", "quantile", "jenks", "kmeans", "sd", "pretty")
+maps <- lapply(styles, function(s) {
+  tm_shape(mpsz_pop2020) +
+    tm_fill("DEPENDENCY", style = s, n = 5, palette = "Blues",
+            title = s) +
+    tm_borders(alpha = 0.4) +
+    tm_layout(main.title = s, main.title.size = 0.9, legend.show = FALSE)
+})
+tmap_arrange(maps[[1]], maps[[2]], maps[[3]],
+             maps[[4]], maps[[5]], maps[[6]], ncol = 3)
+```
+
+::: callout-tip
+`quantile`, `jenks` and `kmeans` reveal the most spatial structure; `equal` and
+`sd` are dominated by the outlier and look nearly uniform.
+:::
+
+## Effect of the number of classes
+
+Same variable and method, varying `n`. Too few classes hide variation; too many
+overload the reader.
+
+```{r}
+#| fig-height: 6
+n_list <- c(2, 5, 10, 20)
+n_maps <- lapply(n_list, function(k) {
+  tm_shape(mpsz_pop2020) +
+    tm_fill("DEPENDENCY", style = "quantile", n = k, palette = "Blues") +
+    tm_borders(alpha = 0.3) +
+    tm_layout(main.title = paste0("n = ", k), main.title.size = 0.9,
+              legend.show = FALSE)
+})
+tmap_arrange(n_maps[[1]], n_maps[[2]], n_maps[[3]], n_maps[[4]], ncol = 2)
+```
+
+## Custom (manual) class breaks
+
+Classification can be driven by domain knowledge instead of an algorithm. Here I
+set breaks from the distribution's own descriptive statistics.
+
+```{r}
+summary(mpsz_pop2020$DEPENDENCY)
+
+breaks <- c(0, 0.6, 0.7, 0.8, 0.9, Inf)
+tm_shape(mpsz_pop2020) +
+  tm_fill("DEPENDENCY",
+          breaks = breaks,
+          palette = "Blues",
+          title = "Dependency ratio (custom breaks)") +
+  tm_borders(alpha = 0.5) +
+  tm_layout(legend.outside = TRUE)
+```
+
+## Colour-blind-safe palette and ranked table
+
+Choropleths must communicate to *all* readers. I switch to the colour-blind-safe
+`viridis` palette and add a table of the 10 most dependent subzones so the map's
+extremes are also legible as numbers.
+
+```{r}
+tm_shape(mpsz_pop2020) +
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = viridisLite::viridis(6),
+          title = "Dependency (viridis)") +
+  tm_borders(alpha = 0.4)
+```
+
+```{r}
+mpsz_pop2020 %>%
+  st_drop_geometry() %>%
+  filter(!is.na(DEPENDENCY)) %>%
+  arrange(desc(DEPENDENCY)) %>%
+  select(SUBZONE_N, PLN_AREA_N, YOUNG, AGED, `ECONOMY ACTIVE`, DEPENDENCY) %>%
+  slice_head(n = 10)
+```
+
+# 6 Reflections
+
+-   The biggest practical lesson is that **classification choice is an editorial
+    decision**, not a default. Extras 2 to 4 show the *same data* telling very
+    different stories depending on style, `n`, and breaks.
+-   `st_make_valid()` (Extra 1) is the small fix that unlocks the entire
+    interactive workflow, and it is worth remembering for every shapefile-based map.
+-   Accessibility (Extra 5) is easy to bolt on and should be the default, not an
+    afterthought.

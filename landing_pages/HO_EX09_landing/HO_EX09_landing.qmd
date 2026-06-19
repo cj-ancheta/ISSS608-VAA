@@ -1,0 +1,59 @@
+---
+title: "Hands-on Exercise 9"
+page-layout: custom
+---
+
+--------------------------------------------------------------------------------
+
+::::::::::::: tech-stack-row
+::::::: gallery-item
+::: huge-number
+1
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('/HO_EX/HO_EX09/images/ho_ex09a_choropleth.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 9-A]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX09/HO_EX09A.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+2
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('/HO_EX/HO_EX09/images/ho_ex09b_bubbles.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 9-B]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX09/HO_EX09B.html" class="stretched-link"></a>
+:::::
+:::::::
+
+::::::: gallery-item
+::: huge-number
+3
+:::
+
+::::: poster-card
+::: {.poster style="background-image: url('/HO_EX/HO_EX09/images/ho_ex09c_boxmap.png');"}
+:::
+
+::: poster-info
+[Hands-on Exercise 9-C]{.poster-label}
+:::
+
+<a href="/HO_EX/HO_EX09/HO_EX09C.html" class="stretched-link"></a>
+:::::
+:::::::
+:::::::::::::
