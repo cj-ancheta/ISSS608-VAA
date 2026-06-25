@@ -1,0 +1,575 @@
+---
+title: "Hands-on Exercise 10:"
+subtitle: "Information Dashboard Design with R"
+date: "25 Jun 2026"
+date-modified: "last-modified"
+format: html
+execute:
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+  fig-width: 8.5
+  fig-align: center
+---
+
+# 1 Overview
+
+This hands-on exercise covers [Chapter 31: Information Dashboard Design: R methods](https://r4va.netlify.app/chap31).
+
+An **information dashboard** packs the key numbers a decision-maker needs into a
+single, scannable view. The design challenge is density without clutter: each
+cell has to earn its space. In this exercise I:
+
+-   Build the classic dashboard building blocks in `ggplot2`: the **bullet
+    chart** (actual vs target) and the **sparkline** (compact trend lines).
+-   Assemble a **static dashboard** with `gt` and `gtExtras`, embedding bullets
+    and sparklines directly inside a table.
+-   Assemble an **interactive dashboard** with `reactable` and `reactablefmtr`,
+    adding hover, points, reference lines and bandlines.
+
+The 5 extras (Section [-@sec-extras]) push the same toolkit further: KPI
+scorecards, dual-metric sparklines, a cross-product sales heatmap, trend small
+multiples, and an exception-reporting view.
+
+# 2 Getting Started
+
+## 2.1 Loading the required packages
+
+-   **tidyverse** and **lubridate**: data wrangling and date handling
+-   **gt** and **gtExtras**: publication-quality static tables with embedded plots
+-   **reactable** and **reactablefmtr**: interactive HTML tables
+-   **ggthemes**: extra `ggplot2` themes
+-   **svglite**: SVG device needed by `gt_plt_bullet()`
+
+```{r}
+pacman::p_load(lubridate, ggthemes, reactable,
+               reactablefmtr, gt, gtExtras, tidyverse, svglite)
+```
+
+I view this site in dark mode, where `ggplot2`'s default grey text washes out
+against the white plot background. I set a global theme so every figure uses
+**black text on a white background**, and reuse the same overrides on the plots
+that supply their own theme.
+
+```{r}
+black_text <- theme(
+  text = element_text(colour = "black"),
+  axis.text = element_text(colour = "black"),
+  plot.title = element_text(colour = "black", face = "bold"),
+  plot.background = element_rect(fill = "white", colour = NA),
+  legend.background = element_rect(fill = "white", colour = NA)
+)
+
+theme_set(theme_gray(base_size = 13) + black_text)
+```
+
+The interactive sparklines in Section 5 rely on the **dataui** package, which
+lives on GitHub rather than CRAN. I install it once and then load it:
+
+```{r}
+#| eval: false
+remotes::install_github("timelyportfolio/dataui")
+```
+
+```{r}
+library(dataui)
+```
+
+## 2.2 Importing data
+
+The dataset is `CoffeeChain.rds`, a sales record of a fictional coffee retail
+chain (4,248 rows). It carries actuals and budgets for `Sales`, `Profit`,
+`Margin` and related measures, plus `Product`, `Product Type`, `Market` and a
+daily `Date`.
+
+```{r}
+coffeechain <- read_rds("data/rds/CoffeeChain.rds")
+glimpse(coffeechain)
+```
+
+# 3 Plotting the Building Blocks with ggplot
+
+## 3.1 Bullet chart
+
+A bullet chart compares a single measure (the actual) against a target and a set
+of qualitative ranges. I first aggregate `Sales` and `Budget Sales` to the
+product level.
+
+```{r}
+product <- coffeechain %>%
+  group_by(Product) %>%
+  summarise(target = sum(`Budget Sales`),
+            current = sum(Sales)) %>%
+  ungroup()
+```
+
+The chart is built from layered `geom_col()` bars (the grey qualitative bands),
+a thin black bar (the actual), and a red error bar standing in for the target
+marker.
+
+```{r}
+#| fig-height: 6
+ggplot(product, aes(Product, current)) +
+  geom_col(aes(Product, max(target) * 1.01),
+           fill = "grey85", width = 0.85) +
+  geom_col(aes(Product, target * 0.75),
+           fill = "grey60", width = 0.85) +
+  geom_col(aes(Product, target * 0.5),
+           fill = "grey50", width = 0.85) +
+  geom_col(aes(Product, current),
+           width = 0.35, fill = "black") +
+  geom_errorbar(aes(y = target, x = Product, ymin = target, ymax = target),
+                width = 0.4, colour = "red", linewidth = 1) +
+  labs(x = "Product", y = "Total sales (actual vs budget)") +
+  coord_flip()
+```
+
+## 3.2 Sparklines
+
+### 3.2.1 Preparing the data
+
+Sparklines need one small time series per product. I build a monthly sales
+report, then derive the supporting points (minimum, maximum, month-end) and the
+inner-quartile ribbon.
+
+```{r}
+sales_report <- coffeechain %>%
+  filter(Date >= "2013-01-01") %>%
+  mutate(Month = month(Date)) %>%
+  group_by(Month, Product) %>%
+  summarise(Sales = sum(Sales)) %>%
+  ungroup() %>%
+  select(Month, Product, Sales)
+```
+
+```{r}
+mins <- group_by(sales_report, Product) %>%
+  slice(which.min(Sales))
+maxs <- group_by(sales_report, Product) %>%
+  slice(which.max(Sales))
+ends <- group_by(sales_report, Product) %>%
+  filter(Month == max(Month))
+```
+
+```{r}
+quarts <- sales_report %>%
+  group_by(Product) %>%
+  summarise(quart1 = quantile(Sales, 0.25),
+            quart2 = quantile(Sales, 0.75)) %>%
+  right_join(sales_report)
+```
+
+### 3.2.2 Generating the chart
+
+```{r}
+#| fig-height: 7
+ggplot(sales_report, aes(x = Month, y = Sales)) +
+  facet_grid(Product ~ ., scales = "free_y") +
+  geom_ribbon(data = quarts, aes(ymin = quart1, max = quart2),
+              fill = "grey90") +
+  geom_line(linewidth = 0.3) +
+  geom_point(data = mins, col = "red") +
+  geom_point(data = maxs, col = "blue") +
+  geom_text(data = mins, aes(label = Sales), vjust = -1) +
+  geom_text(data = maxs, aes(label = Sales), vjust = 2.5) +
+  geom_text(data = ends, aes(label = Sales), hjust = 0, nudge_x = 0.5) +
+  geom_text(data = ends, aes(label = Product), hjust = 0, nudge_x = 1.0) +
+  expand_limits(x = max(sales_report$Month) +
+                  (0.25 * (max(sales_report$Month) - min(sales_report$Month)))) +
+  scale_x_continuous(breaks = seq(1, 12, 1)) +
+  scale_y_continuous(expand = c(0.1, 0)) +
+  theme_tufte(base_size = 3, base_family = "Helvetica") +
+  theme(axis.title = element_blank(), axis.text.y = element_blank(),
+        axis.ticks = element_blank(), strip.text = element_blank())
+```
+
+::: callout-note
+## Insight
+These two `ggplot` versions are the "from scratch" reference. They work, but the
+sparkline in particular takes a lot of code for a small result. Sections 4 and 5
+show how purpose-built table packages collapse the same output into a line or
+two.
+:::
+
+# 4 Static Dashboard: gt and gtExtras
+
+## 4.1 Bullet chart inside a table
+
+`gt_plt_bullet()` reproduces the Section 3.1 chart from the aggregated `product`
+table in a single call.
+
+```{r}
+product %>%
+  gt() %>%
+  gt_plt_bullet(column = current,
+                target = target,
+                width = 60,
+                palette = c("lightblue", "black")) %>%
+  gt_theme_538()
+```
+
+## 4.2 Sparklines with gtExtras
+
+### 4.2.1 Preparing the data
+
+```{r}
+report <- coffeechain %>%
+  mutate(Year = year(Date)) %>%
+  filter(Year == "2013") %>%
+  mutate(Month = month(Date, label = TRUE, abbr = TRUE)) %>%
+  group_by(Product, Month) %>%
+  summarise(Sales = sum(Sales)) %>%
+  ungroup()
+
+head(report)
+```
+
+`gt_plt_sparkline()` expects the values as a list-column, so I collapse each
+product's monthly sales into a list.
+
+```{r}
+report %>%
+  group_by(Product) %>%
+  summarize(`Monthly Sales` = list(Sales), .groups = "drop")
+```
+
+### 4.2.2 Plotting sparklines
+
+```{r}
+report %>%
+  group_by(Product) %>%
+  summarize(`Monthly Sales` = list(Sales), .groups = "drop") %>%
+  gt() %>%
+  gt_plt_sparkline(`Monthly Sales`, same_limit = FALSE)
+```
+
+### 4.2.3 Adding summary statistics
+
+```{r}
+report %>%
+  group_by(Product) %>%
+  summarise(Min = min(Sales, na.rm = TRUE),
+            Max = max(Sales, na.rm = TRUE),
+            Average = mean(Sales, na.rm = TRUE)) %>%
+  gt() %>%
+  fmt_number(columns = 4, decimals = 2)
+```
+
+### 4.2.4 Combining sparklines, statistics and a bullet chart
+
+I build the sparkline list, the summary statistics and the bullet inputs
+separately, then join them into one table.
+
+```{r}
+spark <- report %>%
+  group_by(Product) %>%
+  summarize(`Monthly Sales` = list(Sales), .groups = "drop")
+
+sales <- report %>%
+  group_by(Product) %>%
+  summarise(Min = min(Sales, na.rm = TRUE),
+            Max = max(Sales, na.rm = TRUE),
+            Average = mean(Sales, na.rm = TRUE))
+
+bullet <- coffeechain %>%
+  filter(Date >= "2013-01-01") %>%
+  group_by(Product) %>%
+  summarise(Target = sum(`Budget Sales`),
+            Actual = sum(Sales)) %>%
+  ungroup()
+
+sales_data <- sales %>%
+  left_join(spark) %>%
+  left_join(bullet)
+```
+
+```{r}
+sales_data %>%
+  gt() %>%
+  gt_plt_sparkline(`Monthly Sales`) %>%
+  gt_plt_bullet(column = Actual,
+                target = Target,
+                width = 28,
+                palette = c("lightblue", "black")) %>%
+  gt_theme_538()
+```
+
+::: callout-tip
+## Insight
+This single table is already a dashboard: each row shows a product's trend
+(sparkline), its spread (min/max/average) and its performance against budget
+(bullet). It reads top to bottom like a management report.
+:::
+
+# 5 Interactive Dashboard: reactable and reactablefmtr
+
+`reactable` renders sortable, searchable HTML tables, and `reactablefmtr`'s
+`react_sparkline()` turns a list-column into an interactive sparkline. I first
+reshape the report into one list per product.
+
+```{r}
+report <- report %>%
+  group_by(Product) %>%
+  summarize(`Monthly Sales` = list(Sales))
+```
+
+## 5.1 Interactive sparklines
+
+```{r}
+reactable(
+  report,
+  defaultPageSize = 13,
+  columns = list(
+    Product = colDef(maxWidth = 200),
+    `Monthly Sales` = colDef(cell = react_sparkline(report))
+  )
+)
+```
+
+## 5.2 Adding points and labels
+
+```{r}
+reactable(
+  report,
+  defaultPageSize = 13,
+  columns = list(
+    Product = colDef(maxWidth = 200),
+    `Monthly Sales` = colDef(
+      cell = react_sparkline(
+        report,
+        highlight_points = highlight_points(min = "red", max = "blue"),
+        labels = c("first", "last"))
+    )
+  )
+)
+```
+
+## 5.3 Adding a reference line
+
+```{r}
+reactable(
+  report,
+  defaultPageSize = 13,
+  columns = list(
+    Product = colDef(maxWidth = 200),
+    `Monthly Sales` = colDef(
+      cell = react_sparkline(
+        report,
+        highlight_points = highlight_points(min = "red", max = "blue"),
+        statline = "mean")
+    )
+  )
+)
+```
+
+## 5.4 Adding a bandline
+
+A bandline shades the inner quartiles, making each product's spread visible at a
+glance.
+
+```{r}
+reactable(
+  report,
+  defaultPageSize = 13,
+  columns = list(
+    Product = colDef(maxWidth = 200),
+    `Monthly Sales` = colDef(
+      cell = react_sparkline(
+        report,
+        highlight_points = highlight_points(min = "red", max = "blue"),
+        line_width = 1,
+        bandline = "innerquartiles",
+        bandline_color = "green")
+    )
+  )
+)
+```
+
+## 5.5 Using sparkbars
+
+```{r}
+reactable(
+  report,
+  defaultPageSize = 13,
+  columns = list(
+    Product = colDef(maxWidth = 200),
+    `Monthly Sales` = colDef(
+      cell = react_sparkbar(
+        report,
+        highlight_bars = highlight_bars(min = "red", max = "blue"),
+        bandline = "innerquartiles",
+        statline = "mean")
+    )
+  )
+)
+```
+
+# 6 Extras {#sec-extras}
+
+## 6.1 A KPI scorecard by market
+
+A dashboard usually opens with headline numbers. I summarise the chain by
+`Market` and use `gt` with `data_color()` to turn the table into a heat-shaded
+scorecard, so the strongest and weakest markets read instantly.
+
+```{r}
+market_kpi <- coffeechain %>%
+  group_by(Market) %>%
+  summarise(Sales = sum(Sales),
+            Profit = sum(Profit),
+            Margin = sum(Profit) / sum(Sales)) %>%
+  arrange(desc(Sales))
+
+market_kpi %>%
+  gt() %>%
+  tab_header(title = "Coffee Chain KPI Scorecard",
+             subtitle = "Total performance by market") %>%
+  fmt_currency(columns = c(Sales, Profit), currency = "USD", decimals = 0) %>%
+  fmt_percent(columns = Margin, decimals = 1) %>%
+  data_color(columns = Sales, palette = c("white", "#1b7837")) %>%
+  data_color(columns = Profit, palette = c("white", "#2166ac")) %>%
+  data_color(columns = Margin, palette = c("#b2182b", "white", "#1b7837")) %>%
+  gt_theme_538()
+```
+
+::: callout-tip
+## Insight
+Colour does the ranking for the reader. A market can post high sales yet a thin
+margin, and the diverging colour scale on `Margin` surfaces exactly that case,
+which a plain number column would hide.
+:::
+
+## 6.2 Comparing two trends: sales vs profit sparklines
+
+A single sales sparkline hides whether revenue and profit move together. I place
+a sales sparkline and a profit sparkline side by side for each product, so
+divergence between the two is obvious.
+
+```{r}
+dual_spark <- coffeechain %>%
+  mutate(Month = month(Date, label = TRUE, abbr = TRUE)) %>%
+  filter(year(Date) == 2013) %>%
+  group_by(Product, Month) %>%
+  summarise(Sales = sum(Sales), Profit = sum(Profit), .groups = "drop") %>%
+  group_by(Product) %>%
+  summarise(`Sales trend` = list(Sales),
+            `Profit trend` = list(Profit), .groups = "drop")
+
+dual_spark %>%
+  gt() %>%
+  gt_plt_sparkline(`Sales trend`, same_limit = FALSE) %>%
+  gt_plt_sparkline(`Profit trend`, same_limit = FALSE) %>%
+  gt_theme_538()
+```
+
+## 6.3 Sales heatmap by product and month
+
+The sparklines show each product's trend in isolation. A `ggplot2` heatmap of
+monthly sales across all products puts every product on the same colour scale,
+so seasonal peaks and the strongest products stand out in a single grid. This is
+a `ggplot`-only counterpart to the table-based views above.
+
+```{r}
+#| fig-height: 6
+heat <- coffeechain %>%
+  filter(year(Date) == 2013) %>%
+  mutate(Month = month(Date, label = TRUE, abbr = TRUE)) %>%
+  group_by(Product, Month) %>%
+  summarise(Sales = sum(Sales), .groups = "drop")
+
+ggplot(heat, aes(x = Month,
+                 y = fct_reorder(Product, Sales, .fun = sum),
+                 fill = Sales)) +
+  geom_tile(colour = "white", linewidth = 0.4) +
+  scale_fill_gradient(low = "#deebf7", high = "#08519c",
+                      labels = scales::comma) +
+  labs(title = "Monthly sales heatmap by product (2013)",
+       x = NULL, y = NULL, fill = "Sales") +
+  theme_few(base_size = 13) +
+  theme(panel.grid = element_blank()) +
+  black_text
+```
+
+::: callout-tip
+## Insight
+The heatmap trades the per-product detail of a sparkline for cross-product
+comparison: every cell shares one colour scale, so the busiest products and the
+seasonal pattern across the whole range are both readable at a glance.
+:::
+
+## 6.4 Trend small multiples by product type
+
+The sparklines are intentionally minimal. When I want to read actual values, a
+faceted area chart of monthly profit by `Product Type`, themed with `ggthemes`,
+gives the same trend comparison with axes attached.
+
+```{r}
+#| fig-height: 5
+type_trend <- coffeechain %>%
+  filter(year(Date) == 2013) %>%
+  mutate(Month = month(Date)) %>%
+  group_by(`Product Type`, Month) %>%
+  summarise(Profit = sum(Profit), .groups = "drop")
+
+ggplot(type_trend, aes(Month, Profit)) +
+  geom_area(fill = "#2166ac", alpha = 0.3) +
+  geom_line(colour = "#2166ac", linewidth = 0.6) +
+  facet_wrap(~ `Product Type`) +
+  scale_x_continuous(breaks = seq(2, 12, 2)) +
+  labs(title = "Monthly profit by product type (2013)",
+       x = "Month", y = "Profit") +
+  theme_few(base_size = 13) +
+  black_text
+```
+
+## 6.5 Exception reporting: products below budget
+
+Dashboards should flag problems, not just display data. This `gt` view keeps only
+the products whose actual sales fell short of budget and colours the shortfall,
+turning the table into a management-by-exception list.
+
+```{r}
+exceptions <- coffeechain %>%
+  group_by(Product) %>%
+  summarise(Actual = sum(Sales),
+            Target = sum(`Budget Sales`)) %>%
+  mutate(`Gap to target` = Actual - Target,
+         `% of target` = Actual / Target) %>%
+  filter(Actual < Target) %>%
+  arrange(`% of target`)
+
+exceptions %>%
+  gt() %>%
+  tab_header(title = "Products below budget",
+             subtitle = "Management-by-exception view") %>%
+  fmt_currency(columns = c(Actual, Target, `Gap to target`),
+               currency = "USD", decimals = 0) %>%
+  fmt_percent(columns = `% of target`, decimals = 1) %>%
+  data_color(columns = `% of target`,
+             palette = c("#b2182b", "#fddbc7")) %>%
+  gt_theme_538()
+```
+
+::: callout-tip
+## Insight
+Filtering to the exceptions is itself a design decision. A reader scanning this
+table sees only what needs action, which is the whole point of a dashboard
+versus a raw data dump.
+:::
+
+# 7 Reflections
+
+-   The strongest lesson is that **the right tool collapses effort**. The
+    sparkline took roughly twenty lines in `ggplot2` (Section 3.2) and one line
+    in `gtExtras` (Section 4.2). When a package is built for exactly one job, it
+    is worth reaching for.
+-   `gt`/`gtExtras` and `reactable`/`reactablefmtr` split cleanly by output:
+    static and print-ready versus interactive and exploratory. Extras 1 and 3
+    build the same product view in both, which made the trade-off concrete.
+-   Dashboard design is mostly **editing**, not drawing. The exception view
+    (Extra 5) and the colour-as-ranking scorecard (Extra 1) communicate faster
+    than fuller tables precisely because they show less.
+-   A practical snag worth noting: `gt_plt_bullet()` needs `svglite`, and the
+    interactive sparklines need the GitHub-only `dataui` package. Getting the
+    environment right was a larger share of the work than writing the plots.

@@ -180,19 +180,20 @@ COMING SOON
 :::::
 :::::::
 
-::::::: {.gallery-item .coming-soon}
+::::::: gallery-item
 ::: huge-number
 10
 :::
 
 ::::: poster-card
-::: {.poster .poster-text}
-COMING SOON
+::: {.poster style="background-image: url('HO_EX/HO_EX10/images/ho_ex10_dashboard.png');"}
 :::
 
 ::: poster-info
 [Hands-on Exercise 10]{.poster-label}
 :::
+
+<a href="HO_EX/HO_EX10/HO_EX10.html" class="stretched-link"></a>
 :::::
 :::::::
 :::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -396,22 +397,6 @@ COMING SOON
 :::
 
 <a href="TH_EX/TH_EX02/TH_EX02.html" class="stretched-link"></a>
-:::::
-:::::::
-
-::::::: {.gallery-item .coming-soon}
-::: huge-number
-3
-:::
-
-::::: poster-card
-::: {.poster .poster-text}
-COMING SOON
-:::
-
-::: poster-info
-[Take-home Exercise 3]{.poster-label}
-:::
 :::::
 :::::::
 ::::::::::::::::::
